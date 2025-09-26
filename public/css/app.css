@@ -1,0 +1,184 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    font-family: 'Poppins', Arial, sans-serif;
+}
+.full-bleed {
+    position: relative;
+    left: 50%;
+    margin-left: -50vw;
+    width: 100vw;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.hero {
+    height: 100vh;
+    min-height: 600px;
+    background: url("../images/hero_1.png") center/cover no-repeat;
+}
+.full-bleed .overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 1;
+}
+.full-bleed .content {
+    position: relative;
+    z-index: 2;
+    color: #fff;
+    text-align: center;
+    width: 100%;
+    max-width: 1100px;
+    padding: 30px;
+}
+.hero h1 {
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin: 8px 0 16px;
+    font-size: clamp(32px, 5vw, 64px);
+}
+.hero .lead {
+    opacity: 0.95;
+    margin-bottom: 0;
+}
+.layanan-card {
+    background: url("../images/hero_5.png") center/cover no-repeat;
+    padding: 60px 0;
+    text-align: center;
+}
+.layanan-section {
+    margin-top: -60px;
+    margin-bottom: 40px;
+    text-align: center;
+}
+/* What We Do */
+.what-section {
+    position: relative;
+    left: 50%;
+    margin-left: -50vw;
+    width: 100vw;
+    min-height: 70vh;
+    padding: 80px 0;
+    background: url("../images/hero_4.png") center/cover no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+.what-section .container {
+    position: relative;
+    z-index: 2;
+}
+.what-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+.what-list li {
+    margin-bottom: 14px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-size: 16px;
+}
+/* Card */
+.card-icon {
+    height: 64px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto 12px;
+}
+
+/* KTT */
+.ktt {
+    min-height: 70vh;
+    padding: 80px 0;
+    background: url("../images/hero_2.png") center/cover no-repeat;
+}
+.ktt .card {
+    border-radius: 12px;
+    padding: 30px 20px;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+    background: #004d61;
+    color: #fff;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+.ktt .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.18);
+}
+
+/* Contact */
+.contact-section {
+    position: relative;
+    left: 50%;
+    margin-left: -50vw;
+    width: 100vw;
+}
+.contact-top {
+    background: #004d61;
+    color: #fff;
+    padding: 60px 20px 40px;
+    text-align: center;
+}
+.contact-bottom {
+   position: relative;
+   left: 50%;
+   margin-left: -50vw;
+   width: 100vw;
+   background: url("../images/hero_4.png") center/cover no-repeat;
+   padding: 80px 20px;
+   text-align: center;
+   color: #222;
+}
+.contact-bottom::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.05); 
+    z-index: 1;
+}
+.contact-bottom > * {
+    position: relative;
+    z-index: 2;
+}
+.contact-bottom a img,
+.contact-top a img {
+     height: 28px;
+     width: auto;
+}
+.site-footer {
+    background: #111317;
+    color: #fff;
+    padding: 40px 0;
+}
+.site-footer a img {
+    margin-right: 6px;
+}
+@media (max-width: 992px) {
+    .hero {
+        min-height: 60vh;
+    }
+    .ktt {
+        padding: 40px 0;
+    }
+    .what-section {
+        padding: 50px 20px;
+    }
+    .layanan-section {
+        margin-top: -40px;
+        margin-bottom: 20px;
+    }
+}
