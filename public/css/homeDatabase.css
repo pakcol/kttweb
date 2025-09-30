@@ -17,14 +17,14 @@ body {
     align-items: center;
     justify-content: space-between;
     background: transparent;
-    position: fixed;   /* biar selalu di atas */
+    position: fixed;  
     top: 0;
     left: 0;
     z-index: 100;
 }
 
 .navbar .logo img {
-    height: 40px; /* logo dibesarkan sedikit */
+    height: 40px;
 }
 
 .navbar .nav-links {
@@ -48,7 +48,6 @@ body {
     color: #98E8FF;
 }
 
-/* Container */
 .container {
     flex: 1;
     display: flex;
@@ -59,7 +58,6 @@ body {
     box-sizing: border-box;
 }
 
-/* Left Panel */
 .left-panel {
     max-width: 500px;
     color: #fff;

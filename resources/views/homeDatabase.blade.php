@@ -9,23 +9,23 @@
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar">
-        <div class="logo">
-            <img src="{{ asset('images/logoKTTputih.png') }}" alt="Logo KTT">
-        </div>
-        <ul class="nav-links">
-            <li><a href="{{ url('/homeDatabase') }}">Home</a></li>
-            <li><a href="{{ url('/sub-agent') }}">Sub Agent</a></li>
-            <li><a href="{{ url('/pln') }}">PLN</a></li>
-            <li><a href="{{ url('/admin') }}">Admin</a></li>
-            <li>
-                <a class="btn-nav" href="{{ route('logout') }}"
-                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                    Log Out
-                </a>
-            </li>
-        </ul>
-    </nav>
+<nav class="navbar">
+    <div class="logo">
+        <img src="{{ asset('images/logoKTTputih.png') }}" alt="Logo KTT">
+    </div>
+    <ul class="nav-links">
+        <li><a href="{{ url('/homeDatabase') }}">Home</a></li>
+        <li><a href="{{ url('/sub-agent') }}">Sub Agent</a></li>
+        <li><a href="{{ url('/pln') }}">PLN</a></li>
+        <li><a href="{{ url('/admin') }}">Admin</a></li>
+        <li>
+            <a href="{{ route('logout') }}"
+               onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                Logout
+            </a>
+        </li>
+    </ul>
+</nav>
 
     <!-- Content -->
     <div class="container">

@@ -2,7 +2,7 @@
 <x-layouts.app title="Login">
     <div class="login-container">
         <div class="left-panel">
-            <img src="{{ asset('images/logoKTTputih.png') }}" alt="Logo KTT" class="logo">
+
             <h4>Halo, selamat datang</h4>
             <h1>LOGIN <br> DATABASE</h1>
         </div>

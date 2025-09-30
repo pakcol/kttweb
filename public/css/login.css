@@ -8,11 +8,13 @@ body {
     justify-content: center;
     align-items: center;
 }
+
 .login-container {
     display: flex;
     width: 100%;
     height: 100%;
 }
+
 .left-panel {
     flex: 1;
     display: flex;
@@ -22,30 +24,28 @@ body {
     color: white;
     position: relative;
 }
-.left-panel .logo {
-    width: 160px;
-    margin-bottom: 40px;
-    position: absolute;
-    top: 30px;
-    left: 40px;
-}
+
 .left-panel h4 {
     color: #98E8FF;
     font-weight: 700;
     font-size: 28px;   
     margin-bottom: 15px;
 }
+
 .left-panel h1 {
     font-size: 68px;   
     font-weight: 800;
     line-height: 1.2;
 }
+
+
 .right-panel {
     flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
 }
+
 .login-box {
     background: rgba(255, 255, 255, 0.25);
     backdrop-filter: blur(18px);           
@@ -56,16 +56,19 @@ body {
     text-align: center;
     color: #fff;
 }
+
 .login-box h2 {
     font-size: 24px;
     font-weight: 700;
     margin-bottom: 5px;
 }
+
 .login-box .subtitle {
     font-size: 14px;
     margin-bottom: 30px;
     color: #e6e6e6;
 }
+
 .input-group {
     display: flex;
     align-items: center;
@@ -74,11 +77,13 @@ body {
     border-radius: 10px;
     padding: 10px 14px;
 }
+
 .input-group .icon {
     width: 20px;
     margin-right: 12px;
     opacity: 0.8;
 }
+
 .input-group input {
     border: none;
     outline: none;
@@ -87,9 +92,11 @@ body {
     font-size: 15px;
     color: #fff;
 }
+
 .input-group input::placeholder {
     color: rgba(255, 255, 255, 0.8);
 }
+
 .btn-login {
     width: 100%;
     padding: 14px;
@@ -102,20 +109,24 @@ body {
     margin-top: 15px;
     transition: 0.3s;
 }
+
 .btn-login:hover {
     background: #0d4a5a;
 }
+
 .extra {
     margin-top: 20px;
     font-size: 14px;
     color: #fff;
 }
+
 .extra a {
     color: #fff;
     font-weight: 700;
     text-decoration: none;
     margin: 0 5px;
 }
+
 .extra span {
     color: #ddd;
 }
