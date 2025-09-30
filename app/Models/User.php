@@ -17,6 +17,12 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+
+    public function getAuthIdentifierName()
+    {
+        return 'username';
+    }
+    
     protected $fillable = [
         'name',
         'email',

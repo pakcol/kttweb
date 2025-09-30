@@ -27,3 +27,7 @@ Route::get('/login', function () {
 })->name('login');
 
 Route::resource('account', AccountController::class);
+
+Route::get('/login', [AccountController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AccountController::class, 'login']);
+Route::post('/logout', [AccountController::class, 'logout'])->name('logout');
