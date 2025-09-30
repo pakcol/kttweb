@@ -1,0 +1,104 @@
+/* Background */
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(90deg, #0f4d4d, #c3d8dc);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    color: #333;
+}
+
+/* Navbar */
+.navbar {
+    width: 100%;
+    padding: 20px 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: transparent;
+    position: fixed;   /* biar selalu di atas */
+    top: 0;
+    left: 0;
+    z-index: 100;
+}
+
+.navbar .logo img {
+    height: 40px; /* logo dibesarkan sedikit */
+}
+
+.navbar .nav-links {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+}
+
+.navbar .nav-links li a {
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    color: #fff;
+    transition: 0.3s;
+}
+
+.navbar .nav-links li a:hover {
+    color: #98E8FF;
+}
+
+/* Container */
+.container {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 120px 80px 60px;
+    margin-top: 80px; 
+    box-sizing: border-box;
+}
+
+/* Left Panel */
+.left-panel {
+    max-width: 500px;
+    color: #fff;
+}
+
+.left-panel h4 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #98E8FF;
+    margin-bottom: 15px;
+}
+
+.left-panel h1 {
+    font-size: 70px;
+    font-weight: 800;
+    margin: 0 0 15px;
+}
+
+.left-panel p {
+    font-size: 20px;
+    margin-bottom: 25px;
+}
+
+.btn-input {
+    padding: 14px 28px;
+    background: #105A70;
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    transition: 0.3s;
+}
+.btn-input:hover {
+    background: #0d4a5a;
+}
+
+.right-panel img {
+    width: 520px; 
+    max-width: 100%;
+}

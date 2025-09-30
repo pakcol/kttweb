@@ -26,6 +26,10 @@ Route::get('/login', function () {
     return view('login'); 
 })->name('login');
 
+Route::get('/homeDatabase', function () {
+    return view('homeDatabase');
+})->name('homeDatabase');
+
 Route::resource('account', AccountController::class);
 
 Route::get('/login', [AccountController::class, 'showLoginForm'])->name('login');
