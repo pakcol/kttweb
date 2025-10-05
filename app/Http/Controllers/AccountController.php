@@ -8,12 +8,17 @@ use Illuminate\Support\Facades\Auth;
 class AccountController extends Controller
 {
     public function showLoginForm()
-    {
+    {   
         return view('login');
     }
 
     public function login(Request $request)
     {
+        // Jika sudah login, redirect ke homeDb
+        if (Auth::check()) {
+            return redirect()->route('homeDb');
+        }
+
         // Validasi input
         $credentials = $request->validate([
             'username' => ['required', 'string'],
@@ -23,7 +28,9 @@ class AccountController extends Controller
         // Coba login
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/'); // redirect ke home atau dashboard
+            
+            // Redirect ke homeDb setelah login berhasil
+            return redirect()->intended('/homeDb');
         }
 
         // Kalau gagal login
@@ -39,6 +46,6 @@ class AccountController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/login');
+        return redirect('/');
     }
 }

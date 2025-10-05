@@ -2,7 +2,6 @@
 <x-layouts.app title="Login">
     <div class="login-container">
         <div class="left-panel">
-
             <h4>Halo, selamat datang</h4>
             <h1>LOGIN <br> DATABASE</h1>
         </div>
@@ -12,11 +11,20 @@
                 <h2>LOGIN</h2>
                 <p class="subtitle">DATABASE PT. KUPANG TOUR & TRAVEL</p>
 
+                {{-- Menampilkan error --}}
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        @foreach ($errors->all() as $error)
+                            <p>{{ $error }}</p>
+                        @endforeach
+                    </div>
+                @endif
+
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
                     <div class="input-group">
                         <img src="{{ asset('images/userLogin.png') }}" class="icon" alt="user">
-                        <input type="text" name="username" placeholder="Username" required>
+                        <input type="text" name="username" placeholder="Username" value="{{ old('username') }}" required>
                     </div>
                     <div class="input-group">
                         <img src="{{ asset('images/userPass.png') }}" class="icon" alt="password">

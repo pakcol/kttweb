@@ -16,7 +16,6 @@
 
 </head>
 <body>
-    {{-- Navbar Component --}}
     <x-navbar />
 
     <main class="container my-4">

@@ -3,35 +3,40 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AccountController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
-Route::get('/welcome', function () {
-    return view('welcome');
-});
-
+// Route untuk semua user (guest dan auth) - TANPA middleware
 Route::get('/', function () {
+    // Manual check di sini
+    if (auth()->check()) {
+        return redirect()->route('homeDb');
+    }
     return view('home');
 });
 
-Route::get('/login', function () {
-    return view('login'); 
-})->name('login');
+// Route login khusus guest
+Route::middleware(['guest'])->group(function () {
+    Route::get('/login', [AccountController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [AccountController::class, 'login']);
+});
 
-Route::get('/homeDatabase', function () {
-    return view('homeDatabase');
-})->name('homeDatabase');
+// Route yang butuh auth
+Route::middleware(['auth'])->group(function () {
+    Route::get('/homeDb', function () {
+        return view('homeDb');
+    })->name('homeDb');
+
+    Route::get('/sub-agent', function () {
+        return view('sub-agent');
+    })->name('sub-agent');
+    
+    Route::get('/pln', function () {
+        return view('pln');
+    })->name('pln');
+    
+    Route::get('/admin', function () {
+        return view('admin');
+    })->name('admin');
+    
+    Route::post('/logout', [AccountController::class, 'logout'])->name('logout');
+});
 
 Route::resource('account', AccountController::class);
-
-Route::get('/login', [AccountController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AccountController::class, 'login']);
-Route::post('/logout', [AccountController::class, 'logout'])->name('logout');
