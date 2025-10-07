@@ -4,6 +4,96 @@ html, body {
     overflow-x: hidden;
     font-family: 'Poppins', Arial, sans-serif;
 }
+
+* {
+    box-sizing: border-box;
+}
+
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw; 
+    margin: 0;
+    padding: 16px 40px; 
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.navbar.scrolled {
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+/* LOGO */
+.navbar .logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.navbar .logo img {
+    height: 38px;
+    width: auto;
+}
+
+.navbar .logo span {
+    font-weight: 700;
+    color: #000;
+    font-size: 18px;
+}
+
+/* MENU */
+.navbar .menu {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.navbar .menu a {
+    text-decoration: none;
+    color: #222;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.navbar .menu a:hover {
+    color: #004d61;
+}
+
+.navbar .menu .login-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 6px 16px;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+}
+
+.navbar .menu .login-btn:hover {
+    background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 12px 20px;
+    }
+
+    .navbar .menu {
+        margin-top: 8px;
+        width: 100%;
+        justify-content: flex-start;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+}
+
 .full-bleed {
     position: relative;
     left: 50%;
@@ -12,22 +102,28 @@ html, body {
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: center;
 }
+
+/* HERO SECTION */
 .hero {
     height: 100vh;
     min-height: 600px;
     background: url("../images/hero_1.png") center/cover no-repeat;
+    margin-top: 0;
+    padding-top: 100px; 
+    position: relative;
 }
+
 .full-bleed .overlay {
     position: absolute;
     inset: 0;
     background: rgba(0,0,0,0.45);
     z-index: 1;
 }
+
 .full-bleed .content {
     position: relative;
     z-index: 2;
@@ -37,27 +133,33 @@ html, body {
     max-width: 1100px;
     padding: 30px;
 }
+
 .hero h1 {
     font-weight: 800;
     letter-spacing: 1px;
     margin: 8px 0 16px;
     font-size: clamp(32px, 5vw, 64px);
 }
+
 .hero .lead {
     opacity: 0.95;
     margin-bottom: 0;
 }
+
+/* === LAYANAN === */
 .layanan-card {
     background: url("../images/hero_5.png") center/cover no-repeat;
     padding: 60px 0;
     text-align: center;
 }
+
 .layanan-section {
     margin-top: -60px;
     margin-bottom: 40px;
     text-align: center;
 }
-/* What We Do */
+
+/* === WHAT WE DO === */
 .what-section {
     position: relative;
     left: 50%;
@@ -69,18 +171,20 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-sizing: border-box;
 }
+
 .what-section .container {
     position: relative;
     z-index: 2;
 }
+
 .what-list {
     list-style: none;
     padding: 0;
     margin: 0;
     text-align: left;
 }
+
 .what-list li {
     margin-bottom: 14px;
     display: flex;
@@ -88,7 +192,7 @@ html, body {
     align-items: center;
     font-size: 16px;
 }
-/* Card */
+
 .card-icon {
     height: 64px;
     width: auto;
@@ -97,12 +201,12 @@ html, body {
     margin: 0 auto 12px;
 }
 
-/* KTT */
 .ktt {
     min-height: 70vh;
     padding: 80px 0;
     background: url("../images/hero_2.png") center/cover no-repeat;
 }
+
 .ktt .card {
     border-radius: 12px;
     padding: 30px 20px;
@@ -115,61 +219,70 @@ html, body {
     flex-direction: column;
     justify-content: flex-start;
 }
+
 .ktt .card:hover {
     transform: translateY(-6px);
     box-shadow: 0 12px 24px rgba(0,0,0,0.18);
 }
 
-/* Contact */
 .contact-section {
     position: relative;
     left: 50%;
     margin-left: -50vw;
     width: 100vw;
 }
+
 .contact-top {
     background: #004d61;
     color: #fff;
     padding: 60px 20px 40px;
     text-align: center;
 }
+
 .contact-bottom {
-   position: relative;
-   left: 50%;
-   margin-left: -50vw;
-   width: 100vw;
-   background: url("../images/hero_4.png") center/cover no-repeat;
-   padding: 80px 20px;
-   text-align: center;
-   color: #222;
+    position: relative;
+    left: 50%;
+    margin-left: -50vw;
+    width: 100vw;
+    background: url("../images/hero_4.png") center/cover no-repeat;
+    padding: 80px 20px;
+    text-align: center;
+    color: #222;
 }
+
 .contact-bottom::before {
     content: "";
     position: absolute;
     inset: 0;
-    background: rgba(255,255,255,0.05); 
+    background: rgba(255,255,255,0.05);
     z-index: 1;
 }
+
 .contact-bottom > * {
     position: relative;
     z-index: 2;
 }
+
 .contact-bottom a img,
 .contact-top a img {
-     height: 28px;
-     width: auto;
+    height: 28px;
+    width: auto;
 }
+
 .site-footer {
     background: #111317;
     color: #fff;
     padding: 40px 0;
 }
+
 .site-footer a img {
     margin-right: 6px;
 }
+
 @media (max-width: 992px) {
     .hero {
         min-height: 60vh;
+        padding-top: 80px;
     }
     .ktt {
         padding: 40px 0;
