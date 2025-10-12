@@ -1,84 +1,63 @@
-/* ====== RESET DAN DASAR ====== */
-html, body {
+/* ====== RESET & BASE ====== */
+* {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+}
+html, body {
     width: 100%;
     height: 100%;
     font-family: 'Poppins', sans-serif;
     overflow-x: hidden;
-    box-sizing: border-box;
-}
-
-/* ====== NAVBAR ====== */
-.navbar {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #ffffff;
-    padding: 15px 60px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 100;
-}
-
-.navbar .logo {
-    font-weight: 700;
-    font-size: 1.4rem;
-    color: #003e4d;
-    letter-spacing: 1px;
-}
-
-.navbar .nav-links {
-    display: flex;
-    gap: 25px;
-}
-
-.navbar .nav-links a {
-    text-decoration: none;
-    color: #003e4d;
-    font-weight: 500;
-    transition: color 0.3s ease;
-}
-
-.navbar .nav-links a:hover {
-    color: #007b83;
 }
 
 /* ====== SECTION UTAMA ====== */
 .home-database-section {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    width: 100vw;
-    height: 100vh;
-    background: linear-gradient(90deg, #0f4d4d 0%, #c3d8dc 100%);
+    width: 100%;
+    min-height: 100vh;
+    background: linear-gradient(90deg, #0f4d4d 0%, #b8d3d6 100%);
     color: #ffffff;
-    padding: 120px 6%;
-    box-sizing: border-box;
-    overflow: hidden;
-    margin-top: 70px; /* offset navbar */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 0;
+}
+
+.container-fluid.h-100 {
+    width: 100%;
+    height: 100%;
+}
+
+.row.h-100 {
+    height: 100%;
+    margin: 0;
 }
 
 /* ====== PANEL KIRI ====== */
 .left-panel {
-    flex: 1 1 50%;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    min-width: 320px;
-    max-width: 600px;
+    flex-direction: column;
+    padding: 80px 60px;
+    height: 100%;
+}
+
+.content-wrapper {
+    width: 100%;
+    max-width: 520px;
 }
 
 .welcome-text {
     font-size: 1.2rem;
     font-weight: 600;
-    margin-bottom: 1.2rem;
+    margin-bottom: 1rem;
     color: #a3dbea;
+}
+
+.user-name {
+    color: #fff;
+    font-weight: 700;
 }
 
 .main-title {
@@ -87,23 +66,21 @@ html, body {
     margin-bottom: 1rem;
     color: #ffffff;
     line-height: 1.1;
-    letter-spacing: 1.2px;
 }
 
 .company-name {
     font-size: 1.2rem;
     margin-bottom: 2.5rem;
     opacity: 0.9;
-    font-weight: 400;
     color: #dce5e8;
 }
 
-/* Tombol Input Data */
+/* Tombol */
 .btn-input {
     background: #0b505f;
     color: #fff;
     border: none;
-    padding: 13px 35px;
+    padding: 15px 40px;
     font-size: 1.1rem;
     font-weight: 600;
     border-radius: 10px;
@@ -115,98 +92,68 @@ html, body {
 .btn-input:hover {
     background: #09424f;
     transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
 }
 
 /* ====== PANEL KANAN ====== */
 .right-panel {
-    flex: 1 1 50%;
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 80px 60px;
+    height: 100%;
+}
+
+.image-wrapper {
+    max-width: 550px;
+    width: 100%;
 }
 
 .image-wrapper img {
     width: 100%;
-    max-width: 550px;
     height: auto;
-    filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.4));
+    filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.3));
     animation: float 3s ease-in-out infinite;
-    object-fit: contain;
 }
 
-/* ====== ANIMASI ====== */
+/* Animasi */
 @keyframes float {
-    0%, 100% { transform: translateY(0px); }
+    0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-20px); }
 }
 
-/* ====== RESPONSIVE DESIGN ====== */
-
-/* Laptop sedang */
-@media (max-width: 1200px) {
-    .home-database-section {
-        padding: 100px 5%;
-    }
-    .main-title {
-        font-size: 3.2rem;
-    }
-}
-
-/* Tablet landscape */
+/* ====== RESPONSIVE ====== */
 @media (max-width: 992px) {
     .home-database-section {
         flex-direction: column;
-        justify-content: center;
         text-align: center;
-        padding: 120px 8%;
-        height: auto;
+        padding: 60px 20px;
     }
-    .left-panel {
+    .left-panel, .right-panel {
+        padding: 30px 20px;
         align-items: center;
+        justify-content: center;
+    }
+    .content-wrapper {
         max-width: 100%;
+        text-align: center;
     }
-    .right-panel {
+    .main-title {
+        font-size: 3rem;
+    }
+    .image-wrapper {
         margin-top: 40px;
-    }
-    .image-wrapper img {
         max-width: 400px;
     }
 }
 
-/* Tablet portrait & HP besar */
 @media (max-width: 768px) {
-    .main-title {
-        font-size: 2.6rem;
-    }
-    .welcome-text {
-        font-size: 1rem;
-    }
-    .btn-input {
-        padding: 12px 28px;
-        font-size: 1rem;
-    }
-    .navbar {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 15px 25px;
-        gap: 10px;
-    }
-    .navbar .nav-links {
-        flex-wrap: wrap;
-        gap: 15px;
-    }
+    .main-title { font-size: 2.5rem; }
+    .welcome-text { font-size: 1rem; }
+    .company-name { font-size: 1rem; }
+    .btn-input { font-size: 1rem; padding: 12px 30px; }
 }
 
-/* HP kecil */
 @media (max-width: 576px) {
-    .main-title {
-        font-size: 2rem;
-    }
-    .home-database-section {
-        padding: 110px 5%;
-    }
-    .image-wrapper img {
-        max-width: 80%;
-    }
+    .main-title { font-size: 2.2rem; }
+    .image-wrapper { max-width: 300px; }
 }

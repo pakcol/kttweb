@@ -18,7 +18,7 @@
                     <img src="{{ asset('images/hero_3.png') }}" alt="hero_3" class="img-fluid" style="max-height:260px; width:auto; object-fit:contain;">
                 </div>
                 <div class="col-md-6">
-                    <h3 class="fw-bold mb-4">What we do?</h3>
+                    <h3 class="fw-bold mb-4">What We Do?</h3>
                     <ul class="what-list">
                         <li><img src="{{ asset('images/logo1.png') }}" alt="" style="height:22px; width:auto; object-fit:contain;"> Penjualan Tiket Pesawat Domestik & Internasional</li>
                         <li><img src="{{ asset('images/logo2.png') }}" alt="" style="height:22px; width:auto; object-fit:contain;"> Penjualan Tiket Kapal Laut PELNI</li>
