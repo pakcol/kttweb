@@ -35,7 +35,7 @@ class InputDataController extends Controller
             'pembayaran' => 'required'
         ]);
 
-        // Auto calculate komisi
+        
         $komisi = $request->harga - $request->nta - $request->diskon;
 
         Tiket::create([
@@ -80,7 +80,7 @@ class InputDataController extends Controller
             'pembayaran' => 'required'
         ]);
 
-        // Auto calculate komisi
+        
         $komisi = $request->harga - $request->nta - $request->diskon;
 
         $tiket->update([

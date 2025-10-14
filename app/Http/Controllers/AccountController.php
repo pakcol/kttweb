@@ -14,26 +14,26 @@ class AccountController extends Controller
 
     public function login(Request $request)
     {
-        // Jika sudah login, redirect ke homeDb
+
         if (Auth::check()) {
             return redirect()->route('homeDb');
         }
 
-        // Validasi input
+        
         $credentials = $request->validate([
             'username' => ['required', 'string'],
             'password' => ['required', 'string'],
         ]);
 
-        // Coba login
+        
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             
-            // Redirect ke homeDb setelah login berhasil
+            
             return redirect()->intended('/homeDb');
         }
 
-        // Kalau gagal login
+        
         return back()->withErrors([
             'username' => 'Username atau password salah.',
         ])->onlyInput('username');

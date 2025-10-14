@@ -1,39 +1,46 @@
-/* ====== RESET & BASE ====== */
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
+
 html, body {
     width: 100%;
     height: 100%;
     font-family: 'Poppins', sans-serif;
     overflow-x: hidden;
+    background: #0f4d4d;
 }
 
-/* ====== SECTION UTAMA ====== */
+
 .home-database-section {
-    width: 100%;
-    min-height: 100vh;
+    width: 100vw;
+    height: 100vh;
     background: linear-gradient(90deg, #0f4d4d 0%, #b8d3d6 100%);
     color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 100px 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
 }
 
 .container-fluid.h-100 {
     width: 100%;
     height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 .row.h-100 {
     height: 100%;
     margin: 0;
+    padding: 0;
 }
 
-/* ====== PANEL KIRI ====== */
+
 .left-panel {
     display: flex;
     justify-content: center;
@@ -41,6 +48,7 @@ html, body {
     flex-direction: column;
     padding: 80px 60px;
     height: 100%;
+    width: 100%;
 }
 
 .content-wrapper {
@@ -75,7 +83,7 @@ html, body {
     color: #dce5e8;
 }
 
-/* Tombol */
+
 .btn-input {
     background: #0b505f;
     color: #fff;
@@ -94,55 +102,65 @@ html, body {
     transform: translateY(-3px);
 }
 
-/* ====== PANEL KANAN ====== */
+
 .right-panel {
     display: flex;
-    justify-content: center;
+    justify-content: flex-end; 
     align-items: center;
-    padding: 80px 60px;
+    padding: 60px 80px 60px 40px;
     height: 100%;
+    width: 100%;
 }
 
 .image-wrapper {
-    max-width: 550px;
     width: 100%;
+    max-width: 420px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .image-wrapper img {
     width: 100%;
     height: auto;
+    max-height: 80vh;
+    object-fit: contain;
     filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.3));
     animation: float 3s ease-in-out infinite;
 }
 
-/* Animasi */
+
 @keyframes float {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-20px); }
 }
 
-/* ====== RESPONSIVE ====== */
+
 @media (max-width: 992px) {
     .home-database-section {
         flex-direction: column;
         text-align: center;
-        padding: 60px 20px;
+        padding: 40px 0;
     }
+
     .left-panel, .right-panel {
         padding: 30px 20px;
         align-items: center;
         justify-content: center;
     }
+
     .content-wrapper {
         max-width: 100%;
         text-align: center;
     }
+
     .main-title {
         font-size: 3rem;
     }
+
     .image-wrapper {
         margin-top: 40px;
-        max-width: 400px;
+        max-width: 380px;
     }
 }
 
