@@ -33,7 +33,11 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/store', [TiketController::class, 'store'])->name('store'); 
     });
 
-    Route::get('/invoice/{id}', [InvoiceController::class, 'show'])->name('invoice.show');
+    // Single tiket invoice
+    Route::get('/invoice/{id}', [InvoiceController::class, 'showSingle'])->name('invoice.single');
+
+    // Multi tiket invoice
+    Route::get('/invoice-multi', [InvoiceController::class, 'showMulti'])->name('invoice.multi');
 
     Route::prefix('input-data')->name('input-data.')->group(function () {
         Route::get('/', [InputDataController::class, 'index'])->name('index');       

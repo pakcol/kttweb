@@ -202,3 +202,73 @@ textarea {
         font-size: 22px;
     }
 }
+
+.modal-cari {
+    display: none;
+    position: fixed !important;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-cari .modal-content {
+    background: #fff;
+    padding: 35px 50px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    text-align: center;
+    width: 90%;
+    max-width: 500px;
+}
+
+.modal-cari p {
+    font-size: 16px;
+    color: #222;
+    margin-bottom: 15px;
+}
+
+.modal-cari input {
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 15px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+    outline: none;
+    font-family: "Poppins", sans-serif;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.btn-ok {
+    background: #007a4d;
+    color: #fff;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+.btn-ok:hover {
+    background: #00985f;
+}
+
+.btn-cancel {
+    background: #d0312d;
+    color: #fff;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+.btn-cancel:hover {
+    background: #b1201d;
+}
+

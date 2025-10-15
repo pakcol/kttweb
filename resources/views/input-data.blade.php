@@ -118,7 +118,7 @@
                     </div>
 
                     <div class="button-group">
-                        <button type="reset" class="btn-merah">Hapus</button>
+                        <button type="button" class="btn-merah" id="btnHapus">Hapus</button>
                         <button type="submit" id="btnInputData" class="btn-hijau">Input Data</button>
                         <button type="button" class="btn-oranye">Tutup Kas</button>
                         <button type="button" class="btn-hijau" id="btnCari">Cari</button>
@@ -137,6 +137,7 @@
     <table id="tiketTable">
         <thead>
             <tr>
+                <th>Pilih</th>
                 <th>No</th>
                 <th>Tgl Issued</th>
                 <th>Jam</th>
@@ -162,6 +163,7 @@
         <tbody>
             @foreach ($tikets as $index => $t)
             <tr data-id="{{ $t->id }}">
+                <td><input type="checkbox" class="chkInvoice" value="{{ $t->id }}"></td>
                 <td>{{ $index + 1 }}</td>
                 <td>{{ $t->tgl_issued }}</td>
                 <td>{{ $t->jam_input ?? '-' }}</td>
@@ -188,49 +190,19 @@
     </table>
 </div>
 
-<link rel="stylesheet" href="{{ asset('css/input-data.css') }}">
+<div id="modalCari" class="modal-cari">
+    <div class="modal-content">
+        <p>Masukan <b>KODE BOOKING</b> atau <b>NAMA</b> :</p>
+        <input type="text" id="searchInput" placeholder=" Search">
+        <div class="modal-buttons">
+            <button id="btnCariOk" class="btn-ok">OK</button>
+            <button id="btnCariCancel" class="btn-cancel">CANCEL</button>
+        </div>
+    </div>
+</div>
 
-<style>
-.current-time {
-    text-align: right;
-    font-size: 13px;
-    color: #00343f;
-    margin-bottom: 5px;
-}
-.table-container {
-    margin-top: 40px;
-    background: #fff;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 0 8px rgba(0,0,0,0.1);
-}
-.table-container h3 {
-    margin-bottom: 15px;
-    color: #00343f;
-    text-align: center;
-}
-#tiketTable {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-}
-#tiketTable th, #tiketTable td {
-    border: 1px solid #ddd;
-    padding: 6px;
-    text-align: center;
-}
-#tiketTable th {
-    background-color: #00343f;
-    color: white;
-}
-#tiketTable tr:hover {
-    background-color: #f1f1f1;
-    cursor: pointer;
-}
-#tiketTable tr.selected {
-    background-color: #cce5ff !important;
-}
-</style>
+
+<link rel="stylesheet" href="{{ asset('css/input-data.css') }}">
 
 <script>
 function updateDateTime() {
@@ -244,33 +216,154 @@ function updateDateTime() {
 setInterval(updateDateTime, 1000);
 updateDateTime();
 
-// Pilih baris tabel
+// Klik satu kali isi form & update tombol
+let selectedRow = null;
 document.querySelectorAll('#tiketTable tbody tr').forEach(row => {
     row.addEventListener('click', function() {
         document.querySelectorAll('#tiketTable tr').forEach(r => r.classList.remove('selected'));
         this.classList.add('selected');
+        selectedRow = this;
+
+        const data = Array.from(this.children).map(td => td.innerText);
         document.getElementById('tiketId').value = this.dataset.id;
+        document.getElementById('tgl_issued').value = data[2];
+        document.getElementById('kode_booking').value = data[4];
+        document.getElementById('airlines').value = data[5];
+        document.getElementById('nama').value = data[6];
+        document.getElementById('rute1').value = data[7];
+        document.getElementById('tgl_flight1').value = data[8];
+        document.getElementById('rute2').value = data[9];
+        document.getElementById('tgl_flight2').value = data[10];
+        document.getElementById('harga').value = parseFloat(data[11].replace(/\./g,''));
+        document.getElementById('nta').value = parseFloat(data[12].replace(/\./g,''));
+        document.getElementById('diskon').value = parseFloat(data[13].replace(/\./g,''));
+        document.getElementById('pembayaran').value = data[15];
+        document.getElementById('nama_piutang').value = data[16];
+        document.getElementById('tgl_realisasi').value = data[17];
+        document.getElementById('jam_realisasi').value = data[18];
+        document.getElementById('nilai_refund').value = parseFloat(data[19].replace(/\./g,''));
+        document.getElementById('keterangan').value = data[20];
+
+        document.getElementById('btnInputData').textContent = 'UPDATE';
+    });
+
+    // Hapus klik 2x
+    row.addEventListener('dblclick', function() {
+        const id = this.dataset.id;
+        if(confirm('Apakah yakin ingin menghapus data ini?')) {
+            window.location.href = `/input-data/destroy/${id}`;
+        }
     });
 });
 
-// Cetak invoice
-document.getElementById('btnCetakInvoice').addEventListener('click', function() {
-    const id = document.getElementById('tiketId').value;
-    if (!id) {
-        alert('Silakan pilih data tiket terlebih dahulu sebelum mencetak invoice!');
-        return;
-    }
-    if (confirm('Apakah Anda ingin mencetak invoice untuk tiket ini?')) {
-        window.location.href = `/invoice/${id}`;
-    }
-});
-
-// Tombol Batal
 document.getElementById('btnBatal').addEventListener('click', function() {
     document.getElementById('inputDataForm').reset();
     document.getElementById('tiketId').value = '';
+    document.getElementById('btnInputData').textContent = 'INPUT DATA';
     document.querySelectorAll('#tiketTable tr').forEach(r => r.classList.remove('selected'));
 });
+
+document.querySelectorAll('#tiketTable tbody tr').forEach(row => {
+    row.addEventListener('click', function(e) {
+        if (e.ctrlKey || e.metaKey) {
+            this.classList.toggle('selected');
+        } else { 
+            document.querySelectorAll('#tiketTable tr').forEach(r => r.classList.remove('selected'));
+            this.classList.add('selected');
+        }
+        const selectedIds = Array.from(document.querySelectorAll('#tiketTable tbody tr.selected'))
+            .map(r => r.dataset.id);
+        document.getElementById('tiketId').value = selectedIds.join(',');
+    });
+});
+
+// Cetak invoice multi-tiket
+document.getElementById('btnCetakInvoice').addEventListener('click', function() {
+    const ids = document.getElementById('tiketId').value;
+    if (!ids) {
+        alert('Silakan pilih minimal satu tiket untuk cetak invoice!');
+        return;
+    }
+    if (confirm('Apakah Anda ingin mencetak invoice untuk tiket yang dipilih?')) {
+        window.open(`/invoice-multi?ids=${ids}`, '_blank');
+    }
+});
+
+const modalCari = document.getElementById('modalCari');
+const btnCari = document.getElementById('btnCari');
+const btnCariOk = document.getElementById('btnCariOk');
+const btnCariCancel = document.getElementById('btnCariCancel');
+const searchInput = document.getElementById('searchInput');
+const table = document.getElementById('tiketTable');
+
+// buka modal
+btnCari.addEventListener('click', () => {
+    modalCari.style.display = 'flex';
+    searchInput.focus();
+});
+
+// tombol cancel
+btnCariCancel.addEventListener('click', () => {
+    modalCari.style.display = 'none';
+    searchInput.value = '';
+    document.querySelectorAll('#tiketTable tbody tr').forEach(r => r.style.display = '');
+});
+
+// tombol OK
+btnCariOk.addEventListener('click', () => {
+    const keyword = searchInput.value.trim().toLowerCase();
+    if (!keyword) {
+        alert('Masukkan KODE BOOKING atau NAMA terlebih dahulu!');
+        return;
+    }
+
+    let found = false;
+    document.querySelectorAll('#tiketTable tbody tr').forEach(row => {
+        const kode = row.children[4].innerText.toLowerCase();
+        const nama = row.children[6].innerText.toLowerCase();
+
+        if (kode.includes(keyword) || nama.includes(keyword)) {
+            row.style.display = '';
+            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            document.querySelectorAll('#tiketTable tr').forEach(r => r.classList.remove('selected'));
+            row.classList.add('selected');
+            isiFormDariRow(row);
+            found = true;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    if (!found) {
+        alert('Data tidak ditemukan.');
+    } else {
+        modalCari.style.display = 'none';
+        searchInput.value = '';
+    }
+});
+
+function isiFormDariRow(row) {
+    const data = Array.from(row.children).map(td => td.innerText);
+    document.getElementById('tiketId').value = row.dataset.id;
+    document.getElementById('tgl_issued').value = data[2];
+    document.getElementById('kode_booking').value = data[4];
+    document.getElementById('airlines').value = data[5];
+    document.getElementById('nama').value = data[6];
+    document.getElementById('rute1').value = data[7];
+    document.getElementById('tgl_flight1').value = data[8];
+    document.getElementById('rute2').value = data[9];
+    document.getElementById('tgl_flight2').value = data[10];
+    document.getElementById('harga').value = parseFloat(data[11].replace(/\./g,'')) || 0;
+    document.getElementById('nta').value = parseFloat(data[12].replace(/\./g,'')) || 0;
+    document.getElementById('diskon').value = parseFloat(data[13].replace(/\./g,'')) || 0;
+    document.getElementById('pembayaran').value = data[15];
+    document.getElementById('nama_piutang').value = data[16];
+    document.getElementById('tgl_realisasi').value = data[17];
+    document.getElementById('jam_realisasi').value = data[18];
+    document.getElementById('nilai_refund').value = parseFloat(data[19].replace(/\./g,'')) || 0;
+    document.getElementById('keterangan').value = data[20];
+    document.getElementById('btnInputData').textContent = 'UPDATE';
+}
 </script>
 
 </x-layouts.app>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tiket;
+use App\Models\Bank;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -25,7 +26,7 @@ class InputDataController extends Controller
     {
         $request->validate([
             'tgl_issued' => 'required|date',
-            'kode_booking' => 'required|unique:tikets,kode_booking',
+            'kode_booking' => 'required|string',
             'airlines' => 'required|string',
             'nama' => 'required|string',
             'rute1' => 'required|string',
@@ -37,80 +38,55 @@ class InputDataController extends Controller
         ]);
 
         $komisi = $request->harga - $request->nta - $request->diskon;
+        $tiket = Tiket::updateOrCreate(
+            ['id' => $request->tiket_id],
+            [
+                'tgl_issued' => $request->tgl_issued,
+                'jam_input' => now()->format('H:i:s'),
+                'kode_booking' => strtoupper($request->kode_booking),
+                'airlines' => strtoupper($request->airlines),
+                'nama' => strtoupper($request->nama),
+                'rute1' => strtoupper($request->rute1),
+                'tgl_flight1' => $request->tgl_flight1,
+                'rute2' => $request->rute2 ? strtoupper($request->rute2) : null,
+                'tgl_flight2' => $request->tgl_flight2,
+                'harga' => $request->harga,
+                'nta' => $request->nta,
+                'diskon' => $request->diskon,
+                'komisi' => $komisi,
+                'pembayaran' => strtoupper($request->pembayaran),
+                'nama_piutang' => $request->nama_piutang ? strtoupper($request->nama_piutang) : null,
+                'tgl_realisasi' => $request->tgl_realisasi,
+                'jam_realisasi' => $request->jam_realisasi,
+                'nilai_refund' => $request->nilai_refund ?? 0,
+                'keterangan' => $request->keterangan ? strtoupper($request->keterangan) : null,
+                'usr' => Auth::user()->name,
+            ]
+        );
 
-        Tiket::create([
-            'tgl_issued' => $request->tgl_issued,
-            'jam_input' => now()->format('H:i:s'), 
-            'kode_booking' => strtoupper($request->kode_booking),
-            'airlines' => strtoupper($request->airlines),
-            'nama' => strtoupper($request->nama),
-            'rute1' => strtoupper($request->rute1),
-            'tgl_flight1' => $request->tgl_flight1,
-            'rute2' => $request->rute2 ? strtoupper($request->rute2) : null,
-            'tgl_flight2' => $request->tgl_flight2,
-            'harga' => $request->harga,
-            'nta' => $request->nta,
-            'diskon' => $request->diskon,
-            'komisi' => $komisi,
-            'pembayaran' => strtoupper($request->pembayaran),
-            'nama_piutang' => $request->nama_piutang ? strtoupper($request->nama_piutang) : null,
-            'tgl_realisasi' => $request->tgl_realisasi,
-            'nilai_refund' => $request->nilai_refund ?? 0,
-            'keterangan' => $request->keterangan ? strtoupper($request->keterangan) : null,
-            'usr' => Auth::user()->name,
-        ]);
+        
+        $banks = ['BCA','BTN','BNI','MANDIRI','BRI'];
+        if (in_array(strtoupper($request->pembayaran), $banks)) {
+            Bank::updateOrCreate(
+                ['tiket_id' => $tiket->id],
+                [
+                    'bank' => strtoupper($request->pembayaran),
+                    'total' => $request->harga - $request->nta
+                ]
+            );
+        }
 
-        return redirect()->route('input-data.index')->with('success', 'Data berhasil disimpan!');
-    }
-
-    public function update(Request $request, $id)
-    {
-        $tiket = Tiket::findOrFail($id);
-
-        $request->validate([
-            'tgl_issued' => 'required|date',
-            'kode_booking' => 'required|unique:tikets,kode_booking,' . $id,
-            'airlines' => 'required|string',
-            'nama' => 'required|string',
-            'rute1' => 'required|string',
-            'tgl_flight1' => 'required|date',
-            'harga' => 'required|numeric',
-            'nta' => 'required|numeric',
-            'diskon' => 'required|numeric',
-            'pembayaran' => 'required|string',
-        ]);
-
-        $komisi = $request->harga - $request->nta - $request->diskon;
-
-        $tiket->update([
-            'tgl_issued' => $request->tgl_issued,
-            'jam_input' => now()->format('H:i:s'), 
-            'kode_booking' => strtoupper($request->kode_booking),
-            'airlines' => strtoupper($request->airlines),
-            'nama' => strtoupper($request->nama),
-            'rute1' => strtoupper($request->rute1),
-            'tgl_flight1' => $request->tgl_flight1,
-            'rute2' => $request->rute2 ? strtoupper($request->rute2) : null,
-            'tgl_flight2' => $request->tgl_flight2,
-            'harga' => $request->harga,
-            'nta' => $request->nta,
-            'diskon' => $request->diskon,
-            'komisi' => $komisi,
-            'pembayaran' => strtoupper($request->pembayaran),
-            'nama_piutang' => $request->nama_piutang ? strtoupper($request->nama_piutang) : null,
-            'tgl_realisasi' => $request->tgl_realisasi,
-            'nilai_refund' => $request->nilai_refund ?? 0,
-            'keterangan' => $request->keterangan ? strtoupper($request->keterangan) : null,
-            'usr' => Auth::user()->name,
-        ]);
-
-        return redirect()->route('input-data.index')->with('success', 'Data berhasil diperbarui!');
+        $msg = $request->tiket_id ? 'Data berhasil diperbarui!' : 'Data berhasil disimpan!';
+        return redirect()->route('input-data.index')->with('success', $msg);
     }
 
     public function destroy($id)
     {
         $tiket = Tiket::findOrFail($id);
         $tiket->delete();
+
+        
+        Bank::where('tiket_id', $id)->delete();
 
         return redirect()->route('input-data.index')->with('success', 'Data berhasil dihapus!');
     }
@@ -134,5 +110,13 @@ class InputDataController extends Controller
     {
         $tiket = Tiket::findOrFail($id);
         return response()->json($tiket);
+    }
+
+    public function invoice(Request $request)
+    {
+        $ids = explode(',', $request->ids);
+        $tikets = Tiket::whereIn('id', $ids)->get();
+
+        return view('invoice', compact('tikets'));
     }
 }

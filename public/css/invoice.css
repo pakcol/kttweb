@@ -1,117 +1,163 @@
 body {
-    font-family: 'Segoe UI', sans-serif;
-    background: #f4f4f4;
+    font-family: 'Times New Roman', serif;
+    background: #fff;
     margin: 0;
-    padding: 40px;
+    padding: 30px;
+    color: #000;
 }
 
 .invoice-container {
-    background: white;
     max-width: 850px;
     margin: auto;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    border: 1px solid #000;
+    padding: 25px 40px;
+    background: #fff;
 }
 
-.invoice-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.logo {
-    height: 90px;
-    margin-right: 20px;
-}
-
-.header-text h1 {
-    margin: 0;
-    color: #00343f;
-}
-
-.header-text p {
-    margin: 4px 0;
-    color: #444;
-}
-
-.invoice-body h2 {
-    color: #00343f;
-    text-align: center;
-}
-
-.invoice-grid {
+.header-top {
     display: flex;
     justify-content: space-between;
-    margin-top: 20px;
+    align-items: flex-start;
 }
 
-.price-section table {
+.header-left img {
+    height: 90px;
+}
+
+.header-right {
+    text-align: right;
+    font-size: 14px;
+}
+
+.header-right h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.header-right p {
+    margin: 2px 0;
+}
+
+hr {
+    border: 1px solid #000;
+    margin: 10px 0 15px 0;
+}
+
+.invoice-title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 20px;
+    margin: 10px 0 20px;
+    text-decoration: underline;
+}
+
+.invoice-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
+    font-size: 14px;
 }
 
-.price-section th, .price-section td {
-    text-align: left;
-    padding: 8px;
-}
-
-.price-section th {
-    width: 200px;
-    color: #00343f;
-}
-
-.invoice-footer {
+.invoice-table th, .invoice-table td {
+    border: 1px solid #000;
+    padding: 6px 8px;
     text-align: center;
-    margin-top: 40px;
 }
 
-.btn-print {
+.invoice-table th {
+    background: #f2f2f2;
+    font-weight: bold;
+}
+
+.total-section {
+    margin-top: 20px;
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.total-section td {
+    padding: 6px 8px;
+}
+
+.total-section .label {
+    text-align: right;
+    font-weight: bold;
+}
+
+.total-section .value {
+    text-align: right;
+    border: 1px solid #000;
+    width: 150px;
+}
+
+.footer-section {
+    margin-top: 25px;
+    font-size: 14px;
+}
+
+.footer-section p {
+    margin: 5px 0;
+}
+
+
+.signature-left {
+    width: 60%;
+}
+
+.signature-right {
+    text-align: right;
+    width: 40%;
+    position: relative;
+}
+
+.signature-right img {
+    height: 90px;
+    position: absolute;
+    right: 10px;
+    top: -70px;
+}
+
+.printed-date {
+    text-align: right;
+    font-size: 12px;
+    margin-top: 30px;
+    font-style: italic;
+}
+
+.btn-print, .btn-back {
     background: #00343f;
     color: white;
     border: none;
-    padding: 12px 25px;
-    border-radius: 10px;
+    padding: 10px 20px;
+    border-radius: 6px;
     cursor: pointer;
+    margin: 10px 5px;
 }
 
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 999;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.8);
-    justify-content: center; align-items: center;
-}
-
-.modal-content {
-    background: white;
-    padding: 30px 50px;
-    border-radius: 15px;
+.invoice-buttons {
     text-align: center;
+    margin-top: 30px;
 }
 
-.modal-buttons {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-    gap: 20px;
+
+@media print {
+    body {
+        background: white;
+        margin: 0;
+        padding: 0;
+    }
+
+    .invoice-container {
+        box-shadow: none;
+        border: none;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+
+    .btn-print, .btn-back {
+        display: none;
+    }
 }
 
-.btn-yes {
-    background: #00343f;
-    color: white;
-    padding: 10px 25px;
-    border-radius: 8px;
-    border: none;
-}
 
-.btn-no {
-    background: #8b0000;
-    color: white;
-    padding: 10px 25px;
-    border-radius: 8px;
-    border: none;
-}
