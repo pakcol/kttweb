@@ -4,9 +4,13 @@
     <div class="form-container">
         <h2>INPUT DATA</h2>
 
+        <!-- Waktu komputer (Hari, Tanggal, Jam) -->
+        <div class="current-time" id="currentDateTime"></div>
+
         <form id="inputDataForm" method="POST" action="{{ route('input-data.store') }}">
             @csrf
             <input type="hidden" id="tiketId" name="tiket_id">
+            <input type="hidden" id="jam_input" name="jam_input"> <!-- Jam Input Otomatis -->
 
             <div class="input-grid">
                 {{-- Kolom Kiri --}}
@@ -99,6 +103,10 @@
                         <input type="date" id="tgl_realisasi" name="tgl_realisasi">
                     </div>
                     <div class="form-group">
+                        <label for="jam_realisasi">JAM REALISASI</label>
+                        <input type="time" id="jam_realisasi" name="jam_realisasi">
+                    </div>
+                    <div class="form-group">
                         <label for="nilai_refund">NILAI REFUND</label>
                         <input type="number" id="nilai_refund" name="nilai_refund" value="0" step="0.01">
                     </div>
@@ -125,53 +133,72 @@
     </div>
 </section>
 
-<div class="table-container">
+<!-- Tabel Data Tiket -->
+<div class="table-card">
     <h3>Data Tiket</h3>
     <table id="tiketTable">
         <thead>
             <tr>
                 <th>No</th>
+                <th>Tgl Issued</th>
+                <th>Jam</th>
                 <th>Kode Booking</th>
-                <th>Nama</th>
                 <th>Airlines</th>
+                <th>Nama</th>
                 <th>Rute 1</th>
                 <th>Tgl Flight 1</th>
+                <th>Rute 2</th>
+                <th>Tgl Flight 2</th>
                 <th>Harga</th>
+                <th>NTA</th>
+                <th>Diskon</th>
+                <th>Komisi</th>
                 <th>Pembayaran</th>
-                <th>Tgl Issued</th>
+                <th>Nama Piutang</th>
+                <th>Tanggal Realisasi</th>
+                <th>Jam Realisasi</th>
+                <th>Nilai Refund</th>
+                <th>Keterangan</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($tikets as $index => $t)
             <tr data-id="{{ $t->id }}">
                 <td>{{ $index + 1 }}</td>
+                <td>{{ $t->tgl_issued }}</td>
+                <td>{{ $t->jam_input ?? '-' }}</td>
                 <td>{{ $t->kode_booking }}</td>
-                <td>{{ $t->nama }}</td>
                 <td>{{ $t->airlines }}</td>
+                <td>{{ $t->nama }}</td>
                 <td>{{ $t->rute1 }}</td>
                 <td>{{ $t->tgl_flight1 }}</td>
+                <td>{{ $t->rute2 }}</td>
+                <td>{{ $t->tgl_flight2 }}</td>
                 <td>{{ number_format($t->harga, 0, ',', '.') }}</td>
+                <td>{{ number_format($t->nta, 0, ',', '.') }}</td>
+                <td>{{ number_format($t->diskon, 0, ',', '.') }}</td>
+                <td>{{ number_format($t->komisi, 0, ',', '.') }}</td>
                 <td>{{ $t->pembayaran }}</td>
-                <td>{{ $t->tgl_issued }}</td>
+                <td>{{ $t->nama_piutang }}</td>
+                <td>{{ $t->tgl_realisasi }}</td>
+                <td>{{ $t->jam_realisasi }}</td>
+                <td>{{ number_format($t->nilai_refund, 0, ',', '.') }}</td>
+                <td>{{ $t->keterangan }}</td>
             </tr>
             @endforeach
         </tbody>
     </table>
 </div>
 
-<div id="confirmModal" class="modal">
-    <div class="modal-content">
-        <p>Print <strong>Invoice</strong>?</p>
-        <div class="modal-buttons">
-            <button id="yesPrint" class="btn-yes">YES</button>
-            <button id="noPrint" class="btn-no">NO</button>
-        </div>
-    </div>
-</div>
-
 <link rel="stylesheet" href="{{ asset('css/input-data.css') }}">
 
 <style>
+.current-time {
+    text-align: right;
+    font-size: 13px;
+    color: #00343f;
+    margin-bottom: 5px;
+}
 .table-container {
     margin-top: 40px;
     background: #fff;
@@ -187,11 +214,11 @@
 #tiketTable {
     width: 100%;
     border-collapse: collapse;
-    font-size: 14px;
+    font-size: 13px;
 }
 #tiketTable th, #tiketTable td {
     border: 1px solid #ddd;
-    padding: 8px;
+    padding: 6px;
     text-align: center;
 }
 #tiketTable th {
@@ -207,50 +234,25 @@
 }
 </style>
 
-<style>
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 999;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.8);
-    justify-content: center; align-items: center;
-}
-.modal-content {
-    background: #fff;
-    padding: 30px 40px;
-    border-radius: 15px;
-    text-align: center;
-}
-.modal-buttons {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-}
-.btn-yes {
-    background-color: #00343f;
-    color: white; border: none;
-    padding: 8px 20px; border-radius: 8px;
-    cursor: pointer;
-}
-.btn-no {
-    background-color: #8b0000;
-    color: white; border: none;
-    padding: 8px 20px; border-radius: 8px;
-    cursor: pointer;
-}
-</style>
-
 <script>
-// Pilih tabel
+// === Waktu Real-Time ===
+function updateDateTime() {
+    const now = new Date();
+    const hari = now.toLocaleDateString('id-ID', { weekday: 'long' });
+    const tanggal = now.toLocaleDateString('id-ID');
+    const jam = now.toLocaleTimeString('id-ID', { hour12: false });
+    document.getElementById('currentDateTime').textContent = `${hari}, ${tanggal} | ${jam}`;
+    document.getElementById('jam_input').value = jam;
+}
+setInterval(updateDateTime, 1000);
+updateDateTime();
+
+// Pilih baris tabel
 document.querySelectorAll('#tiketTable tbody tr').forEach(row => {
     row.addEventListener('click', function() {
         document.querySelectorAll('#tiketTable tr').forEach(r => r.classList.remove('selected'));
         this.classList.add('selected');
-        const id = this.dataset.id;
-        document.getElementById('tiketId').value = id;
+        document.getElementById('tiketId').value = this.dataset.id;
     });
 });
 

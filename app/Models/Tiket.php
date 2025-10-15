@@ -11,7 +11,7 @@ class Tiket extends Model
 
     protected $fillable = [
         'tgl_issued',
-        'jam',
+        'jam_input',
         'kode_booking',
         'airlines',
         'nama',
@@ -26,6 +26,7 @@ class Tiket extends Model
         'pembayaran',
         'nama_piutang',
         'tgl_realisasi',
+        'jam_realisasi',
         'nilai_refund',
         'keterangan',
         'usr'
@@ -40,6 +41,8 @@ class Tiket extends Model
         'nta' => 'decimal:2',
         'diskon' => 'decimal:2',
         'komisi' => 'decimal:2',
-        'nilai_refund' => 'decimal:2'
+        'nilai_refund' => 'decimal:2',
+        'jam_input' => 'datetime:H:i',
+        'jam_realisasi' => 'datetime:H:i',
     ];
 }

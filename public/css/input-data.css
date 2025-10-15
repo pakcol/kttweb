@@ -136,6 +136,50 @@ textarea {
     background-color: #d68910;
 }
 
+.table-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    padding: 20px;
+    width: 100%;
+    overflow-x: auto; /* scroll horizontal jika tabel lebar */
+    max-height: 70vh; /* batas tinggi card */
+    overflow-y: auto; /* scroll vertical jika banyak data */
+}
+
+.table-card h3 {
+    text-align: center;
+    color: #00343f;
+    margin-bottom: 15px;
+}
+
+.table-card table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1200px; /* supaya kolom tidak terlalu sempit */
+}
+
+.table-card th,
+.table-card td {
+    border: 1px solid #ddd;
+    padding: 8px 10px;
+    text-align: center;
+    font-size: 13px;
+}
+
+.table-card th {
+    background-color: #009879;
+    color: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.table-card tr:hover {
+    background-color: rgba(0, 152, 121, 0.1);
+    cursor: pointer;
+}
+
 @media (max-width: 992px) {
     .input-grid {
         grid-template-columns: 1fr 1fr;
