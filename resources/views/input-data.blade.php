@@ -3,14 +3,12 @@
 <section class="input-data-section">
     <div class="form-container">
         <h2>INPUT DATA</h2>
-
-        <!-- Waktu komputer (Hari, Tanggal, Jam) -->
         <div class="current-time" id="currentDateTime"></div>
 
         <form id="inputDataForm" method="POST" action="{{ route('input-data.store') }}">
             @csrf
             <input type="hidden" id="tiketId" name="tiket_id">
-            <input type="hidden" id="jam_input" name="jam_input"> <!-- Jam Input Otomatis -->
+            <input type="hidden" id="jam_input" name="jam_input"> 
 
             <div class="input-grid">
                 {{-- Kolom Kiri --}}
@@ -235,7 +233,6 @@
 </style>
 
 <script>
-// === Waktu Real-Time ===
 function updateDateTime() {
     const now = new Date();
     const hari = now.toLocaleDateString('id-ID', { weekday: 'long' });

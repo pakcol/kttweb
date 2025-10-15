@@ -10,7 +10,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tikets', function (Blueprint $table) {
-            // Hanya tambahkan jam_realisasi jika belum ada
             if (!Schema::hasColumn('tikets', 'jam_realisasi')) {
                 $table->time('jam_realisasi')->nullable()->after('tgl_realisasi');
             }

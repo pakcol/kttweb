@@ -15,7 +15,7 @@ class InputDataController extends Controller
         $tikets = Tiket::whereDate('tgl_issued', $today)
             ->orWhereDate('tgl_realisasi', $today)
             ->orderBy('tgl_issued')
-            ->orderBy('jam_input') // pakai kolom jam_input
+            ->orderBy('jam_input') 
             ->get();
 
         return view('input-data', compact('tikets'));
@@ -40,7 +40,7 @@ class InputDataController extends Controller
 
         Tiket::create([
             'tgl_issued' => $request->tgl_issued,
-            'jam_input' => now()->format('H:i:s'), // pastikan jam_input diisi otomatis
+            'jam_input' => now()->format('H:i:s'), 
             'kode_booking' => strtoupper($request->kode_booking),
             'airlines' => strtoupper($request->airlines),
             'nama' => strtoupper($request->nama),
@@ -84,7 +84,7 @@ class InputDataController extends Controller
 
         $tiket->update([
             'tgl_issued' => $request->tgl_issued,
-            'jam_input' => now()->format('H:i:s'), // update jam_input juga saat update
+            'jam_input' => now()->format('H:i:s'), 
             'kode_booking' => strtoupper($request->kode_booking),
             'airlines' => strtoupper($request->airlines),
             'nama' => strtoupper($request->nama),

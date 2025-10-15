@@ -12,7 +12,7 @@ return new class extends Migration
         Schema::create('tikets', function (Blueprint $table) {
             $table->id();
             $table->date('tgl_issued');
-            $table->time('jam_input')->default(DB::raw('CURRENT_TIME')); // otomatis waktu input
+            $table->time('jam_input')->default(DB::raw('CURRENT_TIME')); 
             $table->string('kode_booking')->unique();
             $table->string('airlines');
             $table->string('nama');
@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('pembayaran');
             $table->string('nama_piutang')->nullable();
             $table->date('tgl_realisasi')->nullable();
-            $table->time('jam_realisasi')->nullable(); // waktu realisasi opsional
+            $table->time('jam_realisasi')->nullable(); 
             $table->decimal('nilai_refund', 15, 2)->default(0);
             $table->text('keterangan')->nullable();
             $table->string('usr');
