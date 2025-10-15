@@ -47,7 +47,7 @@
                             <li><a class="dropdown-item" href="{{ url('/find-ticket') }}">Find Ticket</a></li>
                             <li><a class="dropdown-item" href="{{ url('/mutasi-airlines') }}">Mutasi Airlines</a></li>
                             <li><a class="dropdown-item" href="{{ url('/data-airlines') }}">Data Airlines</a></li>
-                            <li><a class="dropdown-item" href="{{ url('/cash-flow') }}">Cash Flow</a></li>
+                            <li><a class="dropdown-item" href="{{ url('/cashFlow') }}">Cash Flow</a></li>
                         </ul>
                     </li>
 
@@ -101,25 +101,21 @@
                     </li>
 
                     {{-- Dropdown user --}}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link fw-medium dropdown-toggle text-dark" 
+                    <li>
+                        <a class="nav-link fw-medium text-dark" 
                            href="#" 
-                           role="button" 
-                           data-bs-toggle="dropdown"
                            aria-expanded="false">
                             {{ Auth::user()->name }}
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <a class="dropdown-item text-danger" href="{{ route('logout') }}"
-                                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                    <i class="fas fa-sign-out-alt me-2"></i>Logout
-                                </a>
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                    @csrf
-                                </form>
-                            </li>
-                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="dropdown-item text-danger" href="{{ route('logout') }}"
+                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                        </a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                            @csrf
+                        </form>
                     </li>
                 @endguest
             </ul>
