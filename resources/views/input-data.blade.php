@@ -120,7 +120,7 @@
                     <div class="button-group">
                         <button type="button" class="btn-merah" id="btnHapus">Hapus</button>
                         <button type="submit" id="btnInputData" class="btn-hijau">Input Data</button>
-                        <button type="button" class="btn-oranye">Tutup Kas</button>
+                        <button type="button" class="btn-oranye" onclick="window.location.href='{{ route('tutupKas') }}'">Tutup Kas</button>
                         <button type="button" class="btn-hijau" id="btnCari">Cari</button>
                         <button type="button" class="btn-merah" id="btnCetakInvoice">Cetak Invoice</button>
                         <button type="button" class="btn-hijau" id="btnBatal">Batal</button>
