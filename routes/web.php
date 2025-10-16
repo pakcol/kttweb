@@ -32,7 +32,6 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/rekapPenjualan', 'recapPenjualan')->name('rekapPenjualan');
     Route::view('/piutang', 'piutang')->name('piutang');
 
-    // API endpoints untuk AJAX
     Route::get('/piutang/summary', [PiutangController::class, 'getSummary'])->name('piutang.summary');
     Route::get('/piutang/detail/{id}', [PiutangController::class, 'getDetail'])->name('piutang.detail');
     Route::get('/piutang/export', [PiutangController::class, 'exportExcel'])->name('piutang.export');
@@ -42,11 +41,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/store', [TiketController::class, 'store'])->name('store'); 
     });
 
-    // Single tiket invoice
     Route::get('/invoice/{id}', [InvoiceController::class, 'showSingle'])->name('invoice.single');
-
-    // Multi tiket invoice
     Route::get('/invoice-multi', [InvoiceController::class, 'showMulti'])->name('invoice.multi');
+    Route::post('/invoice/{id}/update-materai', [InvoiceController::class, 'updateMaterai'])->name('invoice.updateMaterai');
 
     Route::prefix('input-data')->name('input-data.')->group(function () {
         Route::get('/', [InputDataController::class, 'index'])->name('index');       
@@ -54,10 +51,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/search', [InputDataController::class, 'search'])->name('search');
         Route::get('/{id}', [InputDataController::class, 'getTiket'])->name('get');
         Route::put('/{id}', [InputDataController::class, 'update'])->name('update');
-        Route::delete('/{id}', [InputDataController::class, 'destroy'])->name('destroy');
+        Route::delete('/{id}', [InputDataController::class, 'destroy'])->name('destroy'); // DELETE
     });
 
     Route::post('/logout', [AccountController::class, 'logout'])->name('logout');
 });
+
+// Route GET destroy sudah tidak perlu, pakai DELETE saja
+// Route::get('/input-data/destroy/{id}', [InputDataController::class, 'destroy'])->name('input-data.destroy');
 
 Route::resource('account', AccountController::class);

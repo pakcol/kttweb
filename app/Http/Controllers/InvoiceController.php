@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Invoice;
 
 class InvoiceController extends Controller
 {
@@ -20,12 +21,25 @@ class InvoiceController extends Controller
         $subtotal = $tiket->harga ?? 0;
         $issued_fee = 25000;
         $materai = 10000;
-
         $total = $subtotal + $issued_fee + $materai;
+
         $terbilang = $this->terbilang($total) . ' Rupiah';
 
-        return view('invoice', compact('tikets', 'subtotal', 'issued_fee', 'materai', 'total', 'terbilang'));
+        $invoiceId = $tiket->id;
+        $invoice_number = 'INV-' . str_pad($invoiceId, 5, '0', STR_PAD_LEFT);
+
+        return view('invoice', compact(
+            'tikets',
+            'subtotal',
+            'issued_fee',
+            'materai',
+            'total',
+            'terbilang',
+            'invoiceId',
+            'invoice_number'
+        ));
     }
+
     public function showMulti(Request $request)
     {
         $ids = $request->query('ids');
@@ -40,14 +54,56 @@ class InvoiceController extends Controller
         if ($tikets->isEmpty()) {
             return redirect()->back()->with('error', 'Data tidak ditemukan!');
         }
+
         $subtotal = $tikets->sum('harga');
         $issued_fee = 25000;
         $materai = 10000;
         $total = $subtotal + $issued_fee + $materai;
-        $terbilang = $this->terbilang($total) . ' RUPIAH';
+        $terbilang = $this->terbilang($total) . ' Rupiah';
 
-        return view('invoice', compact('tikets', 'subtotal', 'issued_fee', 'materai', 'total', 'terbilang'));
+        $invoiceId = $tikets->first()->id;
+        $invoice_number = 'INV-' . date('Ymd') . '-' . str_pad($invoiceId, 5, '0', STR_PAD_LEFT);
+
+        return view('invoice', compact(
+            'tikets',
+            'subtotal',
+            'issued_fee',
+            'materai',
+            'total',
+            'terbilang',
+            'invoiceId',
+            'invoice_number'
+        ));
     }
+
+    // 🆕 Tambahkan fungsi ini di bawah showMulti()
+    public function updateMaterai(Request $request, $id)
+    {
+        $request->validate([
+            'materai' => 'required|numeric',
+        ]);
+
+        // Ambil tiket berdasarkan ID (karena belum ada tabel invoices)
+        $tiket = DB::table('tikets')->where('id', $id)->first();
+
+        if (!$tiket) {
+            return redirect()->back()->with('error', 'Data tiket tidak ditemukan!');
+        }
+
+        $subtotal = $tiket->harga ?? 0;
+        $issued_fee = 25000;
+        $materai = $request->materai;
+        $total = $subtotal + $issued_fee + $materai;
+
+        // Tidak perlu simpan ke DB kalau cuma tampil di halaman
+        // Tapi jika ingin disimpan, tambahkan kolom materai & total di tabel tikets
+
+        return back()->with([
+            'materai' => $materai,
+            'total' => $total,
+        ]);
+    }
+
     private function terbilang($angka)
     {
         $angka = abs($angka);
@@ -61,11 +117,11 @@ class InvoiceController extends Controller
         } elseif ($angka < 100) {
             $terbilang = $this->terbilang(intval($angka / 10)) . " PULUH" . $this->terbilang($angka % 10);
         } elseif ($angka < 200) {
-            $terbilang = " Seratus" . $this->terbilang($angka - 100);
+            $terbilang = " SERATUS" . $this->terbilang($angka - 100);
         } elseif ($angka < 1000) {
             $terbilang = $this->terbilang(intval($angka / 100)) . " RATUS" . $this->terbilang($angka % 100);
         } elseif ($angka < 2000) {
-            $terbilang = " Seribu" . $this->terbilang($angka - 1000);
+            $terbilang = " SERIBU" . $this->terbilang($angka - 1000);
         } elseif ($angka < 1000000) {
             $terbilang = $this->terbilang(intval($angka / 1000)) . " RIBU" . $this->terbilang($angka % 1000);
         } elseif ($angka < 1000000000) {

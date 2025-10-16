@@ -118,7 +118,7 @@
                     </div>
 
                     <div class="button-group">
-                        <button type="button" class="btn-merah" id="btnHapus">Hapus</button>
+                        {{-- Hapus tombol Hapus --}}
                         <button type="submit" id="btnInputData" class="btn-hijau">Input Data</button>
                         <button type="button" class="btn-oranye" onclick="window.location.href='{{ route('tutupKas') }}'">Tutup Kas</button>
                         <button type="button" class="btn-hijau" id="btnCari">Cari</button>
@@ -135,59 +135,90 @@
 <div class="table-card">
     <h3>Data Tiket</h3>
     <table id="tiketTable">
-        <thead>
-            <tr>
-                <th>Pilih</th>
-                <th>No</th>
-                <th>Tgl Issued</th>
-                <th>Jam</th>
-                <th>Kode Booking</th>
-                <th>Airlines</th>
-                <th>Nama</th>
-                <th>Rute 1</th>
-                <th>Tgl Flight 1</th>
-                <th>Rute 2</th>
-                <th>Tgl Flight 2</th>
-                <th>Harga</th>
-                <th>NTA</th>
-                <th>Diskon</th>
-                <th>Komisi</th>
-                <th>Pembayaran</th>
-                <th>Nama Piutang</th>
-                <th>Tanggal Realisasi</th>
-                <th>Jam Realisasi</th>
-                <th>Nilai Refund</th>
-                <th>Keterangan</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($tikets as $index => $t)
-            <tr data-id="{{ $t->id }}">
-                <td><input type="checkbox" class="chkInvoice" value="{{ $t->id }}"></td>
-                <td>{{ $index + 1 }}</td>
-                <td>{{ $t->tgl_issued }}</td>
-                <td>{{ $t->jam_input ?? '-' }}</td>
-                <td>{{ $t->kode_booking }}</td>
-                <td>{{ $t->airlines }}</td>
-                <td>{{ $t->nama }}</td>
-                <td>{{ $t->rute1 }}</td>
-                <td>{{ $t->tgl_flight1 }}</td>
-                <td>{{ $t->rute2 }}</td>
-                <td>{{ $t->tgl_flight2 }}</td>
-                <td>{{ number_format($t->harga, 0, ',', '.') }}</td>
-                <td>{{ number_format($t->nta, 0, ',', '.') }}</td>
-                <td>{{ number_format($t->diskon, 0, ',', '.') }}</td>
-                <td>{{ number_format($t->komisi, 0, ',', '.') }}</td>
-                <td>{{ $t->pembayaran }}</td>
-                <td>{{ $t->nama_piutang }}</td>
-                <td>{{ $t->tgl_realisasi }}</td>
-                <td>{{ $t->jam_realisasi }}</td>
-                <td>{{ number_format($t->nilai_refund, 0, ',', '.') }}</td>
-                <td>{{ $t->keterangan }}</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+<thead>
+    <tr>
+        <th>Pilih</th>
+        <th>No</th>
+        <th>Tgl Issued</th>
+        <th>Jam</th>
+        <th>Kode Booking</th>
+        <th>Airlines</th>
+        <th>Nama</th>
+        <th>Rute 1</th>
+        <th>Tgl Flight 1</th>
+        <th>Rute 2</th>
+        <th>Tgl Flight 2</th>
+        <th>Harga</th>
+        <th>NTA</th>
+        <th>Diskon</th>
+        <th>Komisi</th>
+        <th>Pembayaran</th>
+        <th>Nama Piutang</th>
+        <th>Tanggal Realisasi</th>
+        <th>Jam Realisasi</th>
+        <th>Nilai Refund</th>
+        <th>Keterangan</th>
+        <th style="text-align:center;">Delete</th>
+    </tr>
+</thead>
+<tbody>
+    @foreach ($tikets as $index => $t)
+    <tr data-id="{{ $t->id }}">
+        <td><input type="checkbox" class="check-row" value="{{ $t->id }}"></td>
+        <td>{{ $index + 1 }}</td>
+        <td>{{ \Carbon\Carbon::parse($t->tgl_issued)->format('Y-m-d') }}</td>
+        <td>{{ \Carbon\Carbon::parse($t->jam_input)->format('H:i:s') }}</td>
+        <td>{{ $t->kode_booking }}</td>
+        <td>{{ $t->airlines }}</td>
+        <td>{{ $t->nama }}</td>
+        <td>{{ $t->rute1 }}</td>
+        <td>{{ $t->tgl_flight1 }}</td>
+        <td>{{ $t->rute2 }}</td>
+        <td>{{ $t->tgl_flight2 }}</td>
+        <td>{{ number_format($t->harga, 0, ',', '.') }}</td>
+        <td>{{ number_format($t->nta, 0, ',', '.') }}</td>
+        <td>{{ number_format($t->diskon, 0, ',', '.') }}</td>
+        <td>{{ number_format($t->komisi, 0, ',', '.') }}</td>
+        <td>{{ $t->pembayaran }}</td>
+        <td>{{ $t->nama_piutang }}</td>
+        <td>{{ $t->tgl_realisasi }}</td>
+        <td>{{ $t->jam_realisasi }}</td>
+        <td>{{ number_format($t->nilai_refund, 0, ',', '.') }}</td>
+        <td>{{ $t->keterangan }}</td>
+        <td style="text-align:center;">
+            <button class="btn-delete" data-id="{{ $t->id }}">Delete</button>
+        </td>
+    </tr>
+    @endforeach
+</tbody>
+</table>
+
+</div>
+
+<style>
+.btn-delete {
+    background-color: #e74c3c;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.btn-delete:hover {
+    background-color: #c0392b;
+}
+</style>
+
+<!-- Modal Konfirmasi Delete -->
+<div id="modalDelete" class="modal-cari">
+    <div class="modal-content">
+        <p>Are you sure want to <br><b>Delete this Line?</b></p>
+        <div class="modal-buttons">
+            <button id="btnYesDelete" class="btn-ok">YES</button>
+            <button id="btnNoDelete" class="btn-cancel">NO</button>
+        </div>
+    </div>
 </div>
 
 <div id="modalCari" class="modal-cari">
@@ -219,35 +250,37 @@ updateDateTime();
 // Klik satu kali isi form & update tombol
 let selectedRow = null;
 document.querySelectorAll('#tiketTable tbody tr').forEach(row => {
-    row.addEventListener('click', function() {
-        document.querySelectorAll('#tiketTable tr').forEach(r => r.classList.remove('selected'));
-        this.classList.add('selected');
-        selectedRow = this;
+    row.addEventListener('click', function(e) {
+        if (!(e.target && e.target.classList.contains('btn-delete'))) {
+            document.querySelectorAll('#tiketTable tr').forEach(r => r.classList.remove('selected'));
+            this.classList.add('selected');
+            selectedRow = this;
 
-        const data = Array.from(this.children).map(td => td.innerText);
-        document.getElementById('tiketId').value = this.dataset.id;
-        document.getElementById('tgl_issued').value = data[2];
-        document.getElementById('kode_booking').value = data[4];
-        document.getElementById('airlines').value = data[5];
-        document.getElementById('nama').value = data[6];
-        document.getElementById('rute1').value = data[7];
-        document.getElementById('tgl_flight1').value = data[8];
-        document.getElementById('rute2').value = data[9];
-        document.getElementById('tgl_flight2').value = data[10];
-        document.getElementById('harga').value = parseFloat(data[11].replace(/\./g,''));
-        document.getElementById('nta').value = parseFloat(data[12].replace(/\./g,''));
-        document.getElementById('diskon').value = parseFloat(data[13].replace(/\./g,''));
-        document.getElementById('pembayaran').value = data[15];
-        document.getElementById('nama_piutang').value = data[16];
-        document.getElementById('tgl_realisasi').value = data[17];
-        document.getElementById('jam_realisasi').value = data[18];
-        document.getElementById('nilai_refund').value = parseFloat(data[19].replace(/\./g,''));
-        document.getElementById('keterangan').value = data[20];
+            const data = Array.from(this.children).map(td => td.innerText);
+            document.getElementById('tiketId').value = this.dataset.id;
+            document.getElementById('tgl_issued').value = data[2];
+            document.getElementById('kode_booking').value = data[4];
+            document.getElementById('airlines').value = data[5];
+            document.getElementById('nama').value = data[6];
+            document.getElementById('rute1').value = data[7];
+            document.getElementById('tgl_flight1').value = data[8];
+            document.getElementById('rute2').value = data[9];
+            document.getElementById('tgl_flight2').value = data[10];
+            document.getElementById('harga').value = parseFloat(data[11].replace(/\./g,'')) || 0;
+            document.getElementById('nta').value = parseFloat(data[12].replace(/\./g,'')) || 0;
+            document.getElementById('diskon').value = parseFloat(data[13].replace(/\./g,'')) || 0;
+            document.getElementById('pembayaran').value = data[15];
+            document.getElementById('nama_piutang').value = data[16];
+            document.getElementById('tgl_realisasi').value = data[17];
+            document.getElementById('jam_realisasi').value = data[18];
+            document.getElementById('nilai_refund').value = parseFloat(data[19].replace(/\./g,'')) || 0;
+            document.getElementById('keterangan').value = data[20];
 
-        document.getElementById('btnInputData').textContent = 'UPDATE';
+            document.getElementById('btnInputData').textContent = 'UPDATE';
+        }
     });
 
-    // Hapus klik 2x
+    // Hapus klik 2x row (fallback)
     row.addEventListener('dblclick', function() {
         const id = this.dataset.id;
         if(confirm('Apakah yakin ingin menghapus data ini?')) {
@@ -263,53 +296,45 @@ document.getElementById('btnBatal').addEventListener('click', function() {
     document.querySelectorAll('#tiketTable tr').forEach(r => r.classList.remove('selected'));
 });
 
-document.querySelectorAll('#tiketTable tbody tr').forEach(row => {
-    row.addEventListener('click', function(e) {
-        if (e.ctrlKey || e.metaKey) {
-            this.classList.toggle('selected');
-        } else { 
-            document.querySelectorAll('#tiketTable tr').forEach(r => r.classList.remove('selected'));
-            this.classList.add('selected');
-        }
-        const selectedIds = Array.from(document.querySelectorAll('#tiketTable tbody tr.selected'))
-            .map(r => r.dataset.id);
-        document.getElementById('tiketId').value = selectedIds.join(',');
-    });
-});
-
 // Cetak invoice multi-tiket
 document.getElementById('btnCetakInvoice').addEventListener('click', function() {
-    const ids = document.getElementById('tiketId').value;
-    if (!ids) {
+    const selected = Array.from(document.querySelectorAll('.check-row:checked')).map(cb => cb.value);
+    if (selected.length === 0) {
         alert('Silakan pilih minimal satu tiket untuk cetak invoice!');
         return;
     }
-    if (confirm('Apakah Anda ingin mencetak invoice untuk tiket yang dipilih?')) {
-        window.open(`/invoice-multi?ids=${ids}`, '_blank');
+    if (confirm(`Cetak invoice untuk ${selected.length} tiket terpilih?`)) {
+        window.open(`/invoice-multi?ids=${selected.join(',')}`, '_blank');
     }
 });
 
+// Checkbox untuk multi selection
+const checkAll = document.getElementById('checkAll');
+if (checkAll) {
+    const checkboxes = document.querySelectorAll('.check-row');
+    checkAll.addEventListener('change', function() {
+        checkboxes.forEach(cb => cb.checked = this.checked);
+    });
+}
+
+// Modal Cari
 const modalCari = document.getElementById('modalCari');
 const btnCari = document.getElementById('btnCari');
 const btnCariOk = document.getElementById('btnCariOk');
 const btnCariCancel = document.getElementById('btnCariCancel');
 const searchInput = document.getElementById('searchInput');
-const table = document.getElementById('tiketTable');
 
-// buka modal
 btnCari.addEventListener('click', () => {
     modalCari.style.display = 'flex';
     searchInput.focus();
 });
 
-// tombol cancel
 btnCariCancel.addEventListener('click', () => {
     modalCari.style.display = 'none';
     searchInput.value = '';
     document.querySelectorAll('#tiketTable tbody tr').forEach(r => r.style.display = '');
 });
 
-// tombol OK
 btnCariOk.addEventListener('click', () => {
     const keyword = searchInput.value.trim().toLowerCase();
     if (!keyword) {
@@ -342,6 +367,60 @@ btnCariOk.addEventListener('click', () => {
     }
 });
 
+// Modal Delete
+let deleteId = null;
+const modalDelete = document.getElementById('modalDelete');
+const btnYesDelete = document.getElementById('btnYesDelete');
+const btnNoDelete = document.getElementById('btnNoDelete');
+
+// Klik tombol delete
+document.querySelectorAll('.btn-delete').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        e.stopPropagation(); // cegah select row
+        deleteId = this.dataset.id;
+        modalDelete.style.display = 'flex';
+    });
+});
+
+// Klik NO
+btnNoDelete.addEventListener('click', () => {
+    deleteId = null;
+    modalDelete.style.display = 'none';
+});
+
+// Klik YES
+btnYesDelete.addEventListener('click', () => {
+    if (!deleteId) return;
+
+    fetch(`/input-data/${deleteId}`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const row = document.querySelector(`#tiketTable tbody tr[data-id="${deleteId}"]`);
+            if (row) row.remove();
+            alert(data.message);
+        } else {
+            alert(data.message || 'Gagal menghapus data.');
+        }
+        deleteId = null;
+        modalDelete.style.display = 'none';
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Terjadi kesalahan saat menghapus data.');
+        deleteId = null;
+        modalDelete.style.display = 'none';
+    });
+});
+
+// Fungsi isi form dari row
 function isiFormDariRow(row) {
     const data = Array.from(row.children).map(td => td.innerText);
     document.getElementById('tiketId').value = row.dataset.id;
@@ -365,5 +444,4 @@ function isiFormDariRow(row) {
     document.getElementById('btnInputData').textContent = 'UPDATE';
 }
 </script>
-
 </x-layouts.app>
