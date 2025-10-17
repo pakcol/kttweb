@@ -7,9 +7,16 @@ use App\Models\Penjualan;
 
 class TutupKasController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return view('tutup-kas');
+        $tanggal = $request->input('tanggal');
+        $data = null;
+
+        if ($tanggal) {
+            $data = Penjualan::whereDate('TANGGAL', $tanggal)->first();
+        }
+
+        return view('tutup-kas', compact('data'));
     }
 
     public function store(Request $request)
@@ -17,6 +24,7 @@ class TutupKasController extends Controller
         $validated = $request->validate([
             '*.numeric' => 'nullable|numeric',
         ]);
+
         $penjualan = new Penjualan();
         $penjualan->TANGGAL = now()->format('Y-m-d');
         $penjualan->JAM = now()->format('H:i');
@@ -76,5 +84,17 @@ class TutupKasController extends Controller
         $penjualan->save();
 
         return redirect()->route('tutup-kas')->with('success', 'Data Tutup Kas berhasil disimpan.');
+    }
+
+    public function search(Request $request)
+    {
+        $tanggal = $request->input('tanggal');
+        $data = Penjualan::whereDate('TANGGAL', $tanggal)->first();
+
+        if (!$data) {
+            return redirect()->route('tutup-kas')->with('error', 'Data untuk tanggal tersebut tidak ditemukan.');
+        }
+
+        return view('tutup-kas', compact('data'));
     }
 }

@@ -64,6 +64,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/tutup-kas', [TutupKasController::class, 'index'])->name('tutup-kas');
     Route::post('/tutup-kas', [TutupKasController::class, 'store'])->name('tutup-kas.store');
     Route::view('/tutupKas', 'tutup-kas')->name('tutupKas');
+    Route::get('/tutup-kas/search', [TutupKasController::class, 'search'])->name('tutup-kas.search');
+
 
     // ======== LOGOUT ========
     Route::post('/logout', [AccountController::class, 'logout'])->name('logout');

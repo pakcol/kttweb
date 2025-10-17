@@ -6,6 +6,7 @@ body {
     color: #fff;
 }
 
+/* ===== WRAPPER ===== */
 .tutup-kas-wrapper {
     display: flex;
     justify-content: center;
@@ -14,6 +15,7 @@ body {
     padding: 80px 20px;
 }
 
+/* ===== CARD UTAMA ===== */
 .tutup-kas-card {
     width: 100%;
     max-width: 1300px;
@@ -25,6 +27,7 @@ body {
     background-color: rgba(255, 255, 255, 0.92);
 }
 
+/* ===== JUDUL ===== */
 .page-title {
     text-align: center;
     font-size: 28px;
@@ -35,15 +38,72 @@ body {
     letter-spacing: 1px;
 }
 
+/* ===== FORM CARI LAPORAN PENJUALAN TANGGAL ===== */
+.search-form {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+    background-color: #0e4463;
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin-bottom: 35px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.search-form label {
+    font-weight: 600;
+    color: #ffffff;
+    font-size: 14px;
+    margin-right: 10px;
+}
+
+.search-form input[type="date"] {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.4);
+    background-color: rgba(255,255,255,0.15);
+    color: #fff;
+    font-size: 13px;
+    outline: none;
+    transition: 0.2s;
+}
+
+.search-form input[type="date"]:focus {
+    background-color: rgba(255,255,255,0.25);
+    border-color: #fff;
+}
+
+.search-btn {
+    border: none;
+    background-color: #15a2b8;
+    color: #fff;
+    padding: 9px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+.search-btn:hover {
+    background-color: #0d8ea2;
+    transform: scale(1.05);
+}
+
+/* ===== GRID CARD ===== */
 .form-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 24px;
 }
+
+/* ===== CARD ===== */
 .card {
     border-radius: 16px;
     padding: 18px 20px 22px;
-    background-color: #0e4463; 
+    background-color: #0e4463;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     transition: all 0.3s ease;
     border: 1px solid rgba(255,255,255,0.1);
@@ -94,6 +154,15 @@ body {
     box-shadow: 0 0 0 3px rgba(255,255,255,0.2);
 }
 
+/* ===== KHUSUS CARD SALDO SUB AGENT & PLN ===== */
+.card.sub-agent {
+    min-height: 190px;
+}
+.card.pln {
+    min-height: 160px;
+}
+
+/* ===== BUTTON ===== */
 .button-container {
     text-align: center;
     margin-top: 40px;
@@ -113,12 +182,12 @@ body {
     box-shadow: 0 5px 15px rgba(0,0,0,0.15);
 }
 
-.btn.green {
-    background: #075f7a;
+.btn.red {
+    background: #e74c3c;
 }
 
-.btn.red {
-    background: #ea5455;
+.btn.green {
+    background: #117a65;
 }
 
 .btn:hover {
@@ -126,11 +195,54 @@ body {
     opacity: 0.9;
 }
 
+/* ===== TABEL LAPORAN PENJUALAN ===== */
+.table-laporan {
+    margin-top: 50px;
+    background: #ffffff;
+    border-radius: 12px;
+    overflow-x: auto;
+    color: #333;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    padding: 10px;
+}
+
+.table-laporan table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table-laporan th,
+.table-laporan td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+    font-size: 13px;
+}
+
+.table-laporan th {
+    background-color: #0e4463;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table-laporan tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
     .tutup-kas-card {
         padding: 30px 20px;
     }
     .page-title {
         font-size: 22px;
+    }
+    .search-form {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
     }
 }
