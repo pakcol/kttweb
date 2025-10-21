@@ -30,7 +30,7 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/sub-agent', 'sub-agent')->name('sub-agent');
     Route::view('/pln', 'pln')->name('pln');
     Route::view('/admin', 'admin')->name('admin');
-    Route::view('/cashFlow', 'cashFlow')->name('cashFlow');
+    Route::view('/cash-flow', 'cash-flow')->name('cash-flow');
     Route::view('/rekapPenjualan', 'recapPenjualan')->name('rekapPenjualan');
     Route::view('/piutang', 'piutang')->name('piutang');
 
