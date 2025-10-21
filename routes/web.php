@@ -5,8 +5,9 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\InputDataController;
 use App\Http\Controllers\TiketController;
 use App\Http\Controllers\InvoiceController;
-use App\Http\Controllers\TutupKasController; 
+use App\Http\Controllers\TutupKasController;
 use App\Http\Controllers\PiutangController;
+use App\Http\Controllers\EviController; // ✅ tambahkan controller Evi di sini
 
 Route::get('/', function () {
     if (auth()->check()) {
@@ -65,6 +66,19 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/tutup-kas', [TutupKasController::class, 'store'])->name('tutup-kas.store');
     Route::view('/tutupKas', 'tutup-kas')->name('tutupKas');
     Route::get('/tutup-kas/search', [TutupKasController::class, 'search'])->name('tutup-kas.search');
+
+    // ======== EVI CONTROLLER ======== ✅
+    Route::prefix('evi')->name('evi.')->group(function () {
+    Route::get('/', [EviController::class, 'index'])->name('index');
+    Route::post('/store', [EviController::class, 'store'])->name('store');
+    Route::get('/search', [EviController::class, 'search'])->name('search');
+    Route::get('/{id}', [EviController::class, 'show'])->name('show');
+    Route::put('/{id}', [EviController::class, 'update'])->name('update');
+    Route::delete('/{id}', [EviController::class, 'destroy'])->name('destroy');
+
+    // ✅ Tambahkan baris ini untuk tombol EXPORT EXCEL
+    Route::get('/export', [EviController::class, 'exportExcel'])->name('export');
+});
 
 
     // ======== LOGOUT ========
