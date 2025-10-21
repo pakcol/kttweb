@@ -35,11 +35,6 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/rekapPenjualan', 'recapPenjualan')->name('rekapPenjualan');
     Route::view('/piutang', 'piutang')->name('piutang');
 
-    // ======== PIUTANG CONTROLLER ========
-    Route::get('/piutang/summary', [PiutangController::class, 'getSummary'])->name('piutang.summary');
-    Route::get('/piutang/detail/{id}', [PiutangController::class, 'getDetail'])->name('piutang.detail');
-    Route::get('/piutang/export', [PiutangController::class, 'exportExcel'])->name('piutang.export');
-
     // ======== TIKET CONTROLLER ========
     Route::prefix('tiket')->name('tiket.')->group(function () {
         Route::get('/', [TiketController::class, 'index'])->name('index'); 

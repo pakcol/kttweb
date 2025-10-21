@@ -62,7 +62,7 @@
                             Sub Agent
                         </a>
                         <ul class="dropdown-menu dropdown-click-menu">
-                            <li><a class="dropdown-item" href="{{ url('/sub-agent/evi') }}">EVI</a></li>
+                            <li><a class="dropdown-item" href="{{ url('/evi') }}">EVI</a></li>
                         </ul>
                     </li>
 

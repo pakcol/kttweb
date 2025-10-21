@@ -11,8 +11,8 @@ class EviController extends Controller
 {
     public function index()
     {
-    $data = Evi::all(); 
-    return view('evi', compact('data'));
+        $data = Evi::all(); 
+        return view('evi', compact('data'));
     }
 
     public function fetch(Request $request)
