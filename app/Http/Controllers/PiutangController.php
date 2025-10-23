@@ -3,9 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Evi; // pastikan model ini ada dan sesuai
+use Illuminate\Support\Facades\Validator;
 
 class PiutangController extends Controller
 {
+    public function index()
+    {
+        // Ambil semua data dari tabel evi
+        $data = Evi::all();
+
+        // Kirim ke view piutang.blade.php
+        return view('piutang', compact('data'));
+    }
+
     public function store(Request $request)
     {
         $v = Validator::make($request->all(), [
@@ -30,7 +41,6 @@ class PiutangController extends Controller
         $lastSaldo = $last ? floatval($last->SALDO) : 0.0;
 
         $topUp = $request->input('TOP_UP') ? floatval($request->input('TOP_UP')) : 0.0;
-
         $newSaldo = $lastSaldo + $topUp;
 
         $data = $request->only([

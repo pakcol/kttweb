@@ -1,0 +1,143 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #f2f6fc;
+    margin: 0;
+    padding: 0;
+}
+
+.biaya-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 100px; 
+    padding-bottom: 50px;
+}
+
+.form-container {
+    width: 85%;
+    max-width: 950px;
+    background: #ffffffb9;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    padding: 30px 40px;
+    text-align: center;
+}
+
+.form-container h2 {
+    font-weight: 600;
+    color: #1a3b5d;
+    margin-bottom: 25px;
+    letter-spacing: 1px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+input[type="text"],
+input[type="date"],
+select {
+    padding: 10px 12px;
+    border: 1px solid #d0d7e1;
+    border-radius: 10px;
+    outline: none;
+    background-color: #f8fafc;
+    transition: 0.2s ease;
+}
+
+input:focus,
+select:focus {
+    border-color: #4b8efc;
+    box-shadow: 0 0 6px rgba(75, 142, 252, 0.3);
+    background-color: #fff;
+}
+
+.button-group {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.btn-simpan, .btn-hapus {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-simpan {
+    background-color: #16a34a;
+}
+
+.btn-hapus {
+    background-color: #dc2626;
+}
+
+.btn-simpan:hover {
+    background-color: #22c55e;
+}
+
+.btn-hapus:hover {
+    background-color: #ef4444;
+}
+
+.table-container {
+    width: 85%;
+    max-width: 950px;
+    margin-top: 40px;
+    background: #dbeafe;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+}
+
+.table-container h2 {
+    text-align: center;
+    color: #1e3a8a;
+    margin-bottom: 15px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+thead {
+    background-color: #1e40af;
+    color: #fff;
+}
+
+th, td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 14px;
+}
+
+tr:hover {
+    background-color: #f1f5f9;
+}

@@ -7,7 +7,10 @@ use App\Http\Controllers\TiketController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\TutupKasController;
 use App\Http\Controllers\PiutangController;
-use App\Http\Controllers\EviController; // ✅ tambahkan controller Evi di sini
+use App\Http\Controllers\EviController; 
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\BiayaController;
+use App\Http\Controllers\PlnController;
 
 Route::get('/', function () {
     if (auth()->check()) {
@@ -27,13 +30,16 @@ Route::middleware(['auth'])->group(function () {
         return view('homeDb');
     })->name('homeDb');
 
-    // ======== HALAMAN ========
+        // ======== HALAMAN ========
     Route::view('/sub-agent', 'sub-agent')->name('sub-agent');
     Route::view('/pln', 'pln')->name('pln');
     Route::view('/admin', 'admin')->name('admin');
     Route::view('/cash-flow', 'cash-flow')->name('cash-flow');
     Route::view('/rekapPenjualan', 'recapPenjualan')->name('rekapPenjualan');
-    Route::view('/piutang', 'piutang')->name('piutang');
+
+    // ======== PIUTANG CONTROLLER ======== 
+    Route::get('/piutang', [PiutangController::class, 'index'])->name('piutang.index');
+    Route::post('/piutang', [PiutangController::class, 'store'])->name('piutang.store');
 
     // ======== TIKET CONTROLLER ========
     Route::prefix('tiket')->name('tiket.')->group(function () {
@@ -62,7 +68,7 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/tutupKas', 'tutup-kas')->name('tutupKas');
     Route::get('/tutup-kas/search', [TutupKasController::class, 'search'])->name('tutup-kas.search');
 
-    // ======== EVI CONTROLLER ======== ✅
+    // ======== EVI CONTROLLER ======== 
     Route::prefix('evi')->name('evi.')->group(function () {
     Route::get('/', [EviController::class, 'index'])->name('index');
     Route::post('/store', [EviController::class, 'store'])->name('store');
@@ -71,10 +77,20 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/{id}', [EviController::class, 'update'])->name('update');
     Route::delete('/{id}', [EviController::class, 'destroy'])->name('destroy');
 
-    // ✅ Tambahkan baris ini untuk tombol EXPORT EXCEL
+    // Tambahkan baris ini untuk tombol EXPORT EXCEL
     Route::get('/export', [EviController::class, 'exportExcel'])->name('export');
 });
 
+// ======== ADD USER ========
+Route::get('/adduser', [UserController::class, 'index'])->name('adduser.index');
+Route::post('/adduser', [UserController::class, 'store'])->name('adduser.store');
+Route::delete('/adduser/{id}', [UserController::class, 'destroy'])->name('adduser.destroy');
+
+Route::get('/biaya', [BiayaController::class, 'index'])->name('biaya.index');
+Route::post('/biaya', [BiayaController::class, 'store'])->name('biaya.store');
+
+Route::get('/pln', [PlnController::class, 'index'])->name('pln.index');
+Route::post('/pln', [PlnController::class, 'store'])->name('pln.store');
 
     // ======== LOGOUT ========
     Route::post('/logout', [AccountController::class, 'logout'])->name('logout');

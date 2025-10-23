@@ -1,259 +1,146 @@
+body {
+    background: linear-gradient(135deg, #d4f1ff, #ffffff);
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 40px 0;
+}
+
 .piutang-section {
-    padding: 100px 20px 30px 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
+    width: 95%;
+    margin: 100px auto 60px; 
 }
 
-.form-container {
-    background: white;
-    border-radius: 15px;
-    padding: 30px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    margin-bottom: 30px;
+.card-form {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    padding: 30px 40px;
+    margin-bottom: 40px;
+    animation: fadeInUp 0.8s ease-in-out;
 }
 
-.form-container h2 {
-    text-align: center;
-    color: #2d3748;
-    margin-bottom: 10px;
-    font-size: 2rem;
-    font-weight: 700;
+.form-title {
+    font-size: 1.6rem;
+    color: #003a63;
+    font-weight: 600;
+    margin-bottom: 20px;
 }
 
-.current-time {
-    text-align: center;
-    color: #718096;
-    margin-bottom: 30px;
-    font-weight: 500;
-}
-
-.input-grid {
+.form-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 30px;
-    margin-bottom: 20px;
-}
-
-.form-group {
-    margin-bottom: 20px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px 25px;
 }
 
 .form-group label {
-    display: block;
-    margin-bottom: 8px;
     font-weight: 600;
-    color: #4a5568;
+    color: #333;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+    display: block;
 }
 
 .form-group input,
-.form-group select,
-.form-group textarea {
+.form-group select {
     width: 100%;
-    padding: 12px 15px;
-    border: 2px solid #e2e8f0;
-    border-radius: 8px;
-    font-size: 14px;
-    transition: all 0.3s ease;
-    background: white;
+    padding: 10px 14px;
+    border: 1px solid #cdd9e2;
+    border-radius: 10px;
+    outline: none;
+    font-size: 0.95rem;
+    transition: 0.3s;
+    background: rgba(255,255,255,0.8);
 }
 
 .form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+.form-group select:focus {
+    border-color: #00a3ff;
+    box-shadow: 0 0 6px rgba(0,163,255,0.3);
 }
 
-.form-group input[readonly] {
-    background-color: #f7fafc;
-    color: #718096;
-}
-
-.text-uppercase {
-    text-transform: uppercase;
-}
-
-/* Summary Cards */
-.summary-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 15px;
-    text-align: center;
-}
-
-.summary-card h4 {
-    margin: 0 0 10px 0;
-    font-size: 0.9rem;
-    opacity: 0.9;
-}
-
-.summary-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-}
-
-.total-belum-bayar {
-    background: linear-gradient(135deg, #ed64a6 0%, #ed8936 100%);
-}
-
-/* Button Group */
-.button-group {
+/* BUTTONS */
+.btn-actions {
+    margin-top: 25px;
     display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 20px;
+    justify-content: flex-end;
+    gap: 15px;
 }
 
-.btn-hijau, .btn-merah, .btn-oranye {
-    padding: 12px 25px;
+.btn-update,
+.btn-print {
+    padding: 10px 20px;
+    border-radius: 10px;
     border: none;
-    border-radius: 8px;
-    font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
-    flex: 1;
-    min-width: 120px;
-}
-
-.btn-hijau {
-    background: #48bb78;
-    color: white;
-}
-
-.btn-hijau:hover {
-    background: #38a169;
-    transform: translateY(-2px);
-}
-
-.btn-merah {
-    background: #f56565;
-    color: white;
-}
-
-.btn-merah:hover {
-    background: #e53e3e;
-    transform: translateY(-2px);
-}
-
-.btn-oranye {
-    background: #ed8936;
-    color: white;
-}
-
-.btn-oranye:hover {
-    background: #dd6b20;
-    transform: translateY(-2px);
-}
-
-/* Table Styles */
-.table-card {
-    background: white;
-    border-radius: 15px;
-    padding: 25px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    overflow-x: auto;
-}
-
-.table-card h3 {
-    color: #2d3748;
-    margin-bottom: 20px;
-    font-size: 1.5rem;
     font-weight: 600;
+    transition: 0.3s;
 }
 
-#piutangTable {
+.btn-update {
+    background: #00a86b;
+    color: white;
+}
+
+.btn-update:hover {
+    background: #007f51;
+    transform: translateY(-2px);
+}
+
+.btn-print {
+    background: #ff4b4b;
+    color: white;
+}
+
+.btn-print:hover {
+    background: #d83a3a;
+    transform: translateY(-2px);
+}
+
+/* TABLE */
+.card-table {
+    background: rgba(240, 249, 255, 0.8);
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.card-table h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #00466e;
+    margin-bottom: 15px;
+}
+
+.table-piutang {
     width: 100%;
     border-collapse: collapse;
-    background: white;
+    overflow: hidden;
+    border-radius: 10px;
 }
 
-#piutangTable th {
-    background: #4c51bf;
+.table-piutang th {
+    background: #00a3ff;
     color: white;
-    padding: 12px 15px;
+    padding: 12px;
     text-align: left;
-    font-weight: 600;
-    font-size: 0.9rem;
 }
 
-#piutangTable td {
-    padding: 10px 15px;
-    border-bottom: 1px solid #e2e8f0;
-    color: #4a5568;
-}
-
-#piutangTable tbody tr:hover {
-    background: #f7fafc;
-}
-
-#piutangTable tbody tr.selected {
-    background: #ebf8ff;
-    border-left: 4px solid #667eea;
-}
-
-/* Status Badges */
-.status-badge {
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: uppercase;
+.table-piutang td {
+    padding: 12px;
+    background: rgba(255,255,255,0.8);
+    border-bottom: 1px solid #e0e0e0;
 }
 
 .status-lunas {
-    background: #c6f6d5;
-    color: #276749;
+    background: #00a86b;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
 }
 
-.status-belum-lunas {
-    background: #fed7d7;
-    color: #c53030;
-}
-
-/* Checkbox styling */
-.chkPiutang {
-    transform: scale(1.2);
-    cursor: pointer;
-}
-
-/* Responsive Design */
-@media (max-width: 1024px) {
-    .input-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-}
-
-@media (max-width: 768px) {
-    .piutang-section {
-        padding: 80px 15px 20px 15px;
-    }
-    
-    .form-container {
-        padding: 20px;
-    }
-    
-    .button-group {
-        flex-direction: column;
-    }
-    
-    .btn-hijau, .btn-merah, .btn-oranye {
-        width: 100%;
-    }
-    
-    .table-card {
-        padding: 15px;
-    }
-    
-    #piutangTable {
-        font-size: 0.8rem;
-    }
-    
-    #piutangTable th,
-    #piutangTable td {
-        padding: 8px 10px;
-    }
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
 }
