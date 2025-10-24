@@ -14,6 +14,11 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="jam">Jam</label>
+                        <input type="time" id="jam" name="jam" required>
+                    </div>
+
+                    <div class="form-group">
                         <label for="biaya">Biaya</label>
                         <input type="text" id="biaya" name="biaya" placeholder="Masukkan jumlah biaya..." required>
                     </div>
@@ -45,6 +50,11 @@
                             <option>Biaya Lain-lain</option>
                         </select>
                     </div>
+
+                    <div class="form-group">
+                        <label for="user">User</label>
+                        <input type="text" id="user" name="user" placeholder="Masukkan nama user..." required>
+                    </div>
                 </div>
 
                 <div class="button-group">
@@ -60,17 +70,21 @@
                 <thead>
                     <tr>
                         <th>Tanggal</th>
-                        <th>Keterangan</th>
+                        <th>Jam</th>
                         <th>Biaya</th>
                         <th>Pembayaran</th>
+                        <th>Keterangan</th>
+                        <th>User</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>2025-10-24</td>
-                        <td>Biaya Telpon dan Pulsa</td>
+                        <td>08:30</td>
                         <td>250.000</td>
                         <td>Tunai</td>
+                        <td>Biaya Telpon dan Pulsa</td>
+                        <td>Admin</td>
                     </tr>
                 </tbody>
             </table>
