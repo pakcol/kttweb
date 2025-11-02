@@ -36,6 +36,7 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/admin', 'admin')->name('admin');
     Route::view('/cash-flow', 'cash-flow')->name('cash-flow');
     Route::view('/rekapPenjualan', 'recapPenjualan')->name('rekapPenjualan');
+    Route::view('/insentif', 'insentif')->name('insentif');
 
     // ======== PIUTANG CONTROLLER ======== 
     Route::get('/piutang', [PiutangController::class, 'index'])->name('piutang.index');

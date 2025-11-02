@@ -12,7 +12,7 @@ return new class extends Migration
         Schema::create('tikets', function (Blueprint $table) {
             $table->id();
             $table->date('tgl_issued');
-            $table->time('jam_input')->default(DB::raw('CURRENT_TIME')); 
+            $table->timestamp('jam_input')->useCurrent();
             $table->string('kode_booking')->unique();
             $table->string('airlines');
             $table->string('nama');

@@ -78,7 +78,7 @@
                         </a>
                         <ul class="dropdown-menu dropdown-click-menu">
                             <li><a class="dropdown-item" href="{{ url('/pln/transaksi') }}">Transaksi</a></li>
-                            <li><a class="dropdown-item" href="{{ url('/pln/piutang') }}">Piutang</a></li>
+                            <li><a class="dropdown-item" href="{{ url('/piutang') }}">Piutang</a></li>
                         </ul>
                     </li>
 
@@ -95,7 +95,7 @@
                         <ul class="dropdown-menu dropdown-click-menu">
                             <li><a class="dropdown-item" href="{{ url('/admin/add-user') }}">Add User</a></li>
                             <li><a class="dropdown-item" href="{{ url('/admin/rekapan-penjualan') }}">Rekapan Penjualan</a></li>
-                            <li><a class="dropdown-item" href="{{ url('/admin/insentif') }}">Insentif</a></li>
+                            <li><a class="dropdown-item" href="{{ url('/insentif') }}">Insentif</a></li>
                             <li><a class="dropdown-item" href="{{ url('/admin/buku-bank') }}">Buku Bank</a></li>
                         </ul>
                     </li>
