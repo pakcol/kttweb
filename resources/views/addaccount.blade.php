@@ -1,20 +1,29 @@
-<x-layouts.app title="Add User - PT. Kupang Tour & Travel">
+<x-layouts.app title="Add Account - PT. Kupang Tour & Travel">
     <link rel="stylesheet" href="{{ asset('css/adduser.css') }}">
 
     <section class="adduser-section">
         <div class="form-card">
             <h2>Add User</h2>
-            <form id="addUserForm" method="POST" action="{{ route('adduser.store') }}">
+            <form id="addUserForm" method="POST" action="{{ route('addaccount.store') }}">
                 @csrf
 
                 <div class="input-group">
                     <label for="nama">Nama</label>
-                    <input type="text" id="nama" name="nama" placeholder="Masukkan nama user" required>
+                    <input type="text" id="nama" name="name" placeholder="Masukkan nama user" required>
                 </div>
 
                 <div class="input-group">
-                    <label for="userid">User ID</label>
-                    <input type="text" id="userid" name="userid" placeholder="Masukkan User ID" required>
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Masukkan Username" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="role">Role</label>
+                    <select id="role" name="role" required>
+                        <option value="">-- Pilih Role --</option>
+                        <option value="superuser">Super Admin</option>
+                        <option value="admin">Admin KTT</option>
+                    </select>
                 </div>
 
                 <div class="input-group">
@@ -22,14 +31,6 @@
                     <input type="password" id="password" name="password" placeholder="Masukkan password" required>
                 </div>
 
-                <div class="input-group">
-                    <label for="rules">Rules</label>
-                    <select id="rules" name="rules" required>
-                        <option value="">-- Pilih Rules --</option>
-                        <option value="Super Admin">Super Admin</option>
-                        <option value="Admin KTT">Admin KTT</option>
-                    </select>
-                </div>
 
                 <div class="button-group">
                     <button type="submit" class="btn-simpan">Simpan</button>
@@ -45,20 +46,20 @@
                     <tr>
                         <th>No</th>
                         <th>Nama</th>
-                        <th>User ID</th>
-                        <th>Rules</th>
+                        <th>Username</th>
+                        <th>Role</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($users as $index => $user)
+                    @forelse ($accounts as $index => $user)
                         <tr>
                             <td>{{ $index + 1 }}</td>
-                            <td>{{ $user->nama }}</td>
-                            <td>{{ $user->userid }}</td>
-                            <td>{{ $user->rules }}</td>
+                            <td>{{ $user->name }}</td>
+                            <td>{{ $user->username }}</td>
+                            <td>{{ $user->role }}</td>
                             <td>
-                                <form action="{{ route('adduser.destroy', $user->id) }}" method="POST">
+                                <form action="{{ route('addaccount.destroy', $user->id) }}" method="POST">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn-delete">Hapus</button>

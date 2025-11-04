@@ -7,8 +7,7 @@ use App\Http\Controllers\TiketController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\TutupKasController;
 use App\Http\Controllers\PiutangController;
-use App\Http\Controllers\EviController; 
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\EviController;
 use App\Http\Controllers\BiayaController;
 use App\Http\Controllers\PlnController;
 
@@ -83,9 +82,9 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // ======== ADD USER ========
-Route::get('/adduser', [UserController::class, 'index'])->name('adduser.index');
-Route::post('/adduser', [UserController::class, 'store'])->name('adduser.store');
-Route::delete('/adduser/{id}', [UserController::class, 'destroy'])->name('adduser.destroy');
+Route::get('/addaccount', [AccountController::class, 'index'])->name('addaccount.index');
+Route::post('/addaccount', [AccountController::class, 'store'])->name('addaccount.store');
+Route::delete('/addaccount/{id}', [AccountController::class, 'destroy'])->name('addaccount.destroy');
 
 Route::get('/biaya', [BiayaController::class, 'index'])->name('biaya.index');
 Route::post('/biaya', [BiayaController::class, 'store'])->name('biaya.store');
