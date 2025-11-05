@@ -1,0 +1,160 @@
+.pln-piutang-container {
+    width: 100%;
+    min-height: 100vh;
+    background: #ffffff;
+    padding: 100px 0 60px; 
+    font-family: 'Poppins', sans-serif;
+}
+
+.piutang-form {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background: url('../images/hero_4.png') no-repeat center center / cover;
+    margin: 0 auto;
+    padding: 30px 40px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 1100px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-left {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    row-gap: 14px;
+    column-gap: 16px;
+    flex: 1;
+}
+
+.form-left label {
+    font-weight: 600;
+    color: #2c3e50; 
+    font-size: 14px;
+    text-shadow: none; 
+}
+
+.form-left input,
+.form-left select {
+    padding: 8px 12px;
+    border: 1px solid #ccc; 
+    border-radius: 8px;
+    background: #fff; 
+    font-size: 14px;
+    color: #333;
+    transition: 0.2s ease-in-out;
+}
+
+.form-left input:focus,
+.form-left select:focus {
+    background: #fff;
+    border-color: #06c167; 
+    box-shadow: 0 0 0 2px rgba(6, 193, 103, 0.2);
+    outline: none;
+}
+
+.form-right {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    width: 180px;
+}
+
+#updateBtn {
+    background: linear-gradient(135deg, #06c167, #04a85a);
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 10px 24px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+#updateBtn:hover {
+    background: linear-gradient(135deg, #04a85a, #03864c);
+    transform: translateY(-2px);
+}
+
+.table-section {
+    margin: 40px auto 0;
+    width: 92%;
+    background: url('../images/hero_4.png') no-repeat center center / cover;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    overflow-x: auto;
+}
+
+#piutangTable {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#piutangTable thead {
+    background: #009879;
+    color: #fff;
+}
+
+#piutangTable th {
+    padding: 10px 12px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: capitalize;
+    border-right: 1px solid #fff;
+}
+
+#piutangTable th:last-child {
+    border-right: none;
+}
+
+#piutangTable td {
+    padding: 10px 12px;
+    text-align: center;
+    font-size: 13px;
+    color: #333;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+#piutangTable tr:nth-child(even) {
+    background-color: #f3f9f7;
+}
+
+#piutangTable tr:hover {
+    background-color: #e6f7ef;
+    transition: background 0.2s;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .piutang-form {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 20px;
+    }
+
+    .form-left {
+        grid-template-columns: 1fr;
+    }
+
+    .form-right {
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    #updateBtn {
+        width: 100%;
+    }
+
+    #piutangTable th,
+    #piutangTable td {
+        font-size: 12px;
+        padding: 8px;
+    }
+}

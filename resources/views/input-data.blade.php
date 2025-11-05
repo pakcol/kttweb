@@ -247,7 +247,6 @@ function updateDateTime() {
 setInterval(updateDateTime, 1000);
 updateDateTime();
 
-// Klik satu kali isi form & update tombol
 let selectedRow = null;
 document.querySelectorAll('#tiketTable tbody tr').forEach(row => {
     row.addEventListener('click', function(e) {
@@ -280,7 +279,6 @@ document.querySelectorAll('#tiketTable tbody tr').forEach(row => {
         }
     });
 
-    // Hapus klik 2x row (fallback)
     row.addEventListener('dblclick', function() {
         const id = this.dataset.id;
         if(confirm('Apakah yakin ingin menghapus data ini?')) {

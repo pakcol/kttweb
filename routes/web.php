@@ -10,6 +10,10 @@ use App\Http\Controllers\PiutangController;
 use App\Http\Controllers\EviController;
 use App\Http\Controllers\BiayaController;
 use App\Http\Controllers\PlnController;
+use App\Http\Controllers\FindController;
+use App\Http\Controllers\MutasiController;
+use App\Http\Controllers\PlnPiutangController;
+use App\Http\Controllers\BukuBankController; 
 
 Route::get('/', function () {
     if (auth()->check()) {
@@ -24,18 +28,26 @@ Route::middleware(['guest'])->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    
+
+    // ======== DASHBOARD ========
     Route::get('/homeDb', function () {
         return view('homeDb');
     })->name('homeDb');
 
-        // ======== HALAMAN ========
+    // ======== HALAMAN TAMBAHAN ========
     Route::view('/sub-agent', 'sub-agent')->name('sub-agent');
     Route::view('/pln', 'pln')->name('pln');
     Route::view('/admin', 'admin')->name('admin');
     Route::view('/cash-flow', 'cash-flow')->name('cash-flow');
     Route::view('/rekapPenjualan', 'recapPenjualan')->name('rekapPenjualan');
     Route::view('/insentif', 'insentif')->name('insentif');
+
+    // ======== 🔹 BUKU BANK CONTROLLER ========
+    Route::prefix('admin')->group(function () {
+        Route::get('/buku-bank', [BukuBankController::class, 'index'])->name('buku-bank.index');
+        Route::post('/buku-bank', [BukuBankController::class, 'store'])->name('buku-bank.store');
+        Route::get('/buku-bank/search', [BukuBankController::class, 'search'])->name('buku-bank.search');
+    });
 
     // ======== PIUTANG CONTROLLER ======== 
     Route::get('/piutang', [PiutangController::class, 'index'])->name('piutang.index');
@@ -62,7 +74,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{id}', [InputDataController::class, 'destroy'])->name('destroy');
     });
 
-    // ======== TUTUP KAS (HALAMAN + FUNGSI SIMPAN) ========
+    // ======== TUTUP KAS ========
     Route::get('/tutup-kas', [TutupKasController::class, 'index'])->name('tutup-kas');
     Route::post('/tutup-kas', [TutupKasController::class, 'store'])->name('tutup-kas.store');
     Route::view('/tutupKas', 'tutup-kas')->name('tutupKas');
@@ -70,27 +82,42 @@ Route::middleware(['auth'])->group(function () {
 
     // ======== EVI CONTROLLER ======== 
     Route::prefix('evi')->name('evi.')->group(function () {
-    Route::get('/', [EviController::class, 'index'])->name('index');
-    Route::post('/store', [EviController::class, 'store'])->name('store');
-    Route::get('/search', [EviController::class, 'search'])->name('search');
-    Route::get('/{id}', [EviController::class, 'show'])->name('show');
-    Route::put('/{id}', [EviController::class, 'update'])->name('update');
-    Route::delete('/{id}', [EviController::class, 'destroy'])->name('destroy');
+        Route::get('/', [EviController::class, 'index'])->name('index');
+        Route::post('/store', [EviController::class, 'store'])->name('store');
+        Route::get('/search', [EviController::class, 'search'])->name('search');
+        Route::get('/{id}', [EviController::class, 'show'])->name('show');
+        Route::put('/{id}', [EviController::class, 'update'])->name('update');
+        Route::delete('/{id}', [EviController::class, 'destroy'])->name('destroy');
+        Route::get('/export', [EviController::class, 'exportExcel'])->name('export');
+    });
 
-    // Tambahkan baris ini untuk tombol EXPORT EXCEL
-    Route::get('/export', [EviController::class, 'exportExcel'])->name('export');
-});
+    // ======== BIAYA CONTROLLER ======== 
+    Route::get('/biaya', [BiayaController::class, 'index'])->name('biaya.index');
+    Route::post('/biaya', [BiayaController::class, 'store'])->name('biaya.store');
 
-// ======== ADD USER ========
-Route::get('/addaccount', [AccountController::class, 'index'])->name('addaccount.index');
-Route::post('/addaccount', [AccountController::class, 'store'])->name('addaccount.store');
-Route::delete('/addaccount/{id}', [AccountController::class, 'destroy'])->name('addaccount.destroy');
+    // ======== PLN CONTROLLER ======== 
+    Route::get('/pln', [PlnController::class, 'index'])->name('pln.index');
+    Route::post('/pln', [PlnController::class, 'store'])->name('pln.store');
 
-Route::get('/biaya', [BiayaController::class, 'index'])->name('biaya.index');
-Route::post('/biaya', [BiayaController::class, 'store'])->name('biaya.store');
+    Route::get('/plnPiutang', [PlnPiutangController::class, 'index'])->name('plnPiutang');
+    Route::get('/plnPiutang/{id}', [PlnPiutangController::class, 'show'])->name('plnPiutang.show');
 
-Route::get('/pln', [PlnController::class, 'index'])->name('pln.index');
-Route::post('/pln', [PlnController::class, 'store'])->name('pln.store');
+    // ======== FIND TICKET CONTROLLER ======== 
+    Route::prefix('find-ticket')->name('find.')->group(function () {
+        Route::get('/', [FindController::class, 'index'])->name('index');
+        Route::get('/search', [FindController::class, 'search'])->name('search');
+    });
+
+    // ======== MUTASI AIRLINES CONTROLLER ======== 
+    Route::prefix('mutasi-airlines')->name('mutasi-airlines.')->group(function () {
+        Route::get('/', [MutasiController::class, 'index'])->name('index');
+        Route::post('/store', [MutasiController::class, 'store'])->name('store');
+    });
+
+    // ======== ADD USER ======== 
+    Route::get('/addaccount', [AccountController::class, 'index'])->name('addaccount.index');
+    Route::post('/addaccount', [AccountController::class, 'store'])->name('addaccount.store');
+    Route::delete('/addaccount/{id}', [AccountController::class, 'destroy'])->name('addaccount.destroy');
 
     // ======== LOGOUT ========
     Route::post('/logout', [AccountController::class, 'logout'])->name('logout');
