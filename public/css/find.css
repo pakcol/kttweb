@@ -1,6 +1,6 @@
 body {
     font-family: "Poppins", sans-serif;
-    background: linear-gradient(to bottom, #c9e4ff, #f3f9ff);
+    background: linear-gradient(90deg, #0f4d4d 0%, #b8d3d6 100%);
     display: flex;
     justify-content: center;
     align-items: flex-start;

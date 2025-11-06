@@ -131,7 +131,6 @@
     </div>
 </section>
 
-<!-- Tabel Data Tiket -->
 <div class="table-card">
     <h3>Data Tiket</h3>
     <table id="tiketTable">
@@ -210,7 +209,6 @@
 }
 </style>
 
-<!-- Modal Konfirmasi Delete -->
 <div id="modalDelete" class="modal-cari">
     <div class="modal-content">
         <p>Are you sure want to <br><b>Delete this Line?</b></p>
@@ -294,7 +292,6 @@ document.getElementById('btnBatal').addEventListener('click', function() {
     document.querySelectorAll('#tiketTable tr').forEach(r => r.classList.remove('selected'));
 });
 
-// Cetak invoice multi-tiket
 document.getElementById('btnCetakInvoice').addEventListener('click', function() {
     const selected = Array.from(document.querySelectorAll('.check-row:checked')).map(cb => cb.value);
     if (selected.length === 0) {
@@ -306,7 +303,6 @@ document.getElementById('btnCetakInvoice').addEventListener('click', function() 
     }
 });
 
-// Checkbox untuk multi selection
 const checkAll = document.getElementById('checkAll');
 if (checkAll) {
     const checkboxes = document.querySelectorAll('.check-row');
@@ -315,7 +311,6 @@ if (checkAll) {
     });
 }
 
-// Modal Cari
 const modalCari = document.getElementById('modalCari');
 const btnCari = document.getElementById('btnCari');
 const btnCariOk = document.getElementById('btnCariOk');
@@ -365,28 +360,24 @@ btnCariOk.addEventListener('click', () => {
     }
 });
 
-// Modal Delete
 let deleteId = null;
 const modalDelete = document.getElementById('modalDelete');
 const btnYesDelete = document.getElementById('btnYesDelete');
 const btnNoDelete = document.getElementById('btnNoDelete');
 
-// Klik tombol delete
 document.querySelectorAll('.btn-delete').forEach(btn => {
     btn.addEventListener('click', function(e) {
-        e.stopPropagation(); // cegah select row
+        e.stopPropagation(); 
         deleteId = this.dataset.id;
         modalDelete.style.display = 'flex';
     });
 });
 
-// Klik NO
 btnNoDelete.addEventListener('click', () => {
     deleteId = null;
     modalDelete.style.display = 'none';
 });
 
-// Klik YES
 btnYesDelete.addEventListener('click', () => {
     if (!deleteId) return;
 
@@ -418,7 +409,6 @@ btnYesDelete.addEventListener('click', () => {
     });
 });
 
-// Fungsi isi form dari row
 function isiFormDariRow(row) {
     const data = Array.from(row.children).map(td => td.innerText);
     document.getElementById('tiketId').value = row.dataset.id;
