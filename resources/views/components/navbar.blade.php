@@ -46,7 +46,6 @@
                             <li><a class="dropdown-item" href="{{ url('/biaya') }}">Biaya</a></li>
                             <li><a class="dropdown-item" href="{{ url('/find-ticket') }}">Find Ticket</a></li>
                             <li><a class="dropdown-item" href="{{ url('/mutasi-airlines') }}">Mutasi Airlines</a></li>
-                            <li><a class="dropdown-item" href="{{ url('/data-airlines') }}">Data Airlines</a></li>
                             <li><a class="dropdown-item" href="{{ url('/cash-flow') }}">Cash Flow</a></li>
                         </ul>
                     </li>

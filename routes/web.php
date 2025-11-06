@@ -99,8 +99,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pln', [PlnController::class, 'index'])->name('pln.index');
     Route::post('/pln', [PlnController::class, 'store'])->name('pln.store');
 
-    Route::get('/plnPiutang', [PlnPiutangController::class, 'index'])->name('plnPiutang');
-    Route::get('/plnPiutang/{id}', [PlnPiutangController::class, 'show'])->name('plnPiutang.show');
+    //piutang pln
+    Route::get('/plnPiutang', [PlnController::class, 'indexPiutang'])->name('plnPiutang');
+    Route::get('/plnPiutang/{id}', [PlnController::class, 'showPiutang'])->name('plnPiutang.show');
 
     // ======== FIND TICKET CONTROLLER ======== 
     Route::prefix('find-ticket')->name('find.')->group(function () {
