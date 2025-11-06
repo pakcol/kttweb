@@ -12,8 +12,7 @@ body {
 .evi-section {
     width: 90%;
     max-width: 1300px;
-    margin-top: 120px; 
-    margin-bottom: 50px;
+    margin: 120px auto 50px;
 }
 
 .card-container {

@@ -38,16 +38,17 @@ body {
     z-index: 1;
 }
 
-.container .form-container,
-.container .inner-card,
-.container .content-card,
-.container form {
-    background: rgba(255, 255, 255, 0.6) !important;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1) !important;
-    border: 1px solid rgba(255, 255, 255, 0.4) !important;
-    border-radius: 14px;
-    padding: 20px;
+.container {
+    width: 95%;
+    max-width: 1400px;
+    background: linear-gradient(145deg, #0f4d4d, #116666); 
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    padding: 50px 60px;
+    margin: 80px auto 20px;
+    position: relative;
+    color: #111;
+    overflow: hidden;
 }
 
 label {

@@ -14,7 +14,7 @@ body {
 }
 
 .form-container {
-    background: url("../images/hero_4.png") center/cover no-repeat;
+    background: rgba(255, 255, 255, 0.7);
     border-radius: 20px;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
     padding: 40px 50px;
@@ -28,7 +28,6 @@ body {
     content: "";
     position: absolute;
     inset: 0;
-    background: rgba(255, 255, 255, 0.85);
     border-radius: 20px;
     z-index: 0;
 }

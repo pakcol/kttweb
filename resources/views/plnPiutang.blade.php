@@ -125,4 +125,22 @@ function updateData() {
 }
 </script>
 
+<style>
+.alert-dummy {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 15px;
+}
+.alert-dummy code {
+    background: #f9f2f4;
+    color: #c7254e;
+    padding: 2px 5px;
+    border-radius: 4px;
+}
+</style>
+
 </x-layouts.app>

@@ -14,6 +14,7 @@ use App\Http\Controllers\FindController;
 use App\Http\Controllers\MutasiController;
 use App\Http\Controllers\PlnPiutangController;
 use App\Http\Controllers\BukuBankController; 
+use App\Http\Controllers\RekapanController;
 
 Route::get('/', function () {
     if (auth()->check()) {
@@ -42,11 +43,13 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/rekapPenjualan', 'recapPenjualan')->name('rekapPenjualan');
     Route::view('/insentif', 'insentif')->name('insentif');
 
-    // ======== 🔹 BUKU BANK CONTROLLER ========
+    // ========  BUKU BANK CONTROLLER ========
     Route::prefix('admin')->group(function () {
         Route::get('/buku-bank', [BukuBankController::class, 'index'])->name('buku-bank.index');
         Route::post('/buku-bank', [BukuBankController::class, 'store'])->name('buku-bank.store');
         Route::get('/buku-bank/search', [BukuBankController::class, 'search'])->name('buku-bank.search');
+
+        Route::get('/rekapan-penjualan', [RekapanController::class, 'index'])->name('rekapan-penjualan.index');
     });
 
     // ======== PIUTANG CONTROLLER ======== 
