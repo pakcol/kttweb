@@ -14,13 +14,13 @@ class InputDataController extends Controller
     {
         $today = now()->format('Y-m-d');
 
-        $tikets = Tiket::whereDate('tglIssued', $today)
+        $ticket = Tiket::whereDate('tglIssued', $today)
             ->orWhereDate('tglRealisasi', $today)
             ->orderBy('tglIssued')
             ->orderBy('jam')
             ->get();
 
-        return view('input-data', compact('tikets'));
+        return view('input-data', compact('ticket'));
     }
 
     public function store(Request $request)
@@ -136,11 +136,11 @@ class InputDataController extends Controller
             return redirect()->route('input-data.index')->with('error', 'Karakter pencarian minimal 3 huruf!');
         }
 
-        $tikets = Tiket::where('kodeBooking', 'like', "%{$search}%")
+        $ticket = Tiket::where('kodeBooking', 'like', "%{$search}%")
             ->orWhere('nama', 'like', "%{$search}%")
             ->get();
 
-        return view('input-data', compact('tikets'));
+        return view('input-data', compact('ticket'));
     }
 
     public function getTiket($id)
@@ -152,8 +152,8 @@ class InputDataController extends Controller
     public function invoice(Request $request)
     {
         $ids = explode(',', $request->ids);
-        $tikets = Tiket::whereIn('id', $ids)->get();
+        $ticket = Tiket::whereIn('id', $ids)->get();
 
-        return view('invoice', compact('tikets'));
+        return view('invoice', compact('ticket'));
     }
 }
