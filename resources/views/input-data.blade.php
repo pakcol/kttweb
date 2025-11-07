@@ -165,27 +165,28 @@
         <td><input type="checkbox" class="check-row" value="{{ $t->id }}"></td>
         <td>{{ $index + 1 }}</td>
         <td>{{ \Carbon\Carbon::parse($t->tglIssued)->format('Y-m-d') }}</td>
-        <td>{{ \Carbon\Carbon::parse($t->jam)->format('H:i:s') }}</td>
+        <td>{{ \Carbon\Carbon::parse($t->jam_input)->format('H:i:s') }}</td>
         <td>{{ $t->kodeBooking }}</td>
         <td>{{ $t->airlines }}</td>
         <td>{{ $t->nama }}</td>
         <td>{{ $t->rute1 }}</td>
-        <td>{{ $t->tglFlight1 }}</td>
-        <td>{{ $t->rute2 }}</td>
-        <td>{{ $t->tglFlight2 }}</td>
-        <td>{{ number_format($t->harga, 0, ',', '.') }}</td>
-        <td>{{ number_format($t->nta, 0, ',', '.') }}</td>
-        <td>{{ number_format($t->diskon, 0, ',', '.') }}</td>
-        <td>{{ number_format($t->komisi, 0, ',', '.') }}</td>
-        <td>{{ $t->pembayaran }}</td>
-        <td>{{ $t->namaPiutang }}</td>
-        <td>{{ $t->tglRealisasi }}</td>
-        <td>{{ $t->jamRealisasi }}</td>
-        <td>{{ number_format($t->nilaiRefund, 0, ',', '.') }}</td>
-        <td>{{ $t->keterangan }}</td>
-        <td style="text-align:center;">
-            <button class="btn-delete" data-id="{{ $t->id }}">Delete</button>
-        </td>
+         <td>{{ \Carbon\Carbon::parse($t->tglFlight1)->format('Y-m-d') }}</td>
+                <td>{{ $t->rute2 }}</td>
+                <td>{{ $t->tglFlight2 ? \Carbon\Carbon::parse($t->tglFlight2)->format('Y-m-d') : '' }}</td>
+
+                <td>{{ number_format($t->harga, 0, ',', '.') }}</td>
+                <td>{{ number_format($t->nta, 0, ',', '.') }}</td>
+                <td>{{ number_format($t->diskon, 0, ',', '.') }}</td>
+                <td>{{ number_format($t->komisi, 0, ',', '.') }}</td>
+                <td>{{ $t->pembayaran }}</td>
+                <td>{{ $t->namaPiutang }}</td>
+                <td>{{ $t->tglRealisasi }}</td>
+                <td>{{ $t->jamRealisasi }}</td>
+                <td>{{ number_format($t->nilaiRefund, 0, ',', '.') }}</td>
+                <td>{{ $t->keterangan }}</td>
+                <td style="text-align:center;">
+                    <button class="btn-delete" data-id="{{ $t->id }}">Delete</button>
+                </td>
     </tr>
     @endforeach
 </tbody>
@@ -247,34 +248,35 @@ updateDateTime();
 let selectedRow = null;
 document.querySelectorAll('#tiketTable tbody tr').forEach(row => {
     row.addEventListener('click', function(e) {
-        if (!(e.target && e.target.classList.contains('btn-delete'))) {
-            document.querySelectorAll('#tiketTable tr').forEach(r => r.classList.remove('selected'));
-            this.classList.add('selected');
-            selectedRow = this;
+        if (e.target.classList.contains('btn-delete')) return;
 
-            const data = Array.from(this.children).map(td => td.innerText);
-            document.getElementById('tiketId').value = this.dataset.id;
-            document.getElementById('tgl_issued').value = data[2];
-            document.getElementById('kode_booking').value = data[4];
-            document.getElementById('airlines').value = data[5];
-            document.getElementById('nama').value = data[6];
-            document.getElementById('rute1').value = data[7];
-            document.getElementById('tgl_flight1').value = data[8];
-            document.getElementById('rute2').value = data[9];
-            document.getElementById('tgl_flight2').value = data[10];
-            document.getElementById('harga').value = parseFloat(data[11].replace(/\./g,'')) || 0;
-            document.getElementById('nta').value = parseFloat(data[12].replace(/\./g,'')) || 0;
-            document.getElementById('diskon').value = parseFloat(data[13].replace(/\./g,'')) || 0;
-            document.getElementById('pembayaran').value = data[15];
-            document.getElementById('nama_piutang').value = data[16];
-            document.getElementById('tgl_realisasi').value = data[17];
-            document.getElementById('jam_realisasi').value = data[18];
-            document.getElementById('nilai_refund').value = parseFloat(data[19].replace(/\./g,'')) || 0;
-            document.getElementById('keterangan').value = data[20];
+        document.querySelectorAll('#tiketTable tr').forEach(r => r.classList.remove('selected'));
+        this.classList.add('selected');
 
-            document.getElementById('btnInputData').textContent = 'UPDATE';
-        }
+        const data = Array.from(this.children).map(td => td.innerText);
+        document.getElementById('tiketId').value = this.dataset.id;
+        document.getElementById('tglIssued').value = data[2];
+        document.getElementById('kodeBooking').value = data[4];
+        document.getElementById('airlines').value = data[5];
+        document.getElementById('nama').value = data[6];
+        document.getElementById('rute1').value = data[7];
+        document.getElementById('tglFlight1').value = data[8];
+        document.getElementById('rute2').value = data[9];
+        document.getElementById('tglFlight2').value = data[10];
+        document.getElementById('harga').value = parseFloat(data[11].replace(/\./g,'')) || 0;
+        document.getElementById('nta').value = parseFloat(data[12].replace(/\./g,'')) || 0;
+        document.getElementById('diskon').value = parseFloat(data[13].replace(/\./g,'')) || 0;
+        document.getElementById('komisi').value = parseFloat(data[14].replace(/\./g,'')) || 0;
+        document.getElementById('pembayaran').value = data[15];
+        document.getElementById('namaPiutang').value = data[16];
+        document.getElementById('tglRealisasi').value = data[17];
+        document.getElementById('jamRealisasi').value = data[18];
+        document.getElementById('nilaiRefund').value = parseFloat(data[19].replace(/\./g,'')) || 0;
+        document.getElementById('keterangan').value = data[20];
+
+        document.getElementById('btnInputData').textContent = 'UPDATE';
     });
+
 
     row.addEventListener('dblclick', function() {
         const id = this.dataset.id;
