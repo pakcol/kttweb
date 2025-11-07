@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('jam', 10);
             $table->string('kodeBooking', 10);
             $table->string('airlines', 20);
-            $table->string('nama', 20);
+            $table->string('nama', 100);
             $table->string('rute1', 45);
             $table->dateTime('tglFlight1');
             $table->string('rute2', 45)->nullable();

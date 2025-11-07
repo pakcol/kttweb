@@ -164,24 +164,24 @@
     <tr data-id="{{ $t->id }}">
         <td><input type="checkbox" class="check-row" value="{{ $t->id }}"></td>
         <td>{{ $index + 1 }}</td>
-        <td>{{ \Carbon\Carbon::parse($t->tgl_issued)->format('Y-m-d') }}</td>
-        <td>{{ \Carbon\Carbon::parse($t->jam_input)->format('H:i:s') }}</td>
-        <td>{{ $t->kode_booking }}</td>
+        <td>{{ \Carbon\Carbon::parse($t->tglIssued)->format('Y-m-d') }}</td>
+        <td>{{ \Carbon\Carbon::parse($t->jam)->format('H:i:s') }}</td>
+        <td>{{ $t->kodeBooking }}</td>
         <td>{{ $t->airlines }}</td>
         <td>{{ $t->nama }}</td>
         <td>{{ $t->rute1 }}</td>
-        <td>{{ $t->tgl_flight1 }}</td>
+        <td>{{ $t->tglFlight1 }}</td>
         <td>{{ $t->rute2 }}</td>
-        <td>{{ $t->tgl_flight2 }}</td>
+        <td>{{ $t->tglFlight2 }}</td>
         <td>{{ number_format($t->harga, 0, ',', '.') }}</td>
         <td>{{ number_format($t->nta, 0, ',', '.') }}</td>
         <td>{{ number_format($t->diskon, 0, ',', '.') }}</td>
         <td>{{ number_format($t->komisi, 0, ',', '.') }}</td>
         <td>{{ $t->pembayaran }}</td>
-        <td>{{ $t->nama_piutang }}</td>
-        <td>{{ $t->tgl_realisasi }}</td>
-        <td>{{ $t->jam_realisasi }}</td>
-        <td>{{ number_format($t->nilai_refund, 0, ',', '.') }}</td>
+        <td>{{ $t->namaPiutang }}</td>
+        <td>{{ $t->tglRealisasi }}</td>
+        <td>{{ $t->jamRealisasi }}</td>
+        <td>{{ number_format($t->nilaiRefund, 0, ',', '.') }}</td>
         <td>{{ $t->keterangan }}</td>
         <td style="text-align:center;">
             <button class="btn-delete" data-id="{{ $t->id }}">Delete</button>
