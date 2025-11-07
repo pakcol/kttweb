@@ -38,10 +38,10 @@ class InputDataController extends Controller
             'pembayaran'   => 'required|string',
         ]);
 
-        // Ubah ke uppercase
+
         $kodeBookingInput = strtoupper($request->kodeBooking ?? $request->kode_booking);
 
-        // === CEK DUPLIKASI KODE BOOKING ===
+        
         if (empty($request->tiket_id)) {
             $exists = Tiket::where('kodeBooking', $kodeBookingInput)->exists();
             if ($exists) {
@@ -60,11 +60,11 @@ class InputDataController extends Controller
             }
         }
 
-        // === HITUNGAN KOMISI & JAM ===
+
         $komisi = ($request->harga ?? 0) - ($request->nta ?? 0) - ($request->diskon ?? 0);
         $jam = Carbon::now()->format('H:i');
 
-        // === JAM REALISASI OPSIONAL ===
+
         $jamRealisasi = null;
         if (!empty($request->tglRealisasi) && !empty($request->jamRealisasi)) {
             $jamRealisasi = is_string($request->jamRealisasi)
@@ -72,7 +72,7 @@ class InputDataController extends Controller
                 : Carbon::parse($request->tglRealisasi)->format('H:i');
         }
 
-        // === SIMPAN / UPDATE DATA TIKET ===
+
         $tiket = Tiket::updateOrCreate(
             ['id' => $request->tiket_id],
             [
@@ -99,7 +99,7 @@ class InputDataController extends Controller
             ]
         );
 
-        // === INPUT KE TABEL BANK JIKA PEMBAYARAN VIA BANK ===
+
         $banks = ['BCA', 'BTN', 'BNI', 'MANDIRI', 'BRI'];
         if (in_array(strtoupper($request->pembayaran), $banks)) {
             Bank::updateOrCreate(
@@ -111,7 +111,7 @@ class InputDataController extends Controller
             );
         }
 
-        // === PESAN SUCCESS ===
+
         $msg = $request->tiket_id ? 'Data berhasil diperbarui!' : 'Data berhasil disimpan!';
         return redirect()->route('input-data.index')->with('success', $msg);
     }
