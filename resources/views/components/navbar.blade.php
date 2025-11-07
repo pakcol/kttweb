@@ -81,7 +81,8 @@
                         </ul>
                     </li>
 
-                    <!-- Admin Dropdown -->
+                    <!-- Admin Dropdown - Hanya untuk Superuser -->
+                    @if(auth()->check() && auth()->user()->roles === 'superuser')
                     <li class="nav-item dropdown" id="adminDropdown">
                         <a class="nav-link fw-medium dropdown-toggle {{ request()->is('admin') ? 'text-primary fw-semibold' : 'text-dark' }}" 
                            href="#" 
@@ -98,6 +99,7 @@
                             <li><a class="dropdown-item" href="{{ url('/admin/buku-bank') }}">Buku Bank</a></li>
                         </ul>
                     </li>
+                    @endif
 
                     {{-- Dropdown user --}}
                     <li>

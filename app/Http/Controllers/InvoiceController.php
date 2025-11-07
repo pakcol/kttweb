@@ -10,7 +10,7 @@ class InvoiceController extends Controller
 {
     public function showSingle($id)
     {
-        $tiket = DB::table('tikets')->where('id', $id)->first();
+        $tiket = DB::table('ticket')->where('id', $id)->first();
 
         if (!$tiket) {
             return redirect()->back()->with('error', 'Data tidak ditemukan!');
@@ -49,7 +49,7 @@ class InvoiceController extends Controller
         }
 
         $idsArray = array_map('intval', explode(',', $ids));
-        $tikets = DB::table('tikets')->whereIn('id', $idsArray)->get();
+        $tikets = DB::table('ticket')->whereIn('id', $idsArray)->get();
 
         if ($tikets->isEmpty()) {
             return redirect()->back()->with('error', 'Data tidak ditemukan!');
@@ -84,7 +84,7 @@ class InvoiceController extends Controller
         ]);
 
         // Ambil tiket berdasarkan ID (karena belum ada tabel invoices)
-        $tiket = DB::table('tikets')->where('id', $id)->first();
+        $tiket = DB::table('ticket')->where('id', $id)->first();
 
         if (!$tiket) {
             return redirect()->back()->with('error', 'Data tiket tidak ditemukan!');

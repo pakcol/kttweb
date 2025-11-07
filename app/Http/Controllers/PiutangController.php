@@ -20,17 +20,19 @@ class PiutangController extends Controller
     public function store(Request $request)
     {
         $v = Validator::make($request->all(), [
-            'TGL_ISSUED' => 'required|date',
-            'JAM' => 'nullable|string',
-            'KODEBOKING' => 'nullable|string',
-            'AIRLINES' => 'nullable|string',
-            'NAMA' => 'nullable|string',
-            'RUTE1' => 'nullable|string',
-            'TGL_FLIGHT1' => 'nullable|date',
-            'RUTE2' => 'nullable|string',
-            'TGL_FLIGHT2' => 'nullable|date',
-            'HARGA' => 'nullable|numeric',
-            'KETERANGAN' => 'nullable|string',
+            'tgl' => 'required|date',
+            'topup' => 'nullable|integer',
+            'jam' => 'nullable',
+            'kodeBooking' => 'nullable|string|max:45',
+            'airlines' => 'nullable|string|max:45',
+            'nama' => 'nullable|string|max:45',
+            'rute1' => 'nullable|string|max:45',
+            'tglFlight1' => 'nullable|date',
+            'rute2' => 'nullable|string|max:45',
+            'tglFlight2' => 'nullable|date',
+            'harga' => 'nullable|integer',
+            'nta' => 'nullable|integer',
+            'keterangan' => 'nullable|string|max:300',
         ]);
 
         if ($v->fails()) {
@@ -38,18 +40,19 @@ class PiutangController extends Controller
         }
 
         $last = Evi::orderBy('id', 'desc')->first();
-        $lastSaldo = $last ? floatval($last->SALDO) : 0.0;
+        $lastSaldo = $last ? (int)$last->saldo : 0;
 
-        $topUp = $request->input('TOP_UP') ? floatval($request->input('TOP_UP')) : 0.0;
+        $topUp = $request->input('topup') ? (int)$request->input('topup') : 0;
         $newSaldo = $lastSaldo + $topUp;
 
         $data = $request->only([
-            'TGL_ISSUED','JAM','KODEBOKING','AIRLINES','NAMA','RUTE1','TGL_FLIGHT1',
-            'RUTE2','TGL_FLIGHT2','HARGA','NTA','TOP_UP','KETERANGAN','USR'
+            'tgl', 'jam', 'kodeBooking', 'airlines', 'nama', 'rute1', 'tglFlight1',
+            'rute2', 'tglFlight2', 'harga', 'nta', 'keterangan'
         ]);
 
-        $data['TOP_UP'] = $topUp;
-        $data['SALDO'] = $newSaldo;
+        $data['topup'] = $topUp;
+        $data['saldo'] = $newSaldo;
+        $data['username'] = auth()->user()->username ?? auth()->user()->name;
 
         $evi = Evi::create($data);
 

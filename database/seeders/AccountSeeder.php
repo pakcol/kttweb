@@ -12,18 +12,18 @@ class AccountSeeder extends Seeder
     {
         // Superuser default
         Account::create([
-            'name' => 'Super Admin',
             'username' => 'superuser',
-            'role' => 'superuser',
+            'name' => 'Super Admin',
             'password' => Hash::make('super123'), // ganti dengan password yang aman
+            'roles' => 'superuser',
         ]);
 
         // Admin default
         Account::create([
-            'name' => 'Admin KTT',
             'username' => 'admin',
-            'role' => 'admin',
+            'name' => 'Admin KTT',
             'password' => Hash::make('admin123'), // ganti sesuai kebutuhan
+            'roles' => 'admin',
         ]);
     }
 }

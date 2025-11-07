@@ -8,21 +8,22 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('evi', function (Blueprint $table) {
             $table->id();
-            $table->date('TGL_ISSUED');
-            $table->string('JAM');
-            $table->string('KODEBOKING');
-            $table->string('AIRLINES');
-            $table->string('NAMA');
-            $table->string('RUTE1')->nullable();
-            $table->date('TGL_FLIGHT1')->nullable();
-            $table->string('RUTE2')->nullable();
-            $table->date('TGL_FLIGHT2')->nullable();
-            $table->decimal('HARGA', 15, 2)->nullable();
-            $table->decimal('NTA', 15, 2)->nullable();
-            $table->decimal('TOP_UP', 15, 2)->nullable();
-            $table->decimal('SALDO', 15, 2)->nullable();
-            $table->string('KETERANGAN')->nullable();
-            $table->string('USR')->nullable();
+            $table->dateTime('tgl');
+            $table->timestamp('jam')->nullable();
+            $table->string('kodeBooking', 45);
+            $table->string('airlines', 45);
+            $table->string('nama', 45);
+            $table->string('rute1', 45)->nullable();
+            $table->dateTime('tglFlight1')->nullable();
+            $table->string('rute2', 45)->nullable();
+            $table->dateTime('tglFlight2')->nullable();
+            $table->integer('harga')->nullable();
+            $table->integer('nta')->nullable();
+            $table->integer('topup')->nullable();
+            $table->integer('saldo')->nullable();
+            $table->string('keterangan', 300)->nullable();
+            $table->string('username', 45);
+            $table->foreign('username')->references('username')->on('accounts')->onDelete('cascade');
             $table->timestamps();
         });
     }

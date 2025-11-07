@@ -48,17 +48,22 @@ class PlnController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'no_pel' => 'required|string|max:255',
-            'pulsa' => 'nullable|string',
-            'nta' => 'nullable|string',
-            'tgl' => 'nullable|date',
-            'bayar' => 'required|string',
+            'tgl' => 'required|date',
+            'id_pel' => 'required|integer',
+            'harga_jual' => 'required|integer',
+            'transaksi' => 'nullable|integer',
+            'bayar' => 'required|string|max:45',
             'nama_piutang' => 'nullable|string',
+            'top_up' => 'nullable|integer',
+            'insentif' => 'nullable|integer',
+            'saldo' => 'nullable|integer',
+            'tgl_reralisasi' => 'nullable|date',
+            'jam_realisasi' => 'nullable',
         ]);
 
-        if (Schema::hasTable('pln')) {
-            Pln::create($validated);
-        }
+        $validated['username'] = auth()->user()->username ?? auth()->user()->name;
+
+        Pln::create($validated);
 
         return redirect()->route('pln.index')->with('success', 'Data PLN berhasil disimpan!');
     }

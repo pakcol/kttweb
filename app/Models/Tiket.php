@@ -9,40 +9,45 @@ class Tiket extends Model
 {
     use HasFactory;
 
+    protected $table = 'ticket';
+
     protected $fillable = [
-        'tgl_issued',
-        'jam_input',
-        'kode_booking',
+        'tglIssued',
+        'jam',
+        'kodeBooking',
         'airlines',
         'nama',
         'rute1',
-        'tgl_flight1',
+        'tglFlight1',
         'rute2',
-        'tgl_flight2',
+        'tglFlight2',
         'harga',
         'nta',
         'diskon',
         'komisi',
         'pembayaran',
-        'nama_piutang',
-        'tgl_realisasi',
-        'jam_realisasi',
-        'nilai_refund',
+        'namaPiutang',
+        'tglRealisasi',
+        'jamRealisasi',
+        'nilaiRefund',
         'keterangan',
-        'usr'
+        'username'
     ];
 
     protected $casts = [
-        'tgl_issued' => 'date',
-        'tgl_flight1' => 'date',
-        'tgl_flight2' => 'date',
-        'tgl_realisasi' => 'date',
-        'harga' => 'decimal:2',
-        'nta' => 'decimal:2',
-        'diskon' => 'decimal:2',
-        'komisi' => 'decimal:2',
-        'nilai_refund' => 'decimal:2',
-        'jam_input' => 'datetime:H:i',
-        'jam_realisasi' => 'datetime:H:i',
+        'tglIssued' => 'datetime',
+        'tglFlight1' => 'datetime',
+        'tglFlight2' => 'datetime',
+        'tglRealisasi' => 'datetime',
+        'harga' => 'integer',
+        'nta' => 'integer',
+        'diskon' => 'integer',
+        'komisi' => 'integer',
+        'nilaiRefund' => 'integer',
     ];
+
+    public function account()
+    {
+        return $this->belongsTo(Account::class, 'username', 'username');
+    }
 }

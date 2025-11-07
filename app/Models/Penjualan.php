@@ -10,14 +10,61 @@ class Penjualan extends Model
     use HasFactory;
 
     protected $table = 'penjualan';
-    protected $primaryKey = 'ID';
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
-        'TANGGAL','JAM','TTL_PENJUALAN','TU_EVI','PIUTANG','REFUND',
-        'STR_BCA','STR_BNI','STR_MDR','STR_BRI','TRF_BCA','TRF_BNI','TRF_MDR','TRF_BRI','TRF_BTN',
-        'BIAYA','CASH_FLOW','SOEVI','SOCITILINK','SOGARUDA','SOLION','SOPELNI','SODLU','SOQGCORNER',
-        'SOSRIWIJAYA','SOTRANSNUSA','SOAIRASIA','TUCITILINK','TUGARUDA','TULION','TUPELNI','TUDLU',
-        'TUQGCORNER','TUSRIWIJAYA','TUTRANSNUSA','TUAIRASIA','PLN','SALDOPLN','USR'
+        'tanggal',
+        'jam',
+        'TTL_PENJUALAN',
+        'TU_EVI',
+        'PIUTANG',
+        'REFUND',
+        'STR_BCA',
+        'STR_BNI',
+        'STR_MDR',
+        'STR_BRI',
+        'TRF_BCA',
+        'TRF_BNI',
+        'TRF_MDR',
+        'TRF_BRI',
+        'TRF_BTN',
+        'BIAYA',
+        'CASH_FLOW',
+        'SOEVI',
+        'SOCITILINK',
+        'SOGARUDA',
+        'SOLION',
+        'SOPELNI',
+        'SODLU',
+        'SOQGCORNER',
+        'SOSRIWIJAYA',
+        'SOTRANSNUSA',
+        'SOAIRASIA',
+        'TUCITILINK',
+        'TUGARUDA',
+        'TULION',
+        'TUPELNI',
+        'TUDLU',
+        'TUQGCORNER',
+        'TUSRIWIJAYA',
+        'TUTRANSNUSA',
+        'TUAIRASIA',
+        'PLN',
+        'SALDOPLN',
+        'username'
     ];
+
+    protected $casts = [
+        'tanggal' => 'datetime',
+        'jam' => 'datetime',
+        'TTL_PENJUALAN' => 'decimal:2',
+        'TU_EVI' => 'decimal:2',
+        'PIUTANG' => 'decimal:2',
+        'REFUND' => 'decimal:2',
+    ];
+
+    public function account()
+    {
+        return $this->belongsTo(Account::class, 'username', 'username');
+    }
 }

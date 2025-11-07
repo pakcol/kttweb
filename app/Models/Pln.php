@@ -13,26 +13,38 @@ class Pln extends Model
     protected $table = 'pln';
 
     protected $fillable = [
-        'no_pel',
-        'pulsa',
-        'nta',
         'tgl',
-        'bayar',
-        'nama_piutang',
-        'tanggal',
-        'jam',
         'id_pel',
         'harga_jual',
         'transaksi',
+        'bayar',
+        'nama_piutang',
         'top_up',
         'insentif',
         'saldo',
-        'usr',
-        'tgl_realisasi',
-        'jam_realisasi'
+        'tgl_reralisasi',
+        'jam_realisasi',
+        'username'
     ];
 
     public $timestamps = false;
+
+    protected $casts = [
+        'tgl' => 'datetime',
+        'tgl_reralisasi' => 'datetime',
+        'jam_realisasi' => 'datetime',
+        'id_pel' => 'integer',
+        'harga_jual' => 'integer',
+        'transaksi' => 'integer',
+        'top_up' => 'integer',
+        'insentif' => 'integer',
+        'saldo' => 'integer',
+    ];
+
+    public function account()
+    {
+        return $this->belongsTo(Account::class, 'username', 'username');
+    }
 
     // 🔽 Tambahkan scope untuk filter piutang
     public function scopePiutang(Builder $query)

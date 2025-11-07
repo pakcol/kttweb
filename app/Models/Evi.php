@@ -12,31 +12,36 @@ class Evi extends Model
     protected $table = 'evi';
 
     protected $fillable = [
-        'TGL_ISSUED',
-        'JAM',
-        'KODEBOKING',
-        'AIRLINES',
-        'NAMA',
-        'RUTE1',
-        'TGL_FLIGHT1',
-        'RUTE2',
-        'TGL_FLIGHT2',
-        'HARGA',
-        'NTA',
-        'TOP_UP',
-        'SALDO',
-        'KETERANGAN',
-        'USR'
+        'tgl',
+        'jam',
+        'kodeBooking',
+        'airlines',
+        'nama',
+        'rute1',
+        'tglFlight1',
+        'rute2',
+        'tglFlight2',
+        'harga',
+        'nta',
+        'topup',
+        'saldo',
+        'keterangan',
+        'username'
     ];
-
 
     protected $casts = [
-        'TGL_ISSUED' => 'date',
-        'TGL_FLIGHT1' => 'date',
-        'TGL_FLIGHT2' => 'date',
-        'HARGA' => 'decimal:2',
-        'NTA' => 'decimal:2',
-        'TOP_UP' => 'decimal:2',
-        'SALDO' => 'decimal:2',
+        'tgl' => 'datetime',
+        'jam' => 'datetime',
+        'tglFlight1' => 'datetime',
+        'tglFlight2' => 'datetime',
+        'harga' => 'integer',
+        'nta' => 'integer',
+        'topup' => 'integer',
+        'saldo' => 'integer',
     ];
+
+    public function account()
+    {
+        return $this->belongsTo(Account::class, 'username', 'username');
+    }
 }

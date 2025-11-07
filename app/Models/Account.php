@@ -12,12 +12,14 @@ class Account extends Authenticatable
     use Notifiable;
     
     protected $table = 'accounts';
-    protected $primaryKey = 'id';  
+    protected $primaryKey = 'username';
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $fillable = [
-        'name', 'username', 'role', 'password',
+        'username', 'name', 'password', 'roles',
     ];    
     protected $hidden = [
         'password',
     ];
-    public $timestamps = false; 
+    public $timestamps = true;
 }

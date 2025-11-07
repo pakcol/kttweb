@@ -9,17 +9,17 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('tikets', function (Blueprint $table) {
-            if (!Schema::hasColumn('tikets', 'jam_realisasi')) {
-                $table->time('jam_realisasi')->nullable()->after('tgl_realisasi');
+        Schema::table('ticket', function (Blueprint $table) {
+            if (!Schema::hasColumn('ticket', 'jamRealisasi')) {
+                $table->string('jamRealisasi', 10)->nullable()->after('tglRealisasi');
             }
         });
     }
 
     public function down(): void
     {
-        Schema::table('tikets', function (Blueprint $table) {
-            $table->dropColumn(['jam_realisasi']);
+        Schema::table('ticket', function (Blueprint $table) {
+            $table->dropColumn(['jamRealisasi']);
         });
     }
 };

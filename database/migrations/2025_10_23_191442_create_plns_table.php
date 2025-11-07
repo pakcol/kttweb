@@ -16,24 +16,21 @@ return new class extends Migration
             $table->integer('harga_jual')->nullable();
             $table->integer('transaksi')->nullable();
             $table->string('bayar', 45)->nullable();
-            $table->string('nama_piutang', 45)->nullable();
+            $table->string('nama_piutang')->nullable();
             $table->integer('top_up')->nullable();
             $table->integer('insentif')->nullable();
             $table->integer('saldo')->nullable();
-            $table->dateTime('tgl_realisasi')->nullable();
+            $table->dateTime('tgl_reralisasi')->nullable();
             $table->timestamp('jam_realisasi')->nullable();
             
-            // Sesuaikan dengan tipe data id di accounts
-            $table->unsignedBigInteger('account_id');
-            
-            // Foreign key constraint
-            $table->foreign('account_id')
-                  ->references('id')
+            $table->string('username', 45);
+            $table->foreign('username')
+                  ->references('username')
                   ->on('accounts')
-                  ->onDelete('no action')
-                  ->onUpdate('no action');
+                  ->onDelete('cascade')
+                  ->onUpdate('cascade');
                   
-            $table->index('account_id', 'fk_pln_accounts1_idx');
+            $table->index('username', 'fk_pln_accounts1_idx');
         });
     }
 

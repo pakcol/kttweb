@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('bank', function (Blueprint $table) {
     $table->id();
-    $table->foreignId('id_tiket')->constrained('tikets')->onDelete('cascade'); // pastikan ini ada
+    $table->foreignId('id_tiket')->constrained('ticket')->onDelete('cascade'); // pastikan ini ada
     $table->string('nama_bank');
     $table->decimal('total_harga', 15, 2);
     $table->timestamps();

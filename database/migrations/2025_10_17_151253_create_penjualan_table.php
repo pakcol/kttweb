@@ -8,8 +8,8 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('penjualan', function (Blueprint $table) {
             $table->id();
-            $table->date('TANGGAL');
-            $table->string('JAM');
+            $table->dateTime('tanggal');
+            $table->timestamp('jam')->nullable();
             $table->decimal('TTL_PENJUALAN', 15, 2)->nullable();
             $table->decimal('TU_EVI', 15, 2)->nullable();
             $table->decimal('PIUTANG', 15, 2)->nullable();
@@ -46,7 +46,8 @@ return new class extends Migration {
             $table->decimal('TUAIRASIA', 15, 2)->nullable();
             $table->decimal('PLN', 15, 2)->nullable();
             $table->decimal('SALDOPLN', 15, 2)->nullable();
-            $table->string('USR')->nullable();
+            $table->string('username', 45)->nullable();
+            $table->foreign('username')->references('username')->on('accounts')->onDelete('cascade');
             $table->timestamps();
         });
     }

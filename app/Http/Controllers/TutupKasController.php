@@ -13,7 +13,7 @@ class TutupKasController extends Controller
         $data = null;
 
         if ($tanggal) {
-            $data = Penjualan::whereDate('TANGGAL', $tanggal)->first();
+            $data = Penjualan::whereDate('tanggal', $tanggal)->first();
         }
 
         return view('tutup-kas', compact('data'));
@@ -26,8 +26,8 @@ class TutupKasController extends Controller
         ]);
 
         $penjualan = new Penjualan();
-        $penjualan->TANGGAL = now()->format('Y-m-d');
-        $penjualan->JAM = now()->format('H:i');
+        $penjualan->tanggal = now();
+        $penjualan->jam = now();
 
         // ===== PENJUALAN =====
         $penjualan->TTL_PENJUALAN = $request->TTL_PENJUALAN ?? 0;
@@ -78,8 +78,8 @@ class TutupKasController extends Controller
         $penjualan->PLN = $request->PLN ?? 0;
         $penjualan->SALDOPLN = $request->SALDOPLN ?? 0;
 
-        // ===== USR =====
-        $penjualan->USR = auth()->user()->name ?? 'Super Admin';
+        // ===== USERNAME =====
+        $penjualan->username = auth()->user()->username ?? auth()->user()->name ?? 'Super Admin';
 
         $penjualan->save();
 
@@ -89,7 +89,7 @@ class TutupKasController extends Controller
     public function search(Request $request)
     {
         $tanggal = $request->input('tanggal');
-        $data = Penjualan::whereDate('TANGGAL', $tanggal)->first();
+        $data = Penjualan::whereDate('tanggal', $tanggal)->first();
 
         if (!$data) {
             return redirect()->route('tutup-kas')->with('error', 'Data untuk tanggal tersebut tidak ditemukan.');

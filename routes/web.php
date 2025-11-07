@@ -38,13 +38,11 @@ Route::middleware(['auth'])->group(function () {
     // ======== HALAMAN TAMBAHAN ========
     Route::view('/sub-agent', 'sub-agent')->name('sub-agent');
     Route::view('/pln', 'pln')->name('pln');
-    Route::view('/admin', 'admin')->name('admin');
-    Route::view('/cash-flow', 'cash-flow')->name('cash-flow');
-    Route::view('/rekapPenjualan', 'recapPenjualan')->name('rekapPenjualan');
-    Route::view('/insentif', 'insentif')->name('insentif');
+    Route::view('/admin', 'admin')->middleware('superuser')->name('admin');
+    Route::view('/cash-flow', 'cash-flow')->name('cash- flow');
 
     // ========  BUKU BANK CONTROLLER ========
-    Route::prefix('admin')->group(function () {
+    Route::prefix('admin')->middleware('superuser')->group(function () {
         Route::get('/buku-bank', [BukuBankController::class, 'index'])->name('buku-bank.index');
         Route::post('/buku-bank', [BukuBankController::class, 'store'])->name('buku-bank.store');
         Route::get('/buku-bank/search', [BukuBankController::class, 'search'])->name('buku-bank.search');
@@ -119,9 +117,13 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // ======== ADD USER ======== 
-    Route::get('/addaccount', [AccountController::class, 'index'])->name('addaccount.index');
-    Route::post('/addaccount', [AccountController::class, 'store'])->name('addaccount.store');
-    Route::delete('/addaccount/{id}', [AccountController::class, 'destroy'])->name('addaccount.destroy');
+    Route::prefix('admin')->middleware('superuser')->group(function () {
+        Route::get('/addaccount', [AccountController::class, 'index'])->name('addaccount.index');
+        Route::post('/addaccount', [AccountController::class, 'store'])->name('addaccount.store');
+        Route::delete('/addaccount/{username}', [AccountController::class, 'destroy'])->name('addaccount.destroy');
+        Route::view('/rekapPenjualan', 'recapPenjualan')->name('rekapPenjualan');
+        Route::view('/insentif', 'insentif')->middleware('superuser')->name('insentif');
+    });
 
     // ======== LOGOUT ========
     Route::post('/logout', [AccountController::class, 'logout'])->name('logout');

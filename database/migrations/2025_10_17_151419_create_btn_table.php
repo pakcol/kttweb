@@ -8,13 +8,13 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('btn', function (Blueprint $table) {
             $table->id();
-            $table->date('TANGGAL');
-            $table->string('JAM');
-            $table->string('KETERANGAN')->nullable();
-            $table->decimal('CREDIT', 15, 2)->nullable();
-            $table->decimal('DEBIT', 15, 2)->nullable();
-            $table->decimal('SALDO', 15, 2)->nullable();
-            $table->string('USR')->nullable();
+            $table->dateTime('tgl');
+            $table->string('keterangan', 30)->nullable();
+            $table->integer('credit')->nullable();
+            $table->integer('debit')->nullable();
+            $table->integer('saldo')->nullable();
+            $table->string('username', 45);
+            $table->foreign('username')->references('username')->on('accounts')->onDelete('cascade');
             $table->timestamps();
         });
     }

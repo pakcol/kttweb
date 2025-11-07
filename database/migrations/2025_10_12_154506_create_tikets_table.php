@@ -9,34 +9,35 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('tikets', function (Blueprint $table) {
+        Schema::create('ticket', function (Blueprint $table) {
             $table->id();
-            $table->date('tgl_issued');
-            $table->timestamp('jam_input')->useCurrent();
-            $table->string('kode_booking')->unique();
-            $table->string('airlines');
-            $table->string('nama');
-            $table->string('rute1');
-            $table->date('tgl_flight1');
-            $table->string('rute2')->nullable();
-            $table->date('tgl_flight2')->nullable();
-            $table->decimal('harga', 15, 2);
-            $table->decimal('nta', 15, 2);
-            $table->decimal('diskon', 15, 2);
-            $table->decimal('komisi', 15, 2);
-            $table->string('pembayaran');
-            $table->string('nama_piutang')->nullable();
-            $table->date('tgl_realisasi')->nullable();
-            $table->time('jam_realisasi')->nullable(); 
-            $table->decimal('nilai_refund', 15, 2)->default(0);
-            $table->text('keterangan')->nullable();
-            $table->string('usr');
+            $table->dateTime('tglIssued');
+            $table->string('jam', 10);
+            $table->string('kodeBooking', 10);
+            $table->string('airlines', 20);
+            $table->string('nama', 20);
+            $table->string('rute1', 45);
+            $table->dateTime('tglFlight1');
+            $table->string('rute2', 45)->nullable();
+            $table->dateTime('tglFlight2')->nullable();
+            $table->integer('harga');
+            $table->integer('nta');
+            $table->integer('diskon');
+            $table->integer('komisi');
+            $table->string('pembayaran', 10);
+            $table->string('namaPiutang')->nullable();
+            $table->dateTime('tglRealisasi')->nullable();
+            $table->string('jamRealisasi', 10)->nullable(); 
+            $table->integer('nilaiRefund')->default(0);
+            $table->string('keterangan', 45)->nullable();
+            $table->string('username', 45);
+            $table->foreign('username')->references('username')->on('accounts')->onDelete('cascade');
             $table->timestamps();
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('tikets');
+        Schema::dropIfExists('ticket');
     }
 };

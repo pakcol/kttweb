@@ -20,10 +20,10 @@ class EviController extends Controller
         $query = Evi::query()->orderBy('id', 'desc');
 
         if ($request->has('from') && $request->from) {
-            $query->whereDate('TGL_ISSUED', '>=', $request->from);
+            $query->whereDate('tgl', '>=', $request->from);
         }
         if ($request->has('to') && $request->to) {
-            $query->whereDate('TGL_ISSUED', '<=', $request->to);
+            $query->whereDate('tgl', '<=', $request->to);
         }
 
         $data = $query->get();
@@ -34,20 +34,19 @@ class EviController extends Controller
     public function store(Request $request)
     {
         $v = Validator::make($request->all(), [
-            'TGL_ISSUED' => 'required|date',
-            'TOP_UP' => 'nullable|numeric',
-            'JAM' => 'nullable|string',
-            'KODEBOKING' => 'nullable|string',
-            'AIRLINES' => 'nullable|string',
-            'NAMA' => 'nullable|string',
-            'RUTE1' => 'nullable|string',
-            'TGL_FLIGHT1' => 'nullable|date',
-            'RUTE2' => 'nullable|string',
-            'TGL_FLIGHT2' => 'nullable|date',
-            'HARGA' => 'nullable|numeric',
-            'NTA' => 'nullable|numeric',
-            'KETERANGAN' => 'nullable|string',
-            'USR' => 'nullable|string',
+            'tgl' => 'required|date',
+            'topup' => 'nullable|integer',
+            'jam' => 'nullable',
+            'kodeBooking' => 'nullable|string|max:45',
+            'airlines' => 'nullable|string|max:45',
+            'nama' => 'nullable|string|max:45',
+            'rute1' => 'nullable|string|max:45',
+            'tglFlight1' => 'nullable|date',
+            'rute2' => 'nullable|string|max:45',
+            'tglFlight2' => 'nullable|date',
+            'harga' => 'nullable|integer',
+            'nta' => 'nullable|integer',
+            'keterangan' => 'nullable|string|max:300',
         ]);
 
         if ($v->fails()) {
@@ -55,19 +54,20 @@ class EviController extends Controller
         }
 
         $last = Evi::orderBy('id', 'desc')->first();
-        $lastSaldo = $last ? floatval($last->SALDO) : 0.0;
+        $lastSaldo = $last ? (int)$last->saldo : 0;
 
-        $topUp = $request->input('TOP_UP') ? floatval($request->input('TOP_UP')) : 0.0;
+        $topUp = $request->input('topup') ? (int)$request->input('topup') : 0;
 
         $newSaldo = $lastSaldo + $topUp;
 
         $data = $request->only([
-            'TGL_ISSUED','JAM','KODEBOKING','AIRLINES','NAMA','RUTE1','TGL_FLIGHT1',
-            'RUTE2','TGL_FLIGHT2','HARGA','NTA','TOP_UP','KETERANGAN','USR'
+            'tgl', 'jam', 'kodeBooking', 'airlines', 'nama', 'rute1', 'tglFlight1',
+            'rute2', 'tglFlight2', 'harga', 'nta', 'keterangan'
         ]);
 
-        $data['TOP_UP'] = $topUp;
-        $data['SALDO'] = $newSaldo;
+        $data['topup'] = $topUp;
+        $data['saldo'] = $newSaldo;
+        $data['username'] = auth()->user()->username ?? auth()->user()->name;
 
         $evi = Evi::create($data);
 
@@ -92,36 +92,36 @@ class EviController extends Controller
         $response = new StreamedResponse(function() use ($request) {
             $handle = fopen('php://output', 'w');
             fputcsv($handle, [
-                'TGL_ISSUED','JAM','KODEBOKING','AIRLINES','NAMA','RUTE1','TGL_FLIGHT1',
-                'RUTE2','TGL_FLIGHT2','HARGA','NTA','TOP_UP','SALDO','KETERANGAN','USR'
+                'tgl','jam','kodeBooking','airlines','nama','rute1','tglFlight1',
+                'rute2','tglFlight2','harga','nta','topup','saldo','keterangan','username'
             ]);
 
             $query = Evi::query()->orderBy('id','desc');
             if ($request->has('from') && $request->from) {
-                $query->whereDate('TGL_ISSUED','>=',$request->from);
+                $query->whereDate('tgl','>=',$request->from);
             }
             if ($request->has('to') && $request->to) {
-                $query->whereDate('TGL_ISSUED','<=',$request->to);
+                $query->whereDate('tgl','<=',$request->to);
             }
 
             $query->chunk(500, function($rows) use ($handle) {
                 foreach ($rows as $r) {
                     fputcsv($handle, [
-                        $r->TGL_ISSUED,
-                        $r->JAM,
-                        $r->KODEBOKING,
-                        $r->AIRLINES,
-                        $r->NAMA,
-                        $r->RUTE1,
-                        $r->TGL_FLIGHT1,
-                        $r->RUTE2,
-                        $r->TGL_FLIGHT2,
-                        $r->HARGA,
-                        $r->NTA,
-                        $r->TOP_UP,
-                        $r->SALDO,
-                        $r->KETERANGAN,
-                        $r->USR,
+                        $r->tgl,
+                        $r->jam,
+                        $r->kodeBooking,
+                        $r->airlines,
+                        $r->nama,
+                        $r->rute1,
+                        $r->tglFlight1,
+                        $r->rute2,
+                        $r->tglFlight2,
+                        $r->harga,
+                        $r->nta,
+                        $r->topup,
+                        $r->saldo,
+                        $r->keterangan,
+                        $r->username,
                     ]);
                 }
             });

@@ -18,26 +18,26 @@ class AccountController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:accounts,username',
-            'role' => 'required|string',
+            'name' => 'required|string|max:255',
             'password' => 'required|string|min:4',
+            'roles' => 'required|string',
         ]);
 
         Account::create([
-            'name' => $request->name,
             'username' => $request->username,
-            'role' => $request->role,
+            'name' => $request->name,
             'password' => Hash::make($request->password),
+            'roles' => $request->roles,
             //'password' => $request->password,
         ]);
 
         return redirect()->route('addaccount.index')->with('success', 'User berhasil ditambahkan!');
     }
 
-    public function destroy($id)
+    public function destroy($username)
     {
-        $account = Account::findOrFail($id);
+        $account = Account::findOrFail($username);
         $account->delete();
         return redirect()->route('addaccount.index')->with('success', 'User berhasil dihapus!');
     }

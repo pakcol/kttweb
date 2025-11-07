@@ -8,14 +8,15 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('transnusa', function (Blueprint $table) {
             $table->id();
-            $table->date('TANGGAL');
-            $table->string('JAM');
-            $table->decimal('TOP_UP', 15, 2)->nullable();
-            $table->decimal('TRANSAKSI', 15, 2)->nullable();
-            $table->decimal('INSENTIF', 15, 2)->nullable();
-            $table->decimal('SALDO', 15, 2)->nullable();
-            $table->string('KETERANGAN')->nullable();
-            $table->string('USR')->nullable();
+            $table->dateTime('tgl');
+            $table->string('jam', 10);
+            $table->integer('top_up')->nullable();
+            $table->integer('transaksi')->nullable();
+            $table->integer('insentif')->nullable();
+            $table->integer('saldo')->nullable();
+            $table->string('keterangan', 30)->nullable();
+            $table->string('username', 45);
+            $table->foreign('username')->references('username')->on('accounts')->onDelete('cascade');
             $table->timestamps();
         });
     }
