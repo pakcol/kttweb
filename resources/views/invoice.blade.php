@@ -63,9 +63,9 @@
                 @foreach($tikets as $index => $data)
                 <tr>
                     <td>{{ $index + 1 }}</td>
-                    <td>{{ $data->kode_booking }}</td>
+                    <td>{{ $data->kodeBooking }}</td>
                     <td>{{ $data->airlines }}</td>
-                    <td>{{ $data->tgl_flight1 }}</td>
+                    <td>{{ $data->tglFlight1 }}</td>
                     <td>{{ $data->rute1 }}</td>
                     <td>{{ $data->nama }}</td>
                     <td>Rp {{ number_format($data->harga, 0, ',', '.') }}</td>

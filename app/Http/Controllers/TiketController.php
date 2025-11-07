@@ -11,8 +11,8 @@ class TiketController extends Controller
 {
     public function index()
     {
-        $tikets = Tiket::orderBy('created_at', 'desc')->get();
-        return view('input-data', compact('tikets'));
+        $ticket = Tiket::orderBy('created_at', 'desc')->get();
+        return view('input-data', compact('ticket'));
     }
 
     public function store(Request $request)

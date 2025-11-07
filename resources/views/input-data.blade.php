@@ -238,7 +238,7 @@ function updateDateTime() {
     const hari = now.toLocaleDateString('id-ID', { weekday: 'long' });
     const tanggal = now.toLocaleDateString('id-ID');
     const jam = now.toLocaleTimeString('id-ID', { hour12: false });
-    document.getElementById('currentDateTime').textContent = ${hari}, ${tanggal} | ${jam};
+    document.getElementById('currentDateTime').textContent = `${hari}, ${tanggal} | ${jam}`;
     document.getElementById('jam_input').value = jam;
 }
 setInterval(updateDateTime, 1000);
@@ -279,7 +279,7 @@ document.querySelectorAll('#tiketTable tbody tr').forEach(row => {
     row.addEventListener('dblclick', function() {
         const id = this.dataset.id;
         if(confirm('Apakah yakin ingin menghapus data ini?')) {
-            window.location.href = /input-data/destroy/${id};
+            window.location.href = `/input-data/destroy/${id}`;
         }
     });
 });
@@ -293,7 +293,7 @@ document.getElementById('btnBatal').addEventListener('click', function() {
 
 document.getElementById('btnCetakInvoice').addEventListener('click', function() {
     const selected = Array.from(document.querySelectorAll('.check-row:checked')).map(cb => cb.value);
-
+    console.log(selected);  
     if (selected.length === 0) {
         alert('Silakan pilih minimal satu tiket untuk cetak invoice!');
         return;
@@ -302,7 +302,7 @@ document.getElementById('btnCetakInvoice').addEventListener('click', function() 
     if (confirm(`Cetak invoice untuk ${selected.length} tiket terpilih?`)) {
         // Gunakan route() dari Laravel agar URL valid
         window.open(`{{ route('invoice.multi') }}?ids=${selected.join(',')}`, '_blank');
-    }
+    }       
 });
 
 const checkAll = document.getElementById('checkAll');
@@ -383,7 +383,7 @@ btnNoDelete.addEventListener('click', () => {
 btnYesDelete.addEventListener('click', () => {
     if (!deleteId) return;
 
-    fetch(/input-data/${deleteId}, {
+    fetch(`/input-data/${deleteId}`, {
         method: 'DELETE',
         headers: {
             'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -394,7 +394,7 @@ btnYesDelete.addEventListener('click', () => {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            const row = document.querySelector(#tiketTable tbody tr[data-id="${deleteId}"]);
+            const row = document.querySelector(`#tiketTable tbody tr[data-id="${deleteId}"]`);
             if (row) row.remove();
             alert(data.message);
         } else {
