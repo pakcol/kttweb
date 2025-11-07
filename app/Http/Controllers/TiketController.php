@@ -15,53 +15,46 @@ class TiketController extends Controller
         return view('input-data', compact('tikets'));
     }
 
-
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'tgl_issued' => 'required|date',
-            'kode_booking' => 'required|string|max:255|unique:tikets,kode_booking',
-            'airlines' => 'required|string',
-            'nama' => 'required|string',
-            'rute1' => 'required|string',
-            'tgl_flight1' => 'required|date',
-            'rute2' => 'nullable|string',
-            'tgl_flight2' => 'nullable|date',
-            'harga' => 'required|numeric',
-            'nta' => 'required|numeric',
-            'diskon' => 'required|numeric',
-            'pembayaran' => 'required|string',
-            'nama_piutang' => 'nullable|string',
-            'tgl_realisasi' => 'nullable|date',
-            'nilai_refund' => 'nullable|numeric',
-            'keterangan' => 'nullable|string',
+            'tglIssued'     => 'required|date',
+            'kodeBooking'   => 'required|string|max:255|unique:ticket,kodeBooking',
+            'airlines'      => 'required|string',
+            'nama'          => 'required|string',
+            'rute1'         => 'required|string',
+            'tglFlight1'    => 'required|date',
+            'rute2'         => 'nullable|string',
+            'tglFlight2'    => 'nullable|date',
+            'harga'         => 'required|numeric',
+            'nta'           => 'required|numeric',
+            'diskon'        => 'required|numeric',
+            'pembayaran'    => 'required|string',
+            'namaPiutang'   => 'nullable|string',
+            'tglRealisasi'  => 'nullable|date',
+            'nilaiRefund'   => 'nullable|numeric',
+            'keterangan'    => 'nullable|string',
         ]);
+
         $validated['komisi'] = $validated['harga'] - $validated['nta'] - $validated['diskon'];
-        $validated['jam_input'] = Carbon::now()->format('H:i:s');
-        $validated['usr'] = Auth::check() ? Auth::user()->name : 'Guest';
+        $validated['jam'] = Carbon::now()->format('H:i');
+        $validated['username'] = Auth::check() ? Auth::user()->username ?? Auth::user()->name : 'Guest';
+
         $tiket = Tiket::create($validated);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Data tiket berhasil disimpan.',
-            'data' => $tiket
-        ]);
+        return redirect()->route('input-data.index')->with('success', 'Data tiket berhasil disimpan.');
     }
 
-    
     public function getAll()
     {
         $tikets = Tiket::orderBy('created_at', 'desc')->get();
         return response()->json($tikets);
     }
 
-
     public function showInvoice(Request $request)
     {
-        $ids = $request->query('ids');
-        $idArray = explode(',', $ids);
-
-        $data = Tiket::whereIn('id', $idArray)->get();
+        $ids = explode(',', $request->query('ids'));
+        $data = Tiket::whereIn('id', $ids)->get();
 
         return view('invoice', compact('data'));
     }

@@ -14,12 +14,12 @@
                 {{-- Kolom Kiri --}}
                 <div>
                     <div class="form-group">
-                        <label for="tgl_issued">TGL ISSUED</label>
-                        <input type="date" id="tgl_issued" name="tgl_issued" value="{{ date('Y-m-d') }}" required>
+                        <label for="tglIssued">TGL ISSUED</label>
+                        <input type="date" id="tglIssued" name="tglIssued" value="{{ date('Y-m-d') }}" required>
                     </div>
                     <div class="form-group">
-                        <label for="kode_booking">KODE BOOKING</label>
-                        <input type="text" id="kode_booking" name="kode_booking" class="text-uppercase" required>
+                        <label for="kodeBooking">KODE BOOKING</label>
+                        <input type="text" id="kodeBooking" name="kodeBooking" class="text-uppercase" required>
                     </div>
                     <div class="form-group">
                         <label for="airlines">AIRLINES</label>
@@ -46,16 +46,16 @@
                         <input type="text" id="rute1" name="rute1" class="text-uppercase" required>
                     </div>
                     <div class="form-group">
-                        <label for="tgl_flight1">TGL FLIGHT1</label>
-                        <input type="date" id="tgl_flight1" name="tgl_flight1" value="{{ date('Y-m-d') }}" required>
+                        <label for="tglFlight1">TGL FLIGHT1</label>
+                        <input type="date" id="tglFlight1" name="tglFlight1" value="{{ date('Y-m-d') }}" required>
                     </div>
                     <div class="form-group">
                         <label for="rute2">RUTE 2</label>
                         <input type="text" id="rute2" name="rute2" class="text-uppercase">
                     </div>
                     <div class="form-group">
-                        <label for="tgl_flight2">TGL FLIGHT2</label>
-                        <input type="date" id="tgl_flight2" name="tgl_flight2">
+                        <label for="tglFlight2">TGL FLIGHT2</label>
+                        <input type="date" id="tglFlight2" name="tglFlight2">
                     </div>
                 </div>
 
@@ -63,23 +63,23 @@
                 <div>
                     <div class="form-group">
                         <label for="harga">HARGA</label>
-                        <input type="number" id="harga" name="harga" value="0" step="0.01" required>
+                        <input type="number" id="harga" name="harga" value="0" required>
                     </div>
                     <div class="form-group">
                         <label for="nta">NTA</label>
-                        <input type="number" id="nta" name="nta" value="0" step="0.01" required>
+                        <input type="number" id="nta" name="nta" value="0" required>
                     </div>
                     <div class="form-group">
                         <label for="diskon">DISKON</label>
-                        <input type="number" id="diskon" name="diskon" value="0" step="0.01" required>
+                        <input type="number" id="diskon" name="diskon" value="0" required>
                     </div>
                     <div class="form-group">
                         <label for="komisi">KOMISI</label>
-                        <input type="number" id="komisi" name="komisi" value="0" step="0.01" readonly>
+                        <input type="number" id="komisi" name="komisi" value="0" readonly>
                     </div>
                     <div class="form-group">
-                        <label for="nama_piutang">NAMA PIUTANG</label>
-                        <input type="text" id="nama_piutang" name="nama_piutang" class="text-uppercase">
+                        <label for="namaPiutang">NAMA PIUTANG</label>
+                        <input type="text" id="namaPiutang" name="namaPiutang" class="text-uppercase">
                     </div>
                     <div class="form-group">
                         <label for="pembayaran">PEMBAYARAN</label>
@@ -97,16 +97,16 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="tgl_realisasi">TGL REALISASI</label>
-                        <input type="date" id="tgl_realisasi" name="tgl_realisasi">
+                        <label for="tglRealisasi">TGL REALISASI</label>
+                        <input type="date" id="tglRealisasi" name="tglRealisasi">
                     </div>
                     <div class="form-group">
-                        <label for="jam_realisasi">JAM REALISASI</label>
-                        <input type="time" id="jam_realisasi" name="jam_realisasi">
+                        <label for="jamRealisasi">JAM REALISASI</label>
+                        <input type="time" id="jamRealisasi" name="jamRealisasi">
                     </div>
                     <div class="form-group">
-                        <label for="nilai_refund">NILAI REFUND</label>
-                        <input type="number" id="nilai_refund" name="nilai_refund" value="0" step="0.01">
+                        <label for="nilaiRefund">NILAI REFUND</label>
+                        <input type="number" id="nilaiRefund" name="nilaiRefund" value="0">
                     </div>
                 </div>
 
@@ -118,7 +118,6 @@
                     </div>
 
                     <div class="button-group">
-                        {{-- Hapus tombol Hapus --}}
                         <button type="submit" id="btnInputData" class="btn-hijau">Input Data</button>
                         <button type="button" class="btn-oranye" onclick="window.location.href='{{ route('tutupKas') }}'">Tutup Kas</button>
                         <button type="button" class="btn-hijau" id="btnCari">Cari</button>
@@ -161,7 +160,7 @@
     </tr>
 </thead>
 <tbody>
-    @foreach ($tikets as $index => $t)
+    @foreach ($ticket as $index => $t)
     <tr data-id="{{ $t->id }}">
         <td><input type="checkbox" class="check-row" value="{{ $t->id }}"></td>
         <td>{{ $index + 1 }}</td>
@@ -239,7 +238,7 @@ function updateDateTime() {
     const hari = now.toLocaleDateString('id-ID', { weekday: 'long' });
     const tanggal = now.toLocaleDateString('id-ID');
     const jam = now.toLocaleTimeString('id-ID', { hour12: false });
-    document.getElementById('currentDateTime').textContent = `${hari}, ${tanggal} | ${jam}`;
+    document.getElementById('currentDateTime').textContent = ${hari}, ${tanggal} | ${jam};
     document.getElementById('jam_input').value = jam;
 }
 setInterval(updateDateTime, 1000);
@@ -280,7 +279,7 @@ document.querySelectorAll('#tiketTable tbody tr').forEach(row => {
     row.addEventListener('dblclick', function() {
         const id = this.dataset.id;
         if(confirm('Apakah yakin ingin menghapus data ini?')) {
-            window.location.href = `/input-data/destroy/${id}`;
+            window.location.href = /input-data/destroy/${id};
         }
     });
 });
@@ -294,12 +293,15 @@ document.getElementById('btnBatal').addEventListener('click', function() {
 
 document.getElementById('btnCetakInvoice').addEventListener('click', function() {
     const selected = Array.from(document.querySelectorAll('.check-row:checked')).map(cb => cb.value);
+
     if (selected.length === 0) {
         alert('Silakan pilih minimal satu tiket untuk cetak invoice!');
         return;
     }
+
     if (confirm(`Cetak invoice untuk ${selected.length} tiket terpilih?`)) {
-        window.open(`/invoice-multi?ids=${selected.join(',')}`, '_blank');
+        // Gunakan route() dari Laravel agar URL valid
+        window.open(`{{ route('invoice.multi') }}?ids=${selected.join(',')}`, '_blank');
     }
 });
 
@@ -381,7 +383,7 @@ btnNoDelete.addEventListener('click', () => {
 btnYesDelete.addEventListener('click', () => {
     if (!deleteId) return;
 
-    fetch(`/input-data/${deleteId}`, {
+    fetch(/input-data/${deleteId}, {
         method: 'DELETE',
         headers: {
             'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -392,7 +394,7 @@ btnYesDelete.addEventListener('click', () => {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            const row = document.querySelector(`#tiketTable tbody tr[data-id="${deleteId}"]`);
+            const row = document.querySelector(#tiketTable tbody tr[data-id="${deleteId}"]);
             if (row) row.remove();
             alert(data.message);
         } else {
