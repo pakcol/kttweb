@@ -14,15 +14,15 @@
                 {{-- Kolom Kiri --}}
                 <div>
                     <div class="form-group">
-                        <label for="tglIssued">TGL ISSUED</label>
+                        <label for="tglIssued">TGL ISSUED*</label>
                         <input type="date" id="tglIssued" name="tglIssued" value="{{ date('Y-m-d') }}" required>
                     </div>
                     <div class="form-group">
-                        <label for="kodeBooking">KODE BOOKING</label>
+                        <label for="kodeBooking">KODE BOOKING*</label>
                         <input type="text" id="kodeBooking" name="kodeBooking" class="text-uppercase" required>
                     </div>
                     <div class="form-group">
-                        <label for="airlines">AIRLINES</label>
+                        <label for="airlines">AIRLINES*</label>
                         <select id="airlines" name="airlines" class="text-uppercase" required>
                             <option value="">Pilih Airlines</option>
                             <option value="AIRASIA">AIR ASIA</option>
@@ -38,15 +38,15 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="nama">NAMA</label>
+                        <label for="nama">NAMA*</label>
                         <input type="text" id="nama" name="nama" class="text-uppercase" required>
                     </div>
                     <div class="form-group">
-                        <label for="rute1">RUTE 1</label>
+                        <label for="rute1">RUTE 1*</label>
                         <input type="text" id="rute1" name="rute1" class="text-uppercase" required>
                     </div>
                     <div class="form-group">
-                        <label for="tglFlight1">TGL FLIGHT1</label>
+                        <label for="tglFlight1">TGL FLIGHT1*</label>
                         <input type="date" id="tglFlight1" name="tglFlight1" value="{{ date('Y-m-d') }}" required>
                     </div>
                     <div class="form-group">
@@ -62,27 +62,23 @@
                 {{-- Kolom Tengah --}}
                 <div>
                     <div class="form-group">
-                        <label for="harga">HARGA</label>
+                        <label for="harga">HARGA*</label>
                         <input type="number" id="harga" name="harga" value="0" required>
                     </div>
                     <div class="form-group">
-                        <label for="nta">NTA</label>
+                        <label for="nta">NTA*</label>
                         <input type="number" id="nta" name="nta" value="0" required>
                     </div>
                     <div class="form-group">
-                        <label for="diskon">DISKON</label>
+                        <label for="diskon">DISKON*</label>
                         <input type="number" id="diskon" name="diskon" value="0" required>
                     </div>
                     <div class="form-group">
                         <label for="komisi">KOMISI</label>
                         <input type="number" id="komisi" name="komisi" value="0" readonly>
-                    </div>
+                    </div>  
                     <div class="form-group">
-                        <label for="namaPiutang">NAMA PIUTANG</label>
-                        <input type="text" id="namaPiutang" name="namaPiutang" class="text-uppercase">
-                    </div>
-                    <div class="form-group">
-                        <label for="pembayaran">PEMBAYARAN</label>
+                        <label for="pembayaran">PEMBAYARAN*</label>
                         <select id="pembayaran" name="pembayaran" class="text-uppercase" required>
                             <option value="">Pilih Pembayaran</option>
                             <option value="CASH">CASH</option>
@@ -95,6 +91,10 @@
                             <option value="MANDIRI">MANDIRI</option>
                             <option value="BRI">BRI</option>
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="namaPiutang">NAMA PIUTANG</label>
+                        <input type="text" id="namaPiutang" name="namaPiutang" class="text-uppercase" disabled>
                     </div>
                     <div class="form-group">
                         <label for="tglRealisasi">TGL REALISASI</label>
@@ -165,7 +165,7 @@
         <td><input type="checkbox" class="check-row" value="{{ $t->id }}"></td>
         <td>{{ $index + 1 }}</td>
         <td>{{ \Carbon\Carbon::parse($t->tglIssued)->format('Y-m-d') }}</td>
-        <td>{{ \Carbon\Carbon::parse($t->jam_input)->format('H:i:s') }}</td>
+        <td>{{ $t->jam ? \Carbon\Carbon::parse($t->jam)->format('H:i:s') : '' }}</td>
         <td>{{ $t->kodeBooking }}</td>
         <td>{{ $t->airlines }}</td>
         <td>{{ $t->nama }}</td>
@@ -245,6 +245,27 @@ function updateDateTime() {
 setInterval(updateDateTime, 1000);
 updateDateTime();
 
+// Fungsi untuk enable/disable NAMA PIUTANG berdasarkan PEMBAYARAN
+function toggleNamaPiutang() {
+    const pembayaran = document.getElementById('pembayaran').value;
+    const namaPiutang = document.getElementById('namaPiutang');
+    
+    if (pembayaran === 'PIUTANG') {
+        namaPiutang.disabled = false;
+        namaPiutang.required = true;
+    } else {
+        namaPiutang.disabled = true;
+        namaPiutang.required = false;
+        namaPiutang.value = ''; // Kosongkan nilai jika disabled
+    }
+}
+
+// Event listener untuk perubahan pembayaran
+document.getElementById('pembayaran').addEventListener('change', toggleNamaPiutang);
+
+// Panggil fungsi saat halaman dimuat untuk set initial state
+toggleNamaPiutang();
+
 let selectedRow = null;
 document.querySelectorAll('#tiketTable tbody tr').forEach(row => {
     row.addEventListener('click', function(e) {
@@ -274,6 +295,9 @@ document.querySelectorAll('#tiketTable tbody tr').forEach(row => {
         document.getElementById('nilaiRefund').value = parseFloat(data[19].replace(/\./g,'')) || 0;
         document.getElementById('keterangan').value = data[20];
 
+        // Panggil toggleNamaPiutang setelah set nilai pembayaran
+        toggleNamaPiutang();
+
         document.getElementById('btnInputData').textContent = 'UPDATE';
     });
 
@@ -291,6 +315,8 @@ document.getElementById('btnBatal').addEventListener('click', function() {
     document.getElementById('tiketId').value = '';
     document.getElementById('btnInputData').textContent = 'INPUT DATA';
     document.querySelectorAll('#tiketTable tr').forEach(r => r.classList.remove('selected'));
+    // Reset state NAMA PIUTANG setelah reset form
+    toggleNamaPiutang();
 });
 
 document.getElementById('btnCetakInvoice').addEventListener('click', function() {
@@ -416,23 +442,28 @@ btnYesDelete.addEventListener('click', () => {
 function isiFormDariRow(row) {
     const data = Array.from(row.children).map(td => td.innerText);
     document.getElementById('tiketId').value = row.dataset.id;
-    document.getElementById('tgl_issued').value = data[2];
-    document.getElementById('kode_booking').value = data[4];
+    document.getElementById('tglIssued').value = data[2];
+    document.getElementById('kodeBooking').value = data[4];
     document.getElementById('airlines').value = data[5];
     document.getElementById('nama').value = data[6];
     document.getElementById('rute1').value = data[7];
-    document.getElementById('tgl_flight1').value = data[8];
+    document.getElementById('tglFlight1').value = data[8];
     document.getElementById('rute2').value = data[9];
-    document.getElementById('tgl_flight2').value = data[10];
+    document.getElementById('tglFlight2').value = data[10];
     document.getElementById('harga').value = parseFloat(data[11].replace(/\./g,'')) || 0;
     document.getElementById('nta').value = parseFloat(data[12].replace(/\./g,'')) || 0;
     document.getElementById('diskon').value = parseFloat(data[13].replace(/\./g,'')) || 0;
+    document.getElementById('komisi').value = parseFloat(data[14].replace(/\./g,'')) || 0;
     document.getElementById('pembayaran').value = data[15];
-    document.getElementById('nama_piutang').value = data[16];
-    document.getElementById('tgl_realisasi').value = data[17];
-    document.getElementById('jam_realisasi').value = data[18];
-    document.getElementById('nilai_refund').value = parseFloat(data[19].replace(/\./g,'')) || 0;
+    document.getElementById('namaPiutang').value = data[16];
+    document.getElementById('tglRealisasi').value = data[17];
+    document.getElementById('jamRealisasi').value = data[18];
+    document.getElementById('nilaiRefund').value = parseFloat(data[19].replace(/\./g,'')) || 0;
     document.getElementById('keterangan').value = data[20];
+    
+    // Panggil toggleNamaPiutang setelah set nilai pembayaran
+    toggleNamaPiutang();
+    
     document.getElementById('btnInputData').textContent = 'UPDATE';
 }
 </script>

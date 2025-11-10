@@ -9,9 +9,9 @@
             <input list="namaPiutangList" id="namaPiutang" placeholder="Ketik atau pilih nama piutang...">
             <datalist id="namaPiutangList">
                 <option value="ALL">
-                <option value="OTE">
-                <option value="OYU">
-                <option value="YATI">
+                @foreach($namaPiutangList as $nama)
+                <option value="{{ $nama }}">
+                @endforeach
             </datalist>
 
             {{-- TOTAL PIUTANG --}}
@@ -63,20 +63,20 @@
             </thead>
             <tbody>
                 @foreach($piutang as $p)
-                <tr onclick="selectRow(this)">
-                    <td>{{ $p->tanggal }}</td>
-                    <td>{{ $p->jam }}</td>
+                <tr onclick="selectRow(this)" data-id="{{ $p->id }}" data-nama-piutang="{{ $p->nama_piutang }}" data-harga="{{ $p->harga_jual }}">
+                    <td>{{ $p->tgl ? \Carbon\Carbon::parse($p->tgl)->format('Y-m-d') : '' }}</td>
+                    <td>{{ $p->tgl ? \Carbon\Carbon::parse($p->tgl)->format('H:i:s') : '' }}</td>
                     <td>{{ $p->id_pel }}</td>
-                    <td>{{ $p->harga_jual }}</td>
+                    <td>{{ number_format($p->harga_jual ?? 0, 0, ',', '.') }}</td>
                     <td>{{ $p->transaksi }}</td>
                     <td>{{ $p->bayar }}</td>
                     <td>{{ $p->nama_piutang }}</td>
-                    <td>{{ $p->top_up }}</td>
-                    <td>{{ $p->insentif }}</td>
-                    <td>{{ $p->saldo }}</td>
-                    <td>{{ $p->usr }}</td>
-                    <td>{{ $p->tgl_realisasi }}</td>
-                    <td>{{ $p->jam_realisasi }}</td>
+                    <td>{{ number_format($p->top_up ?? 0, 0, ',', '.') }}</td>
+                    <td>{{ number_format($p->insentif ?? 0, 0, ',', '.') }}</td>
+                    <td>{{ number_format($p->saldo ?? 0, 0, ',', '.') }}</td>
+                    <td>{{ $p->username }}</td>
+                    <td>{{ $p->tgl_reralisasi ? \Carbon\Carbon::parse($p->tgl_reralisasi)->format('Y-m-d') : '' }}</td>
+                    <td>{{ $p->jam_realisasi ? \Carbon\Carbon::parse($p->jam_realisasi)->format('H:i:s') : '' }}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -86,19 +86,65 @@
 
 <script>
 let selectedRow = null;
+let allPiutangData = @json($piutang);
+
+// Hitung total piutang berdasarkan nama piutang yang dipilih
+function calculateTotalPiutang(namaPiutang) {
+    if (!namaPiutang || namaPiutang === '') {
+        document.getElementById('totalPiutang').value = '';
+        return;
+    }
+
+    let total = 0;
+    if (namaPiutang === 'ALL') {
+        // Hitung total semua piutang
+        allPiutangData.forEach(item => {
+            total += parseInt(item.harga_jual) || 0;
+        });
+    } else {
+        // Hitung total untuk nama piutang tertentu
+        allPiutangData.forEach(item => {
+            if (item.nama_piutang === namaPiutang) {
+                total += parseInt(item.harga_jual) || 0;
+            }
+        });
+    }
+
+    document.getElementById('totalPiutang').value = new Intl.NumberFormat('id-ID').format(total);
+}
+
+// Event listener untuk perubahan nama piutang
+document.getElementById('namaPiutang').addEventListener('input', function() {
+    calculateTotalPiutang(this.value);
+});
+
+// Event listener untuk perubahan nama piutang (change event)
+document.getElementById('namaPiutang').addEventListener('change', function() {
+    calculateTotalPiutang(this.value);
+});
 
 function selectRow(row) {
+    // Hapus selected class dari semua row
+    document.querySelectorAll('#piutangTable tbody tr').forEach(r => {
+        r.classList.remove('selected');
+    });
+    
+    // Tambahkan selected class ke row yang dipilih
+    row.classList.add('selected');
     selectedRow = row;
+    
     const cells = row.getElementsByTagName('td');
+    const rowData = row.dataset;
 
     const namaPiutang = cells[6].innerText.trim();
-    const harga = cells[3].innerText.trim();
+    const harga = cells[3].innerText.trim().replace(/\./g, '');
     const pembayaran = cells[5].innerText.trim();
     const nama = cells[10].innerText.trim(); 
 
     document.getElementById('namaPiutang').value = namaPiutang;
     document.getElementById('nama').value = nama;
     document.getElementById('harga').value = harga;
+    calculateTotalPiutang(namaPiutang);
 
     const selectPembayaran = document.getElementById('pembayaran');
     selectPembayaran.value = pembayaran;
@@ -110,18 +156,56 @@ function updateData() {
         return;
     }
 
+    const rowId = selectedRow.dataset.id;
     const namaPiutang = document.getElementById('namaPiutang').value;
     const nama = document.getElementById('nama').value;
     const harga = document.getElementById('harga').value;
     const pembayaran = document.getElementById('pembayaran').value;
 
-    const cells = selectedRow.getElementsByTagName('td');
-    cells[3].innerText = harga;
-    cells[5].innerText = pembayaran;
-    cells[6].innerText = namaPiutang;
-    cells[10].innerText = nama;
-
-    alert("Data berhasil diperbarui (simulasi).");
+    // Kirim update ke server
+    fetch(`/plnPiutang/${rowId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            nama_piutang: namaPiutang,
+            harga_jual: harga.replace(/\./g, ''),
+            bayar: pembayaran,
+            username: nama
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success || data.message) {
+            // Update tampilan tabel
+            const cells = selectedRow.getElementsByTagName('td');
+            cells[3].innerText = new Intl.NumberFormat('id-ID').format(parseInt(harga.replace(/\./g, '')));
+            cells[5].innerText = pembayaran;
+            cells[6].innerText = namaPiutang;
+            cells[10].innerText = nama;
+            
+            // Update data di array
+            const index = allPiutangData.findIndex(item => item.id == rowId);
+            if (index !== -1) {
+                allPiutangData[index].nama_piutang = namaPiutang;
+                allPiutangData[index].harga_jual = parseInt(harga.replace(/\./g, ''));
+                allPiutangData[index].bayar = pembayaran;
+                allPiutangData[index].username = nama;
+            }
+            
+            calculateTotalPiutang(namaPiutang);
+            alert("Data berhasil diperbarui!");
+        } else {
+            alert("Gagal memperbarui data.");
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert("Terjadi kesalahan saat memperbarui data.");
+    });
 }
 </script>
 

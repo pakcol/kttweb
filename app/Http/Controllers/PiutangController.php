@@ -3,36 +3,45 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Evi; // pastikan model ini ada dan sesuai
+use App\Models\Tiket;
 use Illuminate\Support\Facades\Validator;
 
 class PiutangController extends Controller
 {
     public function index()
     {
-        // Ambil semua data dari tabel evi
-        $data = Evi::all();
+        // Ambil daftar nama piutang unik dari tabel ticket dengan pembayaran = 'PIUTANG'
+        $namaPiutangList = Tiket::where('pembayaran', 'PIUTANG')
+            ->whereNotNull('namaPiutang')
+            ->where('namaPiutang', '!=', '')
+            ->distinct()
+            ->pluck('namaPiutang')
+            ->sort()
+            ->values();
+
+        // Ambil semua data piutang dari tabel ticket
+        $data = Tiket::where('pembayaran', 'PIUTANG')
+            ->orderBy('tglIssued', 'desc')
+            ->orderBy('jam', 'desc')
+            ->get();
 
         // Kirim ke view piutang.blade.php
-        return view('piutang', compact('data'));
+        return view('piutang', compact('data', 'namaPiutangList'));
     }
 
     public function store(Request $request)
     {
         $v = Validator::make($request->all(), [
-            'tgl' => 'required|date',
-            'topup' => 'nullable|integer',
-            'jam' => 'nullable',
-            'kodeBooking' => 'nullable|string|max:45',
-            'airlines' => 'nullable|string|max:45',
-            'nama' => 'nullable|string|max:45',
-            'rute1' => 'nullable|string|max:45',
-            'tglFlight1' => 'nullable|date',
-            'rute2' => 'nullable|string|max:45',
-            'tglFlight2' => 'nullable|date',
+            'tgl' => 'nullable|date',
+            'nama_piutang' => 'nullable|string',
+            'total_piutang' => 'nullable|integer',
             'harga' => 'nullable|integer',
-            'nta' => 'nullable|integer',
-            'keterangan' => 'nullable|string|max:300',
+            'total_diskon' => 'nullable|integer',
+            'diskon' => 'nullable|integer',
+            'kode_booking' => 'nullable|string|max:45',
+            'komisi' => 'nullable|integer',
+            'nama' => 'nullable|string|max:45',
+            'pembayaran' => 'nullable|string',
         ]);
 
         if ($v->fails()) {

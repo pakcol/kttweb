@@ -70,61 +70,21 @@ class PlnController extends Controller
 
     public function indexPiutang()
     {
-        if (!Schema::hasTable('pln')) {
-            // ✅ Data dummy menyesuaikan field yang dipakai di Blade (tanggal, jam, id_pel, dll)
-            $piutang = collect([
-                (object)[
-                    'tanggal' => '2025-11-06',
-                    'jam' => '10:45:00',
-                    'id_pel' => 'PLN001',
-                    'harga_jual' => 150000,
-                    'transaksi' => 'TOKEN 100K',
-                    'bayar' => 'PIUTANG',
-                    'nama_piutang' => 'CV. Sinar Kupang',
-                    'top_up' => 50000,
-                    'insentif' => 2500,
-                    'saldo' => 1000000,
-                    'usr' => 'Admin1',
-                    'tgl_realisasi' => '2025-11-07',
-                    'jam_realisasi' => '14:20:00'
-                ],
-                (object)[
-                    'tanggal' => '2025-11-05',
-                    'jam' => '09:30:00',
-                    'id_pel' => 'PLN002',
-                    'harga_jual' => 200000,
-                    'transaksi' => 'TOKEN 200K',
-                    'bayar' => 'PIUTANG',
-                    'nama_piutang' => 'PT. Alfa Energi',
-                    'top_up' => 100000,
-                    'insentif' => 5000,
-                    'saldo' => 850000,
-                    'usr' => 'Admin2',
-                    'tgl_realisasi' => '2025-11-06',
-                    'jam_realisasi' => '13:00:00'
-                ],
-                (object)[
-                    'tanggal' => '2025-11-04',
-                    'jam' => '11:15:00',
-                    'id_pel' => 'PLN003',
-                    'harga_jual' => 120000,
-                    'transaksi' => 'TOKEN 50K',
-                    'bayar' => 'BCA',
-                    'nama_piutang' => '-',
-                    'top_up' => 0,
-                    'insentif' => 0,
-                    'saldo' => 750000,
-                    'usr' => 'Admin3',
-                    'tgl_realisasi' => '2025-11-05',
-                    'jam_realisasi' => '12:10:00'
-                ],
-            ]);
-        } else {
-            // Jika tabel tersedia, ambil dari DB
-            $piutang = Pln::piutang()->get();
-        }
-
-        return view('plnPiutang', compact('piutang'));
+        $piutang = Pln::piutang()
+            ->orderBy('tgl', 'desc')
+            ->orderBy('jam_realisasi', 'desc')
+            ->get();
+        
+        // Ambil daftar nama piutang unik dari database
+        $namaPiutangList = Pln::piutang()
+            ->whereNotNull('nama_piutang')
+            ->where('nama_piutang', '!=', '')
+            ->distinct()
+            ->pluck('nama_piutang')
+            ->sort()
+            ->values();
+        
+        return view('plnPiutang', compact('piutang', 'namaPiutangList'));
     }
 
     public function showPiutang($id)
@@ -159,5 +119,32 @@ class PlnController extends Controller
         }
 
         return response()->json($data);
+    }
+
+    public function updatePiutang(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'nama_piutang' => 'nullable|string',
+            'harga_jual' => 'nullable|integer',
+            'bayar' => 'nullable|string|max:45',
+            'username' => 'nullable|string',
+        ]);
+
+        $pln = Pln::piutang()->find($id);
+
+        if (!$pln) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data tidak ditemukan'
+            ], 404);
+        }
+
+        $pln->update($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data berhasil diperbarui',
+            'data' => $pln
+        ]);
     }
 }

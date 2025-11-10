@@ -103,6 +103,7 @@ Route::middleware(['auth'])->group(function () {
     //piutang pln
     Route::get('/plnPiutang', [PlnController::class, 'indexPiutang'])->name('plnPiutang');
     Route::get('/plnPiutang/{id}', [PlnController::class, 'showPiutang'])->name('plnPiutang.show');
+    Route::put('/plnPiutang/{id}', [PlnController::class, 'updatePiutang'])->name('plnPiutang.update');
 
     // ======== FIND TICKET CONTROLLER ======== 
     Route::prefix('find-ticket')->name('find.')->group(function () {

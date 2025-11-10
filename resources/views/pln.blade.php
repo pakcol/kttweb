@@ -8,27 +8,27 @@
             @csrf
             <div class="form-grid">
                 <div class="form-group">
-                    <label for="no_pel">NO PELANGGAN</label>
-                    <input type="text" id="no_pel" name="no_pel" class="form-control" placeholder="Masukkan No Pelanggan" required>
+                    <label for="id_pel">ID PELANGGAN*</label>
+                    <input type="text" id="id_pel" name="id_pel" class="form-control" placeholder="Masukkan No Pelanggan" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="pulsa">PULSA</label>
-                    <input type="text" id="pulsa" name="pulsa" class="form-control" placeholder="Masukkan Nominal Pulsa" required>
+                    <label for="harga_jual">HARGA JUAL*</label>
+                    <input type="text" id="harga_jual" name="harga_jual" class="form-control" placeholder="Masukkan Nominal Harga Jual" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="nta">NTA</label>
-                    <input type="text" id="nta" name="nta" class="form-control" placeholder="Masukkan NTA" required>
+                    <label for="transaksi">TRANSAKSI</label>
+                    <input type="text" id="transaksi" name="transaksi" class="form-control" placeholder="Masukkan Transaksi" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="tgl">TANGGAL</label>
+                    <label for="tgl">TANGGAL*</label>
                     <input type="date" id="tgl" name="tgl" class="form-control" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="bayar">BAYAR</label>
+                    <label for="bayar">BAYAR*</label>
                     <select id="bayar" name="bayar" class="form-control" required>
                         <option value="">-- PILIH --</option>
                         <option value="TUNAI">TUNAI</option>
@@ -59,9 +59,9 @@
         <table class="table-pln">
             <thead>
                 <tr>
-                    <th>No Pel</th>
-                    <th>Pulsa</th>
-                    <th>NTA</th>
+                    <th>ID Pelanggan</th>
+                    <th>Harga Jual</th>
+                    <th>Transaksi</th>
                     <th>Tanggal</th>
                     <th>Bayar</th>
                     <th>Nama Piutang</th>
@@ -71,9 +71,9 @@
             <tbody>
                 @forelse ($data as $row)
                 <tr>
-                    <td>{{ $row->no_pel }}</td>
-                    <td>{{ number_format($row->pulsa) }}</td>
-                    <td>{{ number_format($row->nta) }}</td>
+                    <td>{{ $row->id_pel }}</td>
+                    <td>{{ number_format($row->harga_jual) }}</td>
+                    <td>{{ number_format($row->transaksi) }}</td>
                     <td>{{ $row->tgl }}</td>
                     <td>{{ $row->bayar }}</td>
                     <td>{{ $row->nama_piutang }}</td>

@@ -12,12 +12,8 @@ class InputDataController extends Controller
 {
     public function index()
     {
-        $today = now()->format('Y-m-d');
-
-        $ticket = Tiket::whereDate('tglIssued', $today)
-            ->orWhereDate('tglRealisasi', $today)
-            ->orderBy('tglIssued')
-            ->orderBy('jam')
+        $ticket = Tiket::orderBy('tglIssued', 'desc')
+            ->orderBy('jam', 'desc')
             ->get();
 
         return view('input-data', compact('ticket'));
