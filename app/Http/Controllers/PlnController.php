@@ -11,37 +11,7 @@ class PlnController extends Controller
 {
     public function index()
     {
-        if (!Schema::hasTable('pln')) {
-            $data = collect([
-                (object)[
-                    'no_pel' => '1234567890',
-                    'pulsa' => 100000,
-                    'nta' => 5000,
-                    'tgl' => '2025-11-07',
-                    'bayar' => 'TUNAI',
-                    'nama_piutang' => '-'
-                ],
-                (object)[
-                    'no_pel' => '9876543210',
-                    'pulsa' => 150000,
-                    'nta' => 7500,
-                    'tgl' => '2025-11-06',
-                    'bayar' => 'BCA',
-                    'nama_piutang' => 'PT. Alfa Elektronik'
-                ],
-                (object)[
-                    'no_pel' => '5647382910',
-                    'pulsa' => 200000,
-                    'nta' => 10000,
-                    'tgl' => '2025-11-05',
-                    'bayar' => 'PIUTANG',
-                    'nama_piutang' => 'CV. Kupang Listrik'
-                ],
-            ]);
-        } else {
-            $data = Pln::all();
-        }
-
+        $data = Pln::all();
         return view('pln', compact('data'));
     }
 
