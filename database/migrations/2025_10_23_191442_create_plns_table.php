@@ -12,7 +12,7 @@ return new class extends Migration
             // Jika id di accounts adalah bigint
             $table->id(); // Auto-increment BIGINT primary key
             $table->dateTime('tgl')->nullable();
-            $table->integer('id_pel')->nullable();
+            $table->bigInteger('id_pel')->nullable();
             $table->integer('harga_jual')->nullable();
             $table->integer('transaksi')->nullable();
             $table->string('bayar', 45)->nullable();

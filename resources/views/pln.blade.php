@@ -42,7 +42,7 @@
 
                 <div class="form-group">
                     <label for="nama_piutang">NAMA PIUTANG</label>
-                    <input type="text" id="nama_piutang" name="nama_piutang" class="form-control" placeholder="Masukkan Nama Piutang">
+                    <input type="text" id="nama_piutang" name="nama_piutang" class="form-control" disabled>
                 </div>
             </div>
 
@@ -88,5 +88,26 @@
             </tbody>
         </table>
     </div>
+
+    <script>
+        // Event listener untuk perubahan pembayaran
+        document.getElementById('bayar').addEventListener('change', toggleNamaPiutang);
+
+        // Panggil fungsi saat halaman dimuat untuk set initial state
+        toggleNamaPiutang();
+        function toggleNamaPiutang() {
+            const pembayaran = document.getElementById('bayar').value;
+            const namaPiutang = document.getElementById('nama_piutang');
+            
+            if (pembayaran === 'PIUTANG') {
+                nama_piutang.disabled = false;
+                nama_piutang.required = true;
+            } else {
+                nama_piutang.disabled = true;
+                nama_piutang.required = false;
+                nama_piutang.value = ''; // Kosongkan nilai jika disabled
+            }
+        }
+    </script>
 </section>
 </x-layouts.app>
