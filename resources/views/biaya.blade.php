@@ -9,8 +9,8 @@
                 @csrf
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="tanggal">Tanggal</label>
-                        <input type="date" id="tanggal" name="tanggal" required>
+                        <label for="tgl">Tanggal</label>
+                        <input type="date" id="tgl" name="tgl" required>
                     </div>
 
                     <div class="form-group">
@@ -50,11 +50,6 @@
                             <option>Biaya Lain-lain</option>
                         </select>
                     </div>
-
-                    <div class="form-group">
-                        <label for="user">User</label>
-                        <input type="text" id="user" name="user" placeholder="Masukkan nama user..." required>
-                    </div>
                 </div>
 
                 <div class="button-group">
@@ -75,17 +70,26 @@
                         <th>Pembayaran</th>
                         <th>Keterangan</th>
                         <th>User</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
+                    @forelse ($biaya as $row)
                     <tr>
-                        <td>2025-10-24</td>
-                        <td>08:30</td>
-                        <td>250.000</td>
-                        <td>Tunai</td>
-                        <td>Biaya Telpon dan Pulsa</td>
-                        <td>Admin</td>
+                        <td>{{ $row->tgl }}</td>
+                        <td>{{ $row->jam }}</td>
+                        <td>{{ number_format($row->biaya) }}</td>
+                        <td>{{ $row->pembayaran }}</td>
+                        <td>{{ $row->keterangan }}</td>
+                        <td>{{ $row->username }}</td>
+                        <td>
+                            <button class="btn btn-edit">Edit</button>
+                            <button class="btn btn-delete">Delete</button>
+                        </td>
                     </tr>
+                    @empty
+                    <tr><td colspan="7" class="text-center">Belum ada data</td></tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

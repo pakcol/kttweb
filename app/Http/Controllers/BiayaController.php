@@ -19,6 +19,7 @@ class BiayaController extends Controller
     {
         $request->validate([
             'tgl' => 'required|date',
+            'jam' => 'required|date_format:H:i',
             'biaya' => 'required|integer',
             'pembayaran' => 'required|string',
             'keterangan' => 'required|string|max:20'
@@ -26,7 +27,7 @@ class BiayaController extends Controller
 
         Biaya::create([
             'tgl' => $request->tgl,
-            'jam' => Carbon::now()->format('H:i'),
+            'jam' => $request->jam,
             'biaya' => (int)$request->biaya,
             'pembayaran' => $request->pembayaran,
             'keterangan' => $request->keterangan,
