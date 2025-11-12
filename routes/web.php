@@ -48,6 +48,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/buku-bank/search', [BukuBankController::class, 'search'])->name('buku-bank.search');
 
         Route::get('/rekapan-penjualan', [RekapanController::class, 'index'])->name('rekapan-penjualan.index');
+        Route::delete('/buku-bank/{id}', [BukuBankController::class, 'destroy'])->name('buku-bank.destroy');
+        Route::post('/buku-bank/delete-multiple', [BukuBankController::class, 'destroyMultiple'])->name('buku-bank.destroy-multiple');
     });
 
     // ======== PIUTANG CONTROLLER ======== 
