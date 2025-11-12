@@ -94,9 +94,9 @@
                         </a>
                         <ul class="dropdown-menu dropdown-click-menu">
                             <li><a class="dropdown-item" href="{{ url('/addaccount') }}">Add Account</a></li>
-                            <li><a class="dropdown-item" href="{{ url('/admin/rekapan-penjualan') }}">Rekapan Penjualan</a></li>
+                            <li><a class="dropdown-item" href="{{ url('/rekapan-penjualan') }}">Rekapan Penjualan</a></li>
                             <li><a class="dropdown-item" href="{{ url('/insentif') }}">Insentif</a></li>
-                            <li><a class="dropdown-item" href="{{ url('/admin/buku-bank') }}">Buku Bank</a></li>
+                            <li><a class="dropdown-item" href="{{ url('/buku-bank') }}">Buku Bank</a></li>
                         </ul>
                     </li>
                     @endif
