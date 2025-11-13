@@ -114,10 +114,10 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // ======== MUTASI AIRLINES CONTROLLER ======== 
-    Route::prefix('mutasi-airlines')->name('mutasi-airlines.')->group(function () {
-        Route::get('/', [MutasiController::class, 'index'])->name('index');
-        Route::post('/store', [MutasiController::class, 'store'])->name('store');
-    });
+    Route::get('/mutasi-airlines', [MutasiController::class, 'index'])->name('mutasi-airlines.index');
+    Route::post('/mutasi-airlines', [MutasiController::class, 'store'])->name('mutasi-airlines.store');
+    Route::get('/mutasi-airlines/{airlines}', [MutasiController::class, 'show'])->name('mutasi-airlines.show');
+    Route::get('/mutasi-airlines-all', [MutasiController::class, 'showAll'])->name('mutasi-airlines.all');
 
     // ======== ADD USER ======== 
     Route::middleware('superuser')->group(function () {

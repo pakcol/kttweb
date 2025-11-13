@@ -160,24 +160,6 @@ tbody tr:hover {
     transition: 0.2s;
 }
 
-.btn-delete {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 12px;
-}
-
-.btn-delete:hover {
-    background-color: #c82333;
-}
-
-.text-center {
-    text-align: center;
-}
-
 @media (max-width: 768px) {
     .buku-bank-card {
         padding: 30px 20px;
