@@ -10,13 +10,124 @@ class MutasiController extends Controller
 {
     public function index()
     {
-        // Ambil data dari semua airlines (contoh untuk citilink)
-        $data = DB::table('citilink')
-                ->orderBy('tgl', 'desc')
-                ->orderBy('jam', 'desc')
-                ->get();
+        $allData = $this->getAllAirlinesData();
+        return view('mutasi', compact('allData'));
+    }
 
-        return view('mutasi', compact('data'));
+    private function getAllAirlinesData()
+    {
+        $username = Auth::user()->username ?? 'default_user';
+
+        $citilinkData = DB::table('citilink')
+            ->where('username', $username)
+            ->orderBy('tgl', 'desc')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(function($item) {
+                $item->airlines = 'CITILINK';
+                $item->tanggal = $item->tgl;
+                return $item;
+            });
+        
+        $garudaData = DB::table('garuda')
+            ->where('username', $username)
+            ->orderBy('tgl', 'desc')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(function($item) {
+                $item->airlines = 'GARUDA';
+                $item->tanggal = $item->tgl;
+                return $item;
+            });
+        
+        $lionData = DB::table('lion')
+            ->where('username', $username)
+            ->orderBy('tgl', 'desc')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(function($item) {
+                $item->airlines = 'LION';
+                $item->tanggal = $item->tgl;
+                return $item;
+            });
+        
+        $sriwijayaData = DB::table('sriwijaya')
+            ->where('username', $username)
+            ->orderBy('tgl', 'desc')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(function($item) {
+                $item->airlines = 'SRWIJAYA';
+                $item->tanggal = $item->tgl;
+                return $item;
+            });
+        
+        $qgcornerData = DB::table('qgcorner')
+            ->where('username', $username)
+            ->orderBy('tgl', 'desc')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(function($item) {
+                $item->airlines = 'QGCORNER';
+                $item->tanggal = $item->tgl;
+                return $item;
+            });
+        
+        $transnusaData = DB::table('transnusa')
+            ->where('username', $username)
+            ->orderBy('tgl', 'desc')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(function($item) {
+                $item->airlines = 'TRANSNUSA';
+                $item->tanggal = $item->tgl;
+                return $item;
+            });
+        
+        $pelniData = DB::table('pelni')
+            ->where('username', $username)
+            ->orderBy('tgl', 'desc')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(function($item) {
+                $item->airlines = 'PELNI';
+                $item->tanggal = $item->tgl;
+                return $item;
+            });
+        
+        $airasiaData = DB::table('airasia')
+            ->where('username', $username)
+            ->orderBy('tgl', 'desc')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(function($item) {
+                $item->airlines = 'AIRASIA';
+                $item->tanggal = $item->tgl;
+                return $item;
+            });
+        
+        $dluData = DB::table('dlu')
+            ->where('username', $username)
+            ->orderBy('tgl', 'desc')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(function($item) {
+                $item->airlines = 'DLU';
+                $item->tanggal = $item->tgl;
+                return $item;
+            });
+
+        // Gabungkan semua data dan urutkan berdasarkan tanggal dan ID
+        return $citilinkData->concat($garudaData)
+                        ->concat($lionData)
+                        ->concat($sriwijayaData)
+                        ->concat($qgcornerData)
+                        ->concat($transnusaData)
+                        ->concat($pelniData)
+                        ->concat($airasiaData)
+                        ->concat($dluData)
+                        ->sortByDesc('tgl')
+                        ->sortByDesc('id');
     }
 
     public function store(Request $request)
