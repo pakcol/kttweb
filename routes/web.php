@@ -15,6 +15,7 @@ use App\Http\Controllers\MutasiController;
 use App\Http\Controllers\PlnPiutangController;
 use App\Http\Controllers\BukuBankController; 
 use App\Http\Controllers\RekapanController;
+use App\Http\Controllers\RekapPenjualanController;
 
 Route::get('/', function () {
     if (auth()->check()) {
@@ -46,10 +47,13 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/buku-bank', [BukuBankController::class, 'index'])->name('buku-bank.index');
         Route::post('/buku-bank', [BukuBankController::class, 'store'])->name('buku-bank.store');
         Route::get('/buku-bank/search', [BukuBankController::class, 'search'])->name('buku-bank.search');
-
-        Route::get('/rekapan-penjualan', [RekapanController::class, 'index'])->name('rekapan-penjualan.index');
         Route::delete('/buku-bank/{id}', [BukuBankController::class, 'destroy'])->name('buku-bank.destroy');
         Route::post('/buku-bank/delete-multiple', [BukuBankController::class, 'destroyMultiple'])->name('buku-bank.destroy-multiple');
+
+        // ======== REKAP PENJUALAN CONTROLLER ========
+        Route::get('/rekapPenjualan', [RekapPenjualanController::class, 'index'])->name('rekapPenjualan.index');
+        Route::post('/rekapPenjualan/tampil', [RekapPenjualanController::class, 'tampil'])->name('rekapPenjualan.tampil');
+        Route::post('/rekapPenjualan/export', [RekapPenjualanController::class, 'exportExcel'])->name('rekapPenjualan.export');
     });
 
     // ======== PIUTANG CONTROLLER ======== 
@@ -124,7 +128,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/addaccount', [AccountController::class, 'index'])->name('addaccount.index');
         Route::post('/addaccount', [AccountController::class, 'store'])->name('addaccount.store');
         Route::delete('/addaccount/{username}', [AccountController::class, 'destroy'])->name('addaccount.destroy');
-        Route::view('/rekapPenjualan', 'recapPenjualan')->name('rekapPenjualan');
         Route::view('/insentif', 'insentif')->middleware('superuser')->name('insentif');
     });
 

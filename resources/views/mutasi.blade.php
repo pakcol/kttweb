@@ -94,7 +94,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($data as $row)
+                    @forelse ($allData as $row)
                     <tr>
                         <td>{{ \Carbon\Carbon::parse($row->tgl)->format('d/m/Y') }}</td>
                         <td>{{ $row->jam }}</td>
