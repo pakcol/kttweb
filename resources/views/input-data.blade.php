@@ -135,7 +135,7 @@
     <table id="tiketTable">
 <thead>
     <tr>
-        <th>Pilih</th>
+        <th><input type="checkbox" id="checkAll"></th>
         <th>No</th>
         <th>Tgl Issued</th>
         <th>Jam</th>
@@ -234,6 +234,7 @@
 <link rel="stylesheet" href="{{ asset('css/input-data.css') }}">
 
 <script>
+// ====================== JAM REALTIME ===========================
 function updateDateTime() {
     const now = new Date();
     const hari = now.toLocaleDateString('id-ID', { weekday: 'long' });
@@ -245,26 +246,68 @@ function updateDateTime() {
 setInterval(updateDateTime, 1000);
 updateDateTime();
 
-// Fungsi untuk enable/disable NAMA PIUTANG berdasarkan PEMBAYARAN
+
+function unformatNumber(str) {
+    return parseInt(String(str).replace(/\./g, '').replace(/[^0-9]/g, '')) || 0;
+}
+function formatNumber(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+
+function hitungKomisi() {
+    const harga = unformatNumber(document.getElementById('harga').value);
+    const nta = unformatNumber(document.getElementById('nta').value);
+
+    const diskonPercent = parseFloat(document.getElementById('diskon').value) || 0;
+
+    let komisiDasar = harga - nta;
+    if (komisiDasar < 0) komisiDasar = 0;
+
+    const diskonRupiah = Math.round(komisiDasar * (diskonPercent / 100));
+    let komisi = komisiDasar - diskonRupiah;
+    if (komisi < 0) komisi = 0;
+
+    document.getElementById('komisi').value = formatNumber(komisi);
+}
+
+
+
+document.getElementById('harga').addEventListener('input', hitungKomisi);
+document.getElementById('nta').addEventListener('input', hitungKomisi);
+document.getElementById('diskon').addEventListener('input', hitungKomisi);
+document.getElementById('inputDataForm').addEventListener('submit', function () {
+    const harga = unformatNumber(document.getElementById('harga').value);
+    const nta = unformatNumber(document.getElementById('nta').value);
+    const diskonPercent = parseFloat(document.getElementById('diskon').value) || 0;
+
+    let komisiDasar = harga - nta;
+    if (komisiDasar < 0) komisiDasar = 0;
+
+    const diskonRupiah = Math.round(komisiDasar * (diskonPercent / 100));
+    document.getElementById('diskon').value = diskonRupiah;
+
+    const finalKomisi = komisiDasar - diskonRupiah;
+    document.getElementById('komisi').value = finalKomisi;
+});
+
+
 function toggleNamaPiutang() {
     const pembayaran = document.getElementById('pembayaran').value;
     const namaPiutang = document.getElementById('namaPiutang');
-    
+
     if (pembayaran === 'PIUTANG') {
         namaPiutang.disabled = false;
         namaPiutang.required = true;
     } else {
         namaPiutang.disabled = true;
         namaPiutang.required = false;
-        namaPiutang.value = ''; // Kosongkan nilai jika disabled
+        namaPiutang.value = '';
     }
 }
-
-// Event listener untuk perubahan pembayaran
 document.getElementById('pembayaran').addEventListener('change', toggleNamaPiutang);
-
-// Panggil fungsi saat halaman dimuat untuk set initial state
 toggleNamaPiutang();
+
 
 let selectedRow = null;
 document.querySelectorAll('#tiketTable tbody tr').forEach(row => {
@@ -275,6 +318,7 @@ document.querySelectorAll('#tiketTable tbody tr').forEach(row => {
         this.classList.add('selected');
 
         const data = Array.from(this.children).map(td => td.innerText);
+
         document.getElementById('tiketId').value = this.dataset.id;
         document.getElementById('tglIssued').value = data[2];
         document.getElementById('kodeBooking').value = data[4];
@@ -284,29 +328,28 @@ document.querySelectorAll('#tiketTable tbody tr').forEach(row => {
         document.getElementById('tglFlight1').value = data[8];
         document.getElementById('rute2').value = data[9];
         document.getElementById('tglFlight2').value = data[10];
-        document.getElementById('harga').value = parseFloat(data[11].replace(/\./g,'')) || 0;
-        document.getElementById('nta').value = parseFloat(data[12].replace(/\./g,'')) || 0;
-        document.getElementById('diskon').value = parseFloat(data[13].replace(/\./g,'')) || 0;
-        document.getElementById('komisi').value = parseFloat(data[14].replace(/\./g,'')) || 0;
+
+        document.getElementById('harga').value = data[11].replace(/\./g, '');
+        document.getElementById('nta').value = data[12].replace(/\./g, '');
+
+        const komisiDasar = unformatNumber(data[11]) - unformatNumber(data[12]);
+        const diskonRupiah = unformatNumber(data[13]);
+        const diskonPercent = komisiDasar > 0 ? Math.round((diskonRupiah / komisiDasar) * 100) : 0;
+
+        document.getElementById('diskon').value = diskonPercent;
+        document.getElementById('komisi').value = data[14].replace(/\./g, '');
+
         document.getElementById('pembayaran').value = data[15];
         document.getElementById('namaPiutang').value = data[16];
         document.getElementById('tglRealisasi').value = data[17];
         document.getElementById('jamRealisasi').value = data[18];
-        document.getElementById('nilaiRefund').value = parseFloat(data[19].replace(/\./g,'')) || 0;
+        document.getElementById('nilaiRefund').value = data[19].replace(/\./g, '');
         document.getElementById('keterangan').value = data[20];
 
-        // Panggil toggleNamaPiutang setelah set nilai pembayaran
         toggleNamaPiutang();
+        hitungKomisi();
 
         document.getElementById('btnInputData').textContent = 'UPDATE';
-    });
-
-
-    row.addEventListener('dblclick', function() {
-        const id = this.dataset.id;
-        if(confirm('Apakah yakin ingin menghapus data ini?')) {
-            window.location.href = `/input-data/destroy/${id}`;
-        }
     });
 });
 
@@ -315,20 +358,18 @@ document.getElementById('btnBatal').addEventListener('click', function() {
     document.getElementById('tiketId').value = '';
     document.getElementById('btnInputData').textContent = 'INPUT DATA';
     document.querySelectorAll('#tiketTable tr').forEach(r => r.classList.remove('selected'));
-    // Reset state NAMA PIUTANG setelah reset form
     toggleNamaPiutang();
 });
 
 document.getElementById('btnCetakInvoice').addEventListener('click', function() {
     const selected = Array.from(document.querySelectorAll('.check-row:checked')).map(cb => cb.value);
-    console.log(selected);  
+
     if (selected.length === 0) {
         alert('Silakan pilih minimal satu tiket untuk cetak invoice!');
         return;
     }
 
     if (confirm(`Cetak invoice untuk ${selected.length} tiket terpilih?`)) {
-        // Gunakan route() dari Laravel agar URL valid
         window.open(`{{ route('invoice.multi') }}?ids=${selected.join(',')}`, '_blank');
     }       
 });
@@ -441,6 +482,7 @@ btnYesDelete.addEventListener('click', () => {
 
 function isiFormDariRow(row) {
     const data = Array.from(row.children).map(td => td.innerText);
+
     document.getElementById('tiketId').value = row.dataset.id;
     document.getElementById('tglIssued').value = data[2];
     document.getElementById('kodeBooking').value = data[4];
@@ -450,20 +492,20 @@ function isiFormDariRow(row) {
     document.getElementById('tglFlight1').value = data[8];
     document.getElementById('rute2').value = data[9];
     document.getElementById('tglFlight2').value = data[10];
-    document.getElementById('harga').value = parseFloat(data[11].replace(/\./g,'')) || 0;
-    document.getElementById('nta').value = parseFloat(data[12].replace(/\./g,'')) || 0;
-    document.getElementById('diskon').value = parseFloat(data[13].replace(/\./g,'')) || 0;
-    document.getElementById('komisi').value = parseFloat(data[14].replace(/\./g,'')) || 0;
+
+    document.getElementById('harga').value = data[11].replace(/\./g, '');
+    document.getElementById('nta').value = data[12].replace(/\./g, '');
+    document.getElementById('diskon').value = data[13].replace(/\./g, '');
+    document.getElementById('komisi').value = data[14].replace(/\./g, '');
+
     document.getElementById('pembayaran').value = data[15];
     document.getElementById('namaPiutang').value = data[16];
     document.getElementById('tglRealisasi').value = data[17];
     document.getElementById('jamRealisasi').value = data[18];
-    document.getElementById('nilaiRefund').value = parseFloat(data[19].replace(/\./g,'')) || 0;
+    document.getElementById('nilaiRefund').value = data[19].replace(/\./g, '');
     document.getElementById('keterangan').value = data[20];
-    
-    // Panggil toggleNamaPiutang setelah set nilai pembayaran
+
     toggleNamaPiutang();
-    
     document.getElementById('btnInputData').textContent = 'UPDATE';
 }
 </script>

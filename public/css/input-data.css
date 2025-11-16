@@ -13,6 +13,25 @@ body {
     padding: 100px 0 20px;
 }
 
+.input-layout {
+    display: flex;
+    gap: 30px;
+    width: 100%;
+    max-width: 1600px;
+    padding: 20px;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.form-container {
+    flex: 1.2;
+}
+
+.table-card {
+    flex: 1;
+    max-height: 80vh;
+}
+
 .form-container {
     background: rgba(255, 255, 255, 0.7);
     border-radius: 20px;
