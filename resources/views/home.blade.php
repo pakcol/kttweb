@@ -6,7 +6,7 @@
             <p class="lead">Halo, selamat datang</p>
             <h1 class="display-4">PT. KUPANG TOUR & TRAVEL</h1>
             {{-- Tombol login di hero --}}
-            <a href="{{ route('login') }}" class="btn btn-primary btn-lg">LOGIN</a>
+            <a href="{{ route('login') }}" class="btn btn-book btn-lg" style="padding: 12px 30px; font-size: 1.1rem;">LOGIN</a>
         </div>
 
         {{-- PROMO STRIP (center-floating) --}}
@@ -15,7 +15,7 @@
         </div>
     </section>
 
-    <!-- WHAT WE DO -->
+<!-- WHAT WE DO -->
     <section class="what-section" aria-labelledby="what-we-do-title">
         <div class="container">
             <div class="row align-items-center justify-content-center g-5">
@@ -34,8 +34,8 @@
                     </ul>
 
                     <div class="mt-4 d-flex gap-3">
-    <!-- BOOK NOW -->
-    <button id="bookNowBtn" class="btn btn-book" type="button"> BOOK NOW </button>
+                        <!-- BOOK NOW -->
+                        <button id="bookNowBtn" class="btn btn-book" type="button">BOOK NOW</button>
 
                         <!-- JADWAL PELNI modal trigger -->
                         <button id="jadwalPelniBtn" class="btn btn-outline" type="button" aria-haspopup="dialog" aria-controls="jadwalPelniModal">JADWAL PELNI</button>
@@ -48,6 +48,7 @@
     <!-- Landscape Promo Section (below What We Do) -->
     <section class="landscape-promo-section" aria-label="Landscape Promo">
         <div class="container">
+            <h4 class="text-center mb-4" style="color: #004d61; font-weight: 600;">Promo Spesial</h4>
             <div class="landscape-promo" id="landscapePromo">
                 <div class="landscape-inner" id="landscapeInner" role="list"></div>
 
@@ -64,8 +65,8 @@
     <section class="full-bleed ktt" aria-labelledby="ktt-title">
         <div class="overlay"></div>
         <div class="content">
-            <h2 id="ktt-title" class="fw-bold mb-3">KTT</h2>
-            <p class="mb-5">“Satu kepercayaan untuk kemudahan tiket pesawat dan kapal laut, siap melayani perjalanan Anda dengan aman dan nyaman.”</p>
+            <h2 id="ktt-title" class="fw-bold mb-4">KTT</h2>
+            <p class="mb-5" style="font-size: 1.2rem; max-width: 800px; margin: 0 auto;">"Satu kepercayaan untuk kemudahan tiket pesawat dan kapal laut, siap melayani perjalanan Anda dengan aman dan nyaman."</p>
 
             <div class="container">
                 <div class="row g-4 justify-content-center align-items-stretch">
@@ -103,33 +104,33 @@
         </div>
         <div class="contact-bottom">
             <div class="social-links">
-    <!-- Gmail -->
-    <a href="mailto:kupang_tt@yahoo.com"
-       class="social-item"
-       aria-label="Email Kupang Tour & Travel">
-        <img src="{{ asset('images/gmail.png') }}" alt="Gmail">
-        <span>Gmail</span>
-    </a>
+                <!-- Gmail -->
+                <a href="mailto:kupang_tt@yahoo.com"
+                   class="social-item"
+                   aria-label="Email Kupang Tour & Travel">
+                    <img src="{{ asset('images/gmail.png') }}" alt="Gmail">
+                    <span>Gmail</span>
+                </a>
 
-    <!-- Facebook -->
-    <a href="https://www.facebook.com/share/17s8aQ9rW6/?mibextid=wwXIfr"
-       target="_blank"
-       class="social-item"
-       aria-label="Facebook Kupang Tour & Travel">
-        <img src="{{ asset('images/facebook.png') }}" alt="Facebook">
-        <span>Facebook</span>
-    </a>
+                <!-- Facebook -->
+                <a href="https://www.facebook.com/share/17s8aQ9rW6/?mibextid=wwXIfr"
+                   target="_blank"
+                   class="social-item"
+                   aria-label="Facebook Kupang Tour & Travel">
+                    <img src="{{ asset('images/facebook.png') }}" alt="Facebook">
+                    <span>Facebook</span>
+                </a>
 
-    <!-- WhatsApp -->
-    <a href="https://wa.me/6281237481987"
-       target="_blank"
-       class="social-item"
-       aria-label="WhatsApp Kupang Tour & Travel">
-        <img src="{{ asset('images/whatsapp.png') }}" alt="WhatsApp">
-        <span>WhatsApp</span>
-    </a>
-</div>
-            <small class="d-block mt-3">Based In, Kupang Nusa Tenggara Timur<br>JL. Garuda No. 4</small>
+                <!-- WhatsApp -->
+                <a href="https://wa.me/6281237481987"
+                   target="_blank"
+                   class="social-item"
+                   aria-label="WhatsApp Kupang Tour & Travel">
+                    <img src="{{ asset('images/whatsapp.png') }}" alt="WhatsApp">
+                    <span>WhatsApp</span>
+                </a>
+            </div>
+            <small class="d-block mt-4">Based In, Kupang Nusa Tenggara Timur<br>JL. Garuda No. 4</small>
         </div>
     </section>
 
@@ -146,7 +147,7 @@
     <div class="modal-backdrop" id="jadwalPelniModal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="jadwalPelniTitle" tabindex="-1">
         <div class="modal-content" role="document">
             <button class="modal-close" id="jadwalPelniClose" aria-label="Tutup modal">&times;</button>
-            <h3 id="jadwalPelniTitle">Jadwal PELNI</h3>
+            <h3 id="jadwalPelniTitle" style="color: #004d61; text-align: center; margin-bottom: 20px;">Jadwal PELNI</h3>
 
             <div class="pelni-slideshow" id="pelniSlideshow" aria-live="polite">
                 <div class="pelni-inner" id="pelniInner">
@@ -165,350 +166,423 @@
     </div>
 
     <!-- ================= BOOK NOW MODAL ================= -->
-<div class="modal-backdrop" id="bookNowModal" aria-hidden="true">
-    <div class="modal-content book-modal">
-        <button class="modal-close" id="bookNowClose">&times;</button>
+    <div class="modal-backdrop" id="bookNowModal" aria-hidden="true">
+        <div class="modal-content book-modal">
+            <button class="modal-close" id="bookNowClose">&times;</button>
 
-        <h4 class="fw-bold mb-3">Form Pemesanan Tiket</h4>
+            <h4 class="fw-bold mb-4" style="color: #004d61; text-align: center;">Form Pemesanan Tiket</h4>
 
-        <div class="book-form">
-            <input type="text" id="bn_name" placeholder="Nama Lengkap">
-            <input type="text" id="bn_airline" placeholder="Airlines">
-            <input type="text" id="bn_route1" placeholder="Rute 1 (Kupang - Surabaya)">
-            <input type="date" id="bn_date1">
-            <input type="text" id="bn_route2" placeholder="Rute 2 (Opsional)">
-            <input type="date" id="bn_date2">
-        </div>
+            <div class="book-form">
+                <input type="text" id="bn_name" placeholder="Nama Lengkap *" required>
+                <input type="text" id="bn_airline" placeholder="Airlines *" required>
+                <input type="text" id="bn_route1" placeholder="Rute 1 (contoh: Kupang - Surabaya) *" required>
+                <input type="date" id="bn_date1" required>
+                <input type="text" id="bn_route2" placeholder="Rute 2 (Opsional)">
+                <input type="date" id="bn_date2">
+                <small style="color: #666; font-size: 0.85rem; margin-top: -5px; margin-bottom: 10px;">* Wajib diisi</small>
+            </div>
 
-        <div class="text-end mt-3">
-            <button id="sendToWa" class="btn btn-book">
-                BOOK
-            </button>
+            <div class="text-end mt-4">
+                <button id="sendToWa" class="btn btn-book" style="padding: 12px 30px; font-size: 1rem;">
+                    BOOK TIKET
+                </button>
+            </div>
         </div>
     </div>
-</div>
-
 
     {{-- Inline scripts for the front-end only behavior --}}
     @push('scripts')
     <script>
-(function () {
+    (function () {
+        /* ===============================
+           PROMO STRIP (FIXED VERSION)
+        =============================== */
+        const promoImages = [
+            "{{ asset('images/Promo1.jpg') }}",
+            "{{ asset('images/Promo2.jpg') }}",
+            "{{ asset('images/Promo3.jpg') }}",
+            "{{ asset('images/Promo4.jpg') }}",
+            "{{ asset('images/Promo5.jpg') }}",
+            "{{ asset('images/Promo6.jpg') }}"
+        ];
 
-    /* ===============================
-       PROMO STRIP (FIXED VERSION)
-    =============================== */
+        const promoStripInner = document.getElementById('promoStripInner');
+        let promoIndex = 0;
 
-    const promoImages = [
-        "{{ asset('images/Promo1.jpg') }}",
-        "{{ asset('images/Promo2.jpg') }}",
-        "{{ asset('images/Promo3.jpg') }}",
-        "{{ asset('images/Promo4.jpg') }}",
-        "{{ asset('images/Promo5.jpg') }}",
-        "{{ asset('images/Promo6.jpg') }}"
-    ];
+        function renderPromoStrip() {
+            if (!promoStripInner) return;
 
-    const promoStripInner = document.getElementById('promoStripInner');
-    let promoIndex = 0;
+            promoStripInner.innerHTML = '';
+            const total = promoImages.length;
 
-    function renderPromoStrip() {
-        if (!promoStripInner) return;
+            // tampilkan 5 kartu (2 kiri, 1 tengah, 2 kanan)
+            for (let i = -2; i <= 2; i++) {
+                const idx = (promoIndex + i + total) % total;
 
-        promoStripInner.innerHTML = '';
-        const total = promoImages.length;
+                const card = document.createElement('div');
+                card.className = 'promo-card' + (i === 0 ? ' center' : '');
+                card.setAttribute('data-index', idx);
+                
+                // Tambahkan event click untuk membuka modal
+                card.addEventListener('click', () => openPromoModal(idx));
 
-        // tampilkan 5 kartu (2 kiri, 1 tengah, 2 kanan)
-        for (let i = -2; i <= 2; i++) {
-            const idx = (promoIndex + i + total) % total;
+                const img = document.createElement('img');
+                img.src = promoImages[idx];
+                img.alt = 'Promo ' + (idx + 1);
+                img.loading = 'lazy';
 
-            const card = document.createElement('div');
-            card.className = 'promo-card' + (i === 0 ? ' center' : '');
-
-            const img = document.createElement('img');
-            img.src = promoImages[idx];
-            img.alt = 'Promo ' + (idx + 1);
-            img.loading = 'lazy';
-
-            card.appendChild(img);
-            promoStripInner.appendChild(card);
+                card.appendChild(img);
+                promoStripInner.appendChild(card);
+            }
         }
-    }
 
-            function rotatePromo() {
-                promoIndex = (promoIndex + 1) % promoImages.length;
-                renderPromoStrip();
-            }
-
-            // initial render
+        function rotatePromo() {
+            promoIndex = (promoIndex + 1) % promoImages.length;
             renderPromoStrip();
-            // auto rotate every 5s
-            let promoInterval = setInterval(rotatePromo, 5000);
+        }
 
-            // Pause on hover/focus for accessibility
+        // initial render
+        renderPromoStrip();
+        
+        // auto rotate every 5s
+        let promoInterval = setInterval(rotatePromo, 5000);
+
+        // Pause on hover/focus for accessibility
+        if (promoStripInner) {
             promoStripInner.addEventListener('mouseenter', () => clearInterval(promoInterval));
-            promoStripInner.addEventListener('mouseleave', () => { promoInterval = setInterval(rotatePromo, 5000); });
+            promoStripInner.addEventListener('mouseleave', () => { 
+                promoInterval = setInterval(rotatePromo, 5000); 
+            });
+        }
 
-            /* PROMO MODAL */
-            const promoModal = document.getElementById('promoModal');
-            const promoModalBody = document.getElementById('promoModalBody');
-            const promoModalClose = document.getElementById('promoModalClose');
+        /* PROMO MODAL */
+        const promoModal = document.getElementById('promoModal');
+        const promoModalBody = document.getElementById('promoModalBody');
+        const promoModalClose = document.getElementById('promoModalClose');
 
-            function openPromoModal(idx) {
-                promoModalBody.innerHTML = '';
-                const big = document.createElement('img');
-                big.src = promoImages[idx];
-                big.alt = 'Detail Promo ' + (idx + 1);
-                big.className = 'promo-modal-img';
-                promoModalBody.appendChild(big);
+        function openPromoModal(idx) {
+            if (!promoModalBody) return;
+            
+            promoModalBody.innerHTML = '';
+            const big = document.createElement('img');
+            big.src = promoImages[idx];
+            big.alt = 'Detail Promo ' + (idx + 1);
+            big.className = 'promo-modal-img';
+            promoModalBody.appendChild(big);
 
-                promoModal.setAttribute('aria-hidden', 'false');
-                promoModal.style.display = 'flex';
-                // focus for keyboard
-                promoModalBody.focus();
-                // stop strip rotation while modal open
-                clearInterval(promoInterval);
-            }
+            promoModal.setAttribute('aria-hidden', 'false');
+            promoModal.style.display = 'flex';
+            
+            // focus for keyboard
+            if (promoModalBody) promoModalBody.focus();
+            
+            // stop strip rotation while modal open
+            clearInterval(promoInterval);
+        }
 
-            function closePromoModal() {
-                promoModal.setAttribute('aria-hidden', 'true');
-                promoModal.style.display = 'none';
-                // resume rotation
-                promoInterval = setInterval(rotatePromo, 5000);
-            }
+        function closePromoModal() {
+            promoModal.setAttribute('aria-hidden', 'true');
+            promoModal.style.display = 'none';
+            // resume rotation
+            promoInterval = setInterval(rotatePromo, 5000);
+        }
 
+        if (promoModalClose) {
             promoModalClose.addEventListener('click', closePromoModal);
+        }
+        
+        if (promoModal) {
             promoModal.addEventListener('click', function (e) {
                 if (e.target === promoModal) closePromoModal();
             });
-            document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape') {
-                    if (promoModal.style.display === 'flex') closePromoModal();
-                    if (jadwalPelniModal.style.display === 'flex') closeJadwalPelniModal();
-                }
+        }
+
+        /* LANDSCAPE PROMO */
+        const landscapeImages = [
+            "{{ asset('images/LandscapePromo.jpg') }}"
+            // add more if available: "{{ asset('images/LandscapePromo2.jpg') }}"
+        ];
+        
+        const landscapeInner = document.getElementById('landscapeInner');
+        const landscapeControls = document.getElementById('landscapeControls');
+        let landscapeIdx = 0;
+        let landscapeInterval = null;
+
+        function renderLandscape() {
+            if (!landscapeInner) return;
+            
+            landscapeInner.innerHTML = '';
+            landscapeImages.forEach((src, i) => {
+                const item = document.createElement('div');
+                item.className = 'landscape-item' + (i === landscapeIdx ? ' active' : '');
+                const img = document.createElement('img');
+                img.src = src;
+                img.alt = 'Landscape Promo ' + (i + 1);
+                img.loading = 'lazy';
+                item.appendChild(img);
+                landscapeInner.appendChild(item);
             });
 
-            /* LANDSCAPE PROMO: use single image asset images/LandscapePromo.jpg
-               If you want multiple landscape promos, add them to landscapeImages array.
-            */
-            const landscapeImages = [
-                "{{ asset('images/LandscapePromo.jpg') }}"
-                // add more if available: "{{ asset('images/LandscapePromo2.jpg') }}"
-            ];
-            const landscapeInner = document.getElementById('landscapeInner');
-            const landscapeControls = document.getElementById('landscapeControls');
-            let landscapeIdx = 0;
-            let landscapeInterval = null;
-
-            function renderLandscape() {
-                landscapeInner.innerHTML = '';
-                landscapeImages.forEach((src, i) => {
-                    const item = document.createElement('div');
-                    item.className = 'landscape-item' + (i === landscapeIdx ? ' active' : '');
-                    const img = document.createElement('img');
-                    img.src = src;
-                    img.alt = 'Landscape Promo ' + (i + 1);
-                    img.loading = 'lazy';
-                    item.appendChild(img);
-                    landscapeInner.appendChild(item);
-                });
-
-                // show controls only if >1
-                if (landscapeImages.length > 1) {
-                    landscapeControls.setAttribute('aria-hidden', 'false');
-                    landscapeControls.style.display = 'flex';
-                } else {
-                    landscapeControls.style.display = 'none';
-                }
-            }
-
-            function nextLandscape() {
-                landscapeIdx = (landscapeIdx + 1) % landscapeImages.length;
-                renderLandscape();
-            }
-            function prevLandscape() {
-                landscapeIdx = (landscapeIdx - 1 + landscapeImages.length) % landscapeImages.length;
-                renderLandscape();
-            }
-
-            renderLandscape();
+            // show controls only if >1
             if (landscapeImages.length > 1) {
-                landscapeInterval = setInterval(nextLandscape, 5000);
-                document.querySelector('.landscape-next').addEventListener('click', () => {
+                landscapeControls.setAttribute('aria-hidden', 'false');
+                landscapeControls.style.display = 'flex';
+            } else {
+                if (landscapeControls) landscapeControls.style.display = 'none';
+            }
+        }
+
+        function nextLandscape() {
+            landscapeIdx = (landscapeIdx + 1) % landscapeImages.length;
+            renderLandscape();
+        }
+        
+        function prevLandscape() {
+            landscapeIdx = (landscapeIdx - 1 + landscapeImages.length) % landscapeImages.length;
+            renderLandscape();
+        }
+
+        renderLandscape();
+        
+        if (landscapeImages.length > 1) {
+            landscapeInterval = setInterval(nextLandscape, 5000);
+            
+            const landscapeNextBtn = document.querySelector('.landscape-next');
+            const landscapePrevBtn = document.querySelector('.landscape-prev');
+            
+            if (landscapeNextBtn) {
+                landscapeNextBtn.addEventListener('click', () => {
                     clearInterval(landscapeInterval);
                     nextLandscape();
                     landscapeInterval = setInterval(nextLandscape, 5000);
                 });
-                document.querySelector('.landscape-prev').addEventListener('click', () => {
+            }
+            
+            if (landscapePrevBtn) {
+                landscapePrevBtn.addEventListener('click', () => {
                     clearInterval(landscapeInterval);
                     prevLandscape();
                     landscapeInterval = setInterval(nextLandscape, 5000);
                 });
             }
+        }
 
-            // Pause landscape autoplay on hover
-            const landscapePromoEl = document.getElementById('landscapePromo');
+        // Pause landscape autoplay on hover
+        const landscapePromoEl = document.getElementById('landscapePromo');
+        if (landscapePromoEl) {
             landscapePromoEl.addEventListener('mouseenter', () => clearInterval(landscapeInterval));
             landscapePromoEl.addEventListener('mouseleave', () => {
                 if (landscapeImages.length > 1) landscapeInterval = setInterval(nextLandscape, 5000);
             });
+        }
 
-            /* JADWAL PELNI MODAL (slideshow) */
-            const jadwalPelniBtn = document.getElementById('jadwalPelniBtn');
-            const jadwalPelniModal = document.getElementById('jadwalPelniModal');
-            const jadwalPelniClose = document.getElementById('jadwalPelniClose');
+        /* JADWAL PELNI MODAL (slideshow) */
+        const jadwalPelniBtn = document.getElementById('jadwalPelniBtn');
+        const jadwalPelniModal = document.getElementById('jadwalPelniModal');
+        const jadwalPelniClose = document.getElementById('jadwalPelniClose');
 
-            const pelniInner = document.getElementById('pelniInner');
-            const pelniSlides = Array.from(pelniInner.querySelectorAll('.pelni-slide'));
-            let pelniIdx = 0;
-            let pelniInterval = null;
+        const pelniInner = document.getElementById('pelniInner');
+        const pelniSlides = pelniInner ? Array.from(pelniInner.querySelectorAll('.pelni-slide')) : [];
+        let pelniIdx = 0;
+        let pelniInterval = null;
 
-            function showPelniSlide(i) {
-                pelniSlides.forEach((s, idx) => {
-                    s.style.display = (idx === i) ? 'block' : 'none';
-                    if (idx === i) s.setAttribute('aria-hidden', 'false'); else s.setAttribute('aria-hidden', 'true');
-                });
+        function showPelniSlide(i) {
+            pelniSlides.forEach((s, idx) => {
+                s.style.display = (idx === i) ? 'block' : 'none';
+                if (idx === i) s.setAttribute('aria-hidden', 'false'); 
+                else s.setAttribute('aria-hidden', 'true');
+            });
+        }
+
+        function startPelniAuto() {
+            if (pelniSlides.length > 1) {
+                pelniInterval = setInterval(() => {
+                    pelniIdx = (pelniIdx + 1) % pelniSlides.length;
+                    showPelniSlide(pelniIdx);
+                }, 10000); // 10s auto slide
             }
+        }
 
-            function startPelniAuto() {
-                if (pelniSlides.length > 1) {
-                    pelniInterval = setInterval(() => {
-                        pelniIdx = (pelniIdx + 1) % pelniSlides.length;
-                        showPelniSlide(pelniIdx);
-                    }, 10000); // 10s auto slide
-                }
+        function stopPelniAuto() {
+            if (pelniInterval) {
+                clearInterval(pelniInterval);
+                pelniInterval = null;
             }
+        }
 
-            function stopPelniAuto() {
-                if (pelniInterval) {
-                    clearInterval(pelniInterval);
-                    pelniInterval = null;
-                }
-            }
-
-            document.getElementById('pelniPrev').addEventListener('click', () => {
+        const pelniPrevBtn = document.getElementById('pelniPrev');
+        const pelniNextBtn = document.getElementById('pelniNext');
+        
+        if (pelniPrevBtn) {
+            pelniPrevBtn.addEventListener('click', () => {
                 stopPelniAuto();
                 pelniIdx = (pelniIdx - 1 + pelniSlides.length) % pelniSlides.length;
                 showPelniSlide(pelniIdx);
                 startPelniAuto();
             });
-            document.getElementById('pelniNext').addEventListener('click', () => {
+        }
+        
+        if (pelniNextBtn) {
+            pelniNextBtn.addEventListener('click', () => {
                 stopPelniAuto();
                 pelniIdx = (pelniIdx + 1) % pelniSlides.length;
                 showPelniSlide(pelniIdx);
                 startPelniAuto();
             });
+        }
 
-            function openJadwalPelniModal() {
-                jadwalPelniModal.setAttribute('aria-hidden', 'false');
-                jadwalPelniModal.style.display = 'flex';
-                showPelniSlide(pelniIdx);
-                startPelniAuto();
-                jadwalPelniModal.focus();
-            }
+        function openJadwalPelniModal() {
+            if (!jadwalPelniModal) return;
+            
+            jadwalPelniModal.setAttribute('aria-hidden', 'false');
+            jadwalPelniModal.style.display = 'flex';
+            showPelniSlide(pelniIdx);
+            startPelniAuto();
+            jadwalPelniModal.focus();
+        }
 
-            function closeJadwalPelniModal() {
-                jadwalPelniModal.setAttribute('aria-hidden', 'true');
-                jadwalPelniModal.style.display = 'none';
-                stopPelniAuto();
-            }
+        function closeJadwalPelniModal() {
+            if (!jadwalPelniModal) return;
+            
+            jadwalPelniModal.setAttribute('aria-hidden', 'true');
+            jadwalPelniModal.style.display = 'none';
+            stopPelniAuto();
+        }
 
+        if (jadwalPelniBtn) {
             jadwalPelniBtn.addEventListener('click', openJadwalPelniModal);
+        }
+        
+        if (jadwalPelniClose) {
             jadwalPelniClose.addEventListener('click', closeJadwalPelniModal);
+        }
+        
+        if (jadwalPelniModal) {
             jadwalPelniModal.addEventListener('click', function (e) {
                 if (e.target === jadwalPelniModal) closeJadwalPelniModal();
             });
+        }
 
-            // Initial pelni setup: hide all but first
-            if (pelniSlides.length === 0) {
-                // If no images, show placeholder
-                pelniInner.innerHTML = '<div class="pelni-placeholder">Belum ada jadwal PELNI.</div>';
-            } else {
-                showPelniSlide(0);
-            }
+        // Initial pelni setup: hide all but first
+        if (pelniSlides.length === 0 && pelniInner) {
+            // If no images, show placeholder
+            pelniInner.innerHTML = '<div class="pelni-placeholder">Belum ada jadwal PELNI.</div>';
+        } else if (pelniSlides.length > 0) {
+            showPelniSlide(0);
+        }
 
-            /* Accessibility: trap focus inside modals when open (simple) */
-            function trapFocus(modalEl) {
-                const focusables = modalEl.querySelectorAll('a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])');
-                if (!focusables.length) return;
-                const first = focusables[0];
-                const last = focusables[focusables.length - 1];
-                modalEl.addEventListener('keydown', function (e) {
-                    if (e.key !== 'Tab') return;
-                    if (e.shiftKey) { // shift+tab
-                        if (document.activeElement === first) {
-                            e.preventDefault();
-                            last.focus();
-                        }
-                    } else {
-                        if (document.activeElement === last) {
-                            e.preventDefault();
-                            first.focus();
-                        }
-                    }
-                });
-            }
+        /* BOOK NOW → WHATSAPP CHAT */
+        const bookBtn = document.getElementById('bookNowBtn');
+        const bookModal = document.getElementById('bookNowModal');
+        const bookClose = document.getElementById('bookNowClose');
+        const sendToWa = document.getElementById('sendToWa');
 
-            trapFocus(promoModal);
-            trapFocus(jadwalPelniModal);
+        if (bookBtn) {
+            bookBtn.addEventListener('click', () => {
+                if (bookModal) bookModal.style.display = 'flex';
+            });
+        }
 
-            /* Ensure center card stays dominant on small screens by using CSS scaling; no extra JS required */
+        if (bookClose) {
+            bookClose.addEventListener('click', () => {
+                if (bookModal) bookModal.style.display = 'none';
+            });
+        }
 
-            // Done
-        })();
+        if (sendToWa) {
+            sendToWa.addEventListener('click', () => {
+                const nama = document.getElementById('bn_name').value;
+                const airline = document.getElementById('bn_airline').value;
+                const rute1 = document.getElementById('bn_route1').value;
+                const tgl1 = document.getElementById('bn_date1').value;
+                const rute2 = document.getElementById('bn_route2').value;
+                const tgl2 = document.getElementById('bn_date2').value;
 
-    /* =====================================================
-   BOOK NOW → WHATSAPP CHAT
-===================================================== */
-const bookBtn   = document.getElementById('bookNowBtn');
-const bookModal = document.getElementById('bookNowModal');
-const bookClose = document.getElementById('bookNowClose');
-const sendToWa  = document.getElementById('sendToWa');
+                // Validasi input
+                if (!nama || !airline || !rute1 || !tgl1) {
+                    alert('Harap isi semua field yang wajib diisi!');
+                    return;
+                }
 
-bookBtn.addEventListener('click', () => {
-    bookModal.style.display = 'flex';
-});
+                // Format tanggal
+                const formatDate = (dateString) => {
+                    if (!dateString) return '-';
+                    const date = new Date(dateString);
+                    return date.toLocaleDateString('id-ID', { 
+                        day: 'numeric', 
+                        month: 'long', 
+                        year: 'numeric' 
+                    });
+                };
 
-bookClose.addEventListener('click', () => {
-    bookModal.style.display = 'none';
-});
-
-sendToWa.addEventListener('click', () => {
-    const nama     = bn_name.value;
-    const airline  = bn_airline.value;
-    const rute1    = bn_route1.value;
-    const tgl1     = bn_date1.value;
-    const rute2    = bn_route2.value;
-    const tgl2     = bn_date2.value;
-
-    const message =
+                const message =
 `Halo Kupang travel, saya ingin mencari tiket ke :
 
 Nama            : ${nama}
 Airlines        : ${airline}
 Rute 1          : ${rute1}
-Tgl flight 1    : ${tgl1}
-Rute 2          : ${rute2}
-Tgl flight 2    : ${tgl2}
+Tgl flight 1    : ${formatDate(tgl1)}
+Rute 2          : ${rute2 || '-'}
+Tgl flight 2    : ${formatDate(tgl2) || '-'}
 
 apakah bisa dibantu untuk pemesanannya?`;
 
-    const waUrl = `https://wa.me/6281237481987?text=${encodeURIComponent(message)}`;
-    window.open(waUrl, '_blank');
-});
+                const waUrl = `https://wa.me/6281237481987?text=${encodeURIComponent(message)}`;
+                window.open(waUrl, '_blank');
+            });
+        }
 
-// Klik area luar → tutup modal
-bookModal.addEventListener('click', (e) => {
-    if (e.target === bookModal) {
-        bookModal.style.display = 'none';
-    }
-});
+        // Klik area luar → tutup modal
+        if (bookModal) {
+            bookModal.addEventListener('click', (e) => {
+                if (e.target === bookModal) {
+                    bookModal.style.display = 'none';
+                }
+            });
+        }
 
-// ESC → tutup modal
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        bookModal.style.display = 'none';
-    }
-});
-        
+        // ESC → tutup modal untuk semua modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (promoModal && promoModal.style.display === 'flex') closePromoModal();
+                if (jadwalPelniModal && jadwalPelniModal.style.display === 'flex') closeJadwalPelniModal();
+                if (bookModal && bookModal.style.display === 'flex') bookModal.style.display = 'none';
+            }
+        });
+
+        /* Accessibility: trap focus inside modals when open */
+        function trapFocus(modalEl) {
+            if (!modalEl) return;
+            
+            const focusables = modalEl.querySelectorAll('a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])');
+            if (!focusables.length) return;
+            
+            const first = focusables[0];
+            const last = focusables[focusables.length - 1];
+            
+            modalEl.addEventListener('keydown', function (e) {
+                if (e.key !== 'Tab') return;
+                
+                if (e.shiftKey) { // shift+tab
+                    if (document.activeElement === first) {
+                        e.preventDefault();
+                        last.focus();
+                    }
+                } else {
+                    if (document.activeElement === last) {
+                        e.preventDefault();
+                        first.focus();
+                    }
+                }
+            });
+        }
+
+        // Trap focus untuk semua modal
+        trapFocus(promoModal);
+        trapFocus(jadwalPelniModal);
+        trapFocus(bookModal);
+
+    })();
     </script>
     @endpush
 </x-layouts.app>
