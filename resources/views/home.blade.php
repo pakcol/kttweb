@@ -516,16 +516,16 @@
                 };
 
                 const message =
-`Halo Kupang travel, saya ingin mencari tiket ke :
+                    `Halo Kupang travel, saya ingin mencari tiket ke :
 
-Nama            : ${nama}
-Airlines        : ${airline}
-Rute 1          : ${rute1}
-Tgl flight 1    : ${formatDate(tgl1)}
-Rute 2          : ${rute2 || '-'}
-Tgl flight 2    : ${formatDate(tgl2) || '-'}
+                    Nama            : ${nama}
+                    Airlines        : ${airline}
+                    Rute 1          : ${rute1}
+                    Tgl flight 1    : ${formatDate(tgl1)}
+                    Rute 2          : ${rute2 || '-'}
+                    Tgl flight 2    : ${formatDate(tgl2) || '-'}
 
-apakah bisa dibantu untuk pemesanannya?`;
+                    apakah bisa dibantu untuk pemesanannya?`;
 
                 const waUrl = `https://wa.me/6281237481987?text=${encodeURIComponent(message)}`;
                 window.open(waUrl, '_blank');

@@ -12,7 +12,7 @@ return new class extends Migration {
             $table->string('username')->unique();
             $table->string('name');
             $table->string('password');
-            $table->string('roles')->default('admin');
+            $table->enum('roles', ['superuser', 'admin']);
             $table->rememberToken();
             $table->timestamps();
         });

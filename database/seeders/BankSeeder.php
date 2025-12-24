@@ -22,6 +22,7 @@ class BankSeeder extends Seeder
             DB::table('bank')->updateOrInsert(
                 ['name' => $name],
                 [
+                    'saldo'      => 0,
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
                 ]

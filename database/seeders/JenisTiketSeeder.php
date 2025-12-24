@@ -24,7 +24,9 @@ class JenisTiketSeeder extends Seeder
 
         foreach ($maskapai as $nama) {
             DB::table('jenis_tiket')->insert([
-                'nama'       => $nama,
+                'name_jenis' => $nama,
+                'saldo' => 0,
+                'keterangan' => 'Maskapai ' . $nama,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);

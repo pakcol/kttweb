@@ -18,7 +18,7 @@ class JenisBayarSeeder extends Seeder
 
         foreach ($jenisBayar as $nama) {
             DB::table('jenis_bayar')->updateOrInsert(
-                ['nama' => $nama],
+                ['jenis' => $nama],
                 [
                     'created_at' => Carbon::now(),
                     'updated_at' => Carbon::now(),
