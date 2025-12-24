@@ -1,25 +1,35 @@
 <?php
+// app/Models/Bank.php
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Bank extends Model
 {
-    use HasFactory;
-
-    // Nama tabel
     protected $table = 'bank';
+    protected $primaryKey = 'id';
     
     protected $fillable = [
-        'id_tiket',      // ID tiket terkait
-        'nama_bank',     // Nama bank (BCA, BTN, BNI, MANDIRI, BRI)
-        'total_harga'    // Total harga setelah dikurangi NTA
+        'name',
+        'saldo',
+        'credit',
+        'debit',
+        'indicacs'
     ];
-
-    public function tiket()
+    
+    protected $casts = [
+        'saldo' => 'decimal:2',
+        'credit' => 'decimal:2',
+        'debit' => 'decimal:2',
+    ];
+    
+    /**
+     * Relasi ke JenisBayar
+     */
+    public function jenisBayar(): HasMany
     {
-        return $this->belongsTo(Tiket::class, 'id_tiket');
+        return $this->hasMany(JenisBayar::class, 'bank_id');
     }
 }

@@ -1,33 +1,33 @@
 <?php
+// app/Models/Biaya.php
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Biaya extends Model
 {
-    use HasFactory;
-
     protected $table = 'biaya';
-
+    protected $primaryKey = 'id';
+    
     protected $fillable = [
         'tgl',
-        'jam',
         'biaya',
-        'pembayaran',
-        'keterangan',
-        'username'
+        'jenis_bayar_id',
+        'keterangan'
     ];
-
+    
     protected $casts = [
         'tgl' => 'datetime',
         'biaya' => 'integer',
     ];
-
-    public function account()
+    
+    /**
+     * Relasi ke JenisBayar
+     */
+    public function jenisBayar(): BelongsTo
     {
-        return $this->belongsTo(Account::class, 'username', 'username');
+        return $this->belongsTo(JenisBayar::class, 'jenis_bayar_id');
     }
 }
-

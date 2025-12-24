@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('accounts', function (Blueprint $table) {
-            $table->string('username', 45)->primary();
-            $table->string('name', 45);
-            $table->string('password', 255);
-            $table->enum('roles', ['superuser', 'admin'])->default('admin');
+        Schema::create('jenis_bayar', function (Blueprint $table) {
+            $table->id(); // id INT
+            $table->string('jenis', 15); // jenis VARCHAR(15)
+            $table->foreignId('bank_id')->nullable()->constrained('bank'); // bank_id INT
+            $table->text('indicacs')->nullable(); // indicacs
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('accounts');
+        Schema::dropIfExists('jenis_bayar');
     }
 };
