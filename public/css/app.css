@@ -52,6 +52,23 @@ html, body {
     justify-content: center;
 }
 
+.hero .content {
+    transform: translateY(-170px);
+}
+
+.hero::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -70px; /* ⬅️ TURUNKAN KE BAWAH */
+    width: 100%;
+    height: 220px; /* ⬅️ LEBIHKAN TINGGI AGAR LENGKUNG HALUS */
+    background: url("../images/hero_6.png") center bottom no-repeat;
+    background-size: 100% auto;
+    z-index: 6;
+    pointer-events: none;
+}
+
 /* HERO */
 .hero {
     height: 100vh;
@@ -89,61 +106,52 @@ html, body {
 
 .hero .lead { opacity: 0.95; margin-bottom: 0; }
 
-/* PROMO STRIP (floating center) */
+/* PROMO STRIP */
 .promo-strip {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    bottom: -80px; /* floating across hero bottom */
-    width: calc(100% - 80px);
-    max-width: 1200px;
-    z-index: 9999; /* very high so it floats above hero */
-    pointer-events: auto;
+    bottom: 95px;
+    width: 100%;
+    max-width: 1240px;
+    padding: 0 40px;
+    z-index: 20;
 }
 
 .promo-strip-inner {
     display: flex;
-    gap: 18px;
     justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    padding: 18px;
-    background: transparent;
+    align-items: flex-end;
+    gap: 26px;
 }
 
 /* each promo card */
 .promo-card {
-    width: calc((100% - 4 * 18px) / 5);
-    max-width: 200px;
-    min-width: 92px;
-    border-radius: 14px;
+    width: 190px;
+    height: 260px;
+    border-radius: 18px;
     overflow: hidden;
-    box-shadow: 0 8px 22px rgba(0,0,0,0.18);
-    transform-origin: center center;
+    background: #fff;
+    border: 5px solid rgba(255,255,255,0.9);
+    box-shadow: 0 14px 34px rgba(0,0,0,0.22);
     transition: transform 0.35s ease, box-shadow 0.35s ease;
-    cursor: pointer;
-    border: 6px solid rgba(255,255,255,0.85);
-    background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
-    z-index: 1000;
 }
 
 .promo-card img {
-    display: block;
     width: 100%;
-    height: 140px;
+    height: 100%;
     object-fit: cover;
-    vertical-align: middle;
 }
 
 /* center (dominant) card */
 .promo-card.center {
-    transform: scale(1.16);
-    z-index: 1100;
-    box-shadow: 0 18px 40px rgba(0,0,0,0.30);
-    width: calc((100% - 4 * 18px) / 5 + 30px);
-    max-width: 300px;
-    min-width: 140px;
+    width: 230px;
+    height: 300px;
+    transform: translateY(-18px);
+    box-shadow: 0 24px 50px rgba(0,0,0,0.35);
+    z-index: 30;
 }
+
 
 /* ensure promotional strip looks good on smaller screens */
 @media (max-width: 1200px) {
@@ -168,7 +176,7 @@ html, body {
     margin-left: -50vw;
     width: 100vw;
     min-height: 70vh;
-    padding: 120px 0 80px;
+    padding: 120px 0 40px;
     background: url("../images/hero_4.png") center/cover no-repeat;
     display: flex;
     align-items: center;
@@ -200,24 +208,68 @@ html, body {
 .what-list { list-style: none; padding:0; margin:0; }
 .what-list li { margin-bottom: 14px; display: flex; gap: 12px; align-items: center; font-size: 16px; color: #111; }
 
-/* LANDSCAPE PROMO */
+/* =========================================================
+   LANDSCAPE PROMO SECTION (FINAL – CLEAN & STABLE)
+========================================================= */
 .landscape-promo-section {
-    padding: 40px 0 60px;
-    background: #f5f8f9;
+    position: relative;
+    margin-top: -120px; /* ⬅️ OVERLAP KE ATAS */
+    padding: 160px 0 180px;
+    background: transparent;
+    z-index: 3;
+    overflow: hidden;
 }
+
+.landscape-promo-section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 220px;
+    background: url("../images/hero_6.png") center bottom no-repeat;
+    background-size: 100% auto;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.landscape-promo-section::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 300px;
+    background: linear-gradient(
+        to bottom,
+        rgba(255,255,255,0),
+        #f5f8f9 75%
+    );
+    z-index: 0;
+}
+
 
 .landscape-promo {
     position: relative;
-    overflow: hidden;
-    border-radius: 12px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    max-width: 1160px;
+    margin: -40px auto 0; /* ⬅️ NAIK KE HERO_6 */
+    padding: 22px;
+    border-radius: 26px;
+
+    background: rgba(255,255,255,0.38);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    box-shadow: 0 30px 90px rgba(0,0,0,0.24);
+    z-index: 5;
 }
 
 .landscape-inner {
     display: flex;
-    transition: transform 0.5s ease;
     width: 100%;
-    height: 240px;
+    height: 250px;
+    border-radius: 18px;
+    overflow: hidden;
 }
 
 .landscape-item {
@@ -225,30 +277,50 @@ html, body {
     display: none;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
 }
 
-.landscape-item.active { display: flex; }
-.landscape-item img { width:100%; height:240px; object-fit:cover; }
+.landscape-item.active {
+    display: flex;
+}
 
-/* landscape controls */
-.landscape-controls {
-    position: absolute;
-    inset: 0;
-    display: none;
-    justify-content: space-between;
-    align-items: center;
-    pointer-events: none;
+.landscape-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 16px;
 }
-.landscape-controls button {
-    pointer-events: all;
-    background: rgba(255,255,255,0.85);
-    border: none;
-    font-size: 28px;
-    width:48px; height:48px; border-radius:8px;
-    margin: 0 12px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+
+
+@media (max-width: 992px) {
+    .landscape-promo-section {
+        margin-top: -80px;
+        padding: 120px 16px 140px;
+    }
+
+    .landscape-inner {
+        height: 220px;
+    }
 }
+
+@media (max-width: 576px) {
+    .landscape-promo-section {
+        margin-top: -60px;
+        padding: 100px 14px 120px;
+    }
+
+    .landscape-inner {
+        height: 180px;
+    }
+
+    .landscape-promo {
+        margin-top: -20px;
+        padding: 18px;
+        border-radius: 20px;
+    }
+}
+
+
+
 
 /* KTT (glass cards replaced) */
 .ktt {
@@ -356,5 +428,48 @@ html, body {
     .modal-content { padding: 12px; margin: 8px; max-width: 96vw; }
     .promo-card img { height: 86px; }
 }
+
+@media (max-width: 992px) {
+    .promo-strip {
+        bottom: -90px;
+    }
+
+    .promo-strip-inner {
+        gap: 18px;
+    }
+
+    .promo-card {
+        width: 150px;
+        height: 220px;
+    }
+
+    .promo-card.center {
+        width: 190px;
+        height: 260px;
+        transform: translateY(-12px);
+    }
+}
+
+@media (max-width: 576px) {
+    .promo-strip {
+        bottom: -70px;
+        padding: 0 16px;
+    }
+
+    .promo-strip-inner {
+        gap: 14px;
+    }
+
+    .promo-card {
+        width: 120px;
+        height: 180px;
+    }
+
+    .promo-card.center {
+        width: 150px;
+        height: 210px;
+    }
+}
+
 
 

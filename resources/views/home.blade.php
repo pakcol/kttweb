@@ -6,7 +6,7 @@
             <p class="lead">Halo, selamat datang</p>
             <h1 class="display-4">PT. KUPANG TOUR & TRAVEL</h1>
             {{-- Tombol login di hero --}}
-            <a href="{{ route('login') }}" class="btn btn-book btn-lg" style="padding: 12px 30px; font-size: 1.1rem;">LOGIN</a>
+            <button id="bookNowBtn" class="btn btn-book" type="button">BOOK NOW</a>
         </div>
 
         {{-- PROMO STRIP (center-floating) --}}
@@ -516,19 +516,19 @@
                 };
 
                 const message =
-                    `Halo Kupang travel, saya ingin mencari tiket ke :
+`Halo Kupang Travel, saya ingin mencari tiket ke:
 
-                    Nama            : ${nama}
-                    Airlines        : ${airline}
-                    Rute 1          : ${rute1}
-                    Tgl flight 1    : ${formatDate(tgl1)}
-                    Rute 2          : ${rute2 || '-'}
-                    Tgl flight 2    : ${formatDate(tgl2) || '-'}
+Nama        : ${nama}
+Airlines    : ${airline}
+Rute 1      : ${rute1}
+Tgl Flight 1: ${formatDate(tgl1)}
+Rute 2      : ${rute2 || '-'}
+Tgl Flight 2: ${tgl2 ? formatDate(tgl2) : '-'}
 
-                    apakah bisa dibantu untuk pemesanannya?`;
+Apakah bisa dibantu untuk pemesanannya?`;
 
-                const waUrl = `https://wa.me/6281237481987?text=${encodeURIComponent(message)}`;
-                window.open(waUrl, '_blank');
+const waUrl = `https://wa.me/6281237481987?text=${encodeURIComponent(message)}`;
+window.open(waUrl, '_blank');
             });
         }
 
