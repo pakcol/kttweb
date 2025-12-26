@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AccountController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\InputDataController;
 use App\Http\Controllers\TiketController;
 use App\Http\Controllers\InvoiceController;
@@ -25,8 +25,8 @@ Route::get('/', function () {
 });
 
 Route::middleware(['guest'])->group(function () {
-    Route::get('/login', [AccountController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [AccountController::class, 'login']);
+    Route::get('/login', [UserController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [UserController::class, 'login']);
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -40,7 +40,7 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/sub-agent', 'sub-agent')->name('sub-agent');
     Route::view('/pln', 'pln')->name('pln');
     Route::view('/admin', 'admin')->middleware('superuser')->name('admin');
-    Route::view('/cash-flow', 'cash-flow')->name('cash- flow');
+    Route::view('/cash-flow', 'cash-flow')->name('cash-flow'); // Perbaiki: hapus spasi
 
     // ========  BUKU BANK CONTROLLER ========
     Route::middleware('superuser')->group(function () {
@@ -60,25 +60,30 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/piutang', [PiutangController::class, 'index'])->name('piutang.index');
     Route::post('/piutang', [PiutangController::class, 'store'])->name('piutang.store');
 
-    // ======== TIKET CONTROLLER ========
+    // ======== TIKET CONTROLLER  ========
     Route::prefix('tiket')->name('tiket.')->group(function () {
         Route::get('/', [TiketController::class, 'index'])->name('index'); 
         Route::post('/store', [TiketController::class, 'store'])->name('store'); 
     });
+
+    // ======== NOTA CONTROLLER ========
+    Route::get('/nota/by-tiket/{kodeBooking}', 
+        [NotaController::class, 'showByKodeBooking']
+    );
 
     // ======== INVOICE CONTROLLER ========
     Route::get('/invoice/{id}', [InvoiceController::class, 'showSingle'])->name('invoice.single');
     Route::get('/invoice-multi', [InvoiceController::class, 'showMulti'])->name('invoice.multi');
     Route::post('/invoice/{id}/update-materai', [InvoiceController::class, 'updateMaterai'])->name('invoice.updateMaterai');
 
-    // ======== INPUT DATA CONTROLLER ========
-    Route::prefix('input-data')->name('input-data.')->group(function () {
-        Route::get('/', [InputDataController::class, 'index'])->name('index');       
-        Route::post('/', [InputDataController::class, 'store'])->name('store');      
-        Route::get('/search', [InputDataController::class, 'search'])->name('search');
-        Route::get('/{id}', [InputDataController::class, 'getTiket'])->name('get');
-        Route::put('/{id}', [InputDataController::class, 'update'])->name('update');
-        Route::delete('/{id}', [InputDataController::class, 'destroy'])->name('destroy');
+    // ======== INPUT TIKET CONTROLLER ========
+    Route::prefix('input-tiket')->name('input-tiket.')->group(function () {
+        Route::get('/', [TiketController::class, 'index'])->name('index');       
+        Route::post('/', [TiketController::class, 'store'])->name('store');      
+        Route::get('/search', [TiketController::class, 'search'])->name('search');
+        Route::get('/{kode_booking}', [TiketController::class, 'getTiket'])->name('get');
+        Route::put('/{kode_booking}', [TiketController::class, 'update'])->name('update');
+        Route::delete('/{kode_booking}', [TiketController::class, 'destroy'])->name('destroy');
     });
 
     // ======== TUTUP KAS ========
@@ -125,15 +130,12 @@ Route::middleware(['auth'])->group(function () {
 
     // ======== ADD USER ======== 
     Route::middleware('superuser')->group(function () {
-        Route::get('/addaccount', [AccountController::class, 'index'])->name('addaccount.index');
-        Route::post('/addaccount', [AccountController::class, 'store'])->name('addaccount.store');
-        Route::delete('/addaccount/{username}', [AccountController::class, 'destroy'])->name('addaccount.destroy');
+        Route::get('/register', [UserController::class, 'create'])->name('register.create'); // Menggunakan method create
+        Route::post('/register', [UserController::class, 'store'])->name('register.store');
+        Route::delete('/register/{username}', [UserController::class, 'destroy'])->name('register.destroy');
         Route::view('/insentif', 'insentif')->middleware('superuser')->name('insentif');
     });
 
     // ======== LOGOUT ========
-    Route::post('/logout', [AccountController::class, 'logout'])->name('logout');
+    Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 });
-
-// ======== ACCOUNT RESOURCE ========
-Route::resource('account', AccountController::class);

@@ -22,11 +22,6 @@
                             Home
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="btn btn-primary btn-sm px-3 ms-lg-2" href="{{ route('login') }}">
-                            Login
-                        </a>
-                    </li>
                 @else
                     {{-- Menu untuk user login dengan Dropdown --}}
                     
@@ -41,7 +36,7 @@
                             Home
                         </a>
                         <ul class="dropdown-menu dropdown-click-menu">
-                            <li><a class="dropdown-item" href="{{ url('/input-data') }}">Input Data</a></li>
+                            <li><a class="dropdown-item" href="{{ url('/input-tiket') }}">Input Tiket</a></li>
                             <li><a class="dropdown-item" href="{{ url('/piutang') }}">Piutang</a></li>
                             <li><a class="dropdown-item" href="{{ url('/biaya') }}">Biaya</a></li>
                             <li><a class="dropdown-item" href="{{ url('/find-ticket') }}">Find Ticket</a></li>
@@ -93,7 +88,7 @@
                             Admin
                         </a>
                         <ul class="dropdown-menu dropdown-click-menu">
-                            <li><a class="dropdown-item" href="{{ url('/addaccount') }}">Add Account</a></li>
+                            <li><a class="dropdown-item" href="{{ url('/register') }}">Register new User</a></li>
                             <li><a class="dropdown-item" href="{{ url('/rekapPenjualan') }}">Rekapan Penjualan</a></li>
                             <li><a class="dropdown-item" href="{{ url('/insentif') }}">Insentif</a></li>
                             <li><a class="dropdown-item" href="{{ url('/buku-bank') }}">Buku Bank</a></li>

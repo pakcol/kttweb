@@ -17,6 +17,7 @@ return new class extends Migration
             $table->dateTime('tgl_bayar')->nullable(); // tgj_bayar DATETIME
             $table->integer('harga_bayar'); // harga_bayar INT
             $table->foreignId('jenis_bayar_id')->constrained('jenis_bayar'); // jenis_bayar_id INT
+            $table->foreignId('bank_id')->nullable()->constrained('bank');
             $table->foreignId('pembayaran_online_id')->nullable()->constrained('pembayaran_online'); // pembayaranOnline_id INT
             $table->string('tiket_kode_booking', 10); // tiket_kodeBooling VARCHAR(10)
             $table->timestamps();

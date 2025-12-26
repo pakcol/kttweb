@@ -27,8 +27,8 @@
                         </h4>
                         <h1 class="main-title">DATABASE</h1>
                         <p class="company-name">PT. Kupang Tour & Travel</p>
-                        <button class="btn-input" onclick="window.location.href='{{ route('input-data.index') }}'">
-                            Input Data
+                        <button class="btn-input" onclick="window.location.href='{{ route('input-tiket.index') }}'">
+                            Input Tiket
                         </button>
                     </div>
                 </div>

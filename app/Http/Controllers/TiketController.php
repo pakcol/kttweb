@@ -3,58 +3,284 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tiket;
+use App\Models\Nota;
+use App\Models\JenisTiket;
+use App\Models\JenisBayar;
+use App\Models\Bank;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use DB;
 
 class TiketController extends Controller
 {
+    /**
+     * Menampilkan semua tiket untuk halaman input-tiket
+     */
     public function index()
     {
-        $ticket = Tiket::orderBy('created_at', 'desc')->get();
-        return view('input-data', compact('ticket'));
+        $ticket = Tiket::with('jenisTiket')
+            ->orderBy('tgl_issued', 'desc')
+            ->get();
+
+        $jenisTiket = JenisTiket::orderBy('name_jenis')->get();
+        $jenisBayar = JenisBayar::orderBy('jenis')->get();
+        $bank = Bank::orderBy('name')->get();
+
+        return view('input-tiket', compact(
+            'ticket',
+            'jenisTiket',
+            'jenisBayar',
+            'bank'
+        ));
     }
 
+
+    /**
+     * Menyimpan tiket baru atau update tiket yang ada, plus simpan ke nota
+     */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'tglIssued'     => 'required|date',
-            'kodeBooking'   => 'required|string|max:255|unique:ticket,kodeBooking',
-            'airlines'      => 'required|string',
-            'nama'          => 'required|string',
-            'rute1'         => 'required|string',
-            'tglFlight1'    => 'required|date',
-            'rute2'         => 'nullable|string',
-            'tglFlight2'    => 'nullable|date',
-            'harga'         => 'required|numeric',
-            'nta'           => 'required|numeric',
-            'diskon'        => 'required|numeric',
-            'pembayaran'    => 'required|string',
-            'namaPiutang'   => 'nullable|string',
-            'tglRealisasi'  => 'nullable|date',
-            'nilaiRefund'   => 'nullable|numeric',
-            'keterangan'    => 'nullable|string',
+        $request->validate([
+            'tgl_issued'     => 'required|date',
+            'kode_booking'   => 'required|string|max:10',
+            'name'           => 'required|string|max:100',
+            'harga_jual'     => 'required|integer',
+            'nta'            => 'required|integer',
+            'diskon'         => 'required|integer',
+            'rute'           => 'required|string|max:45',
+            'tgl_flight'     => 'required|date',
+            'rute2'          => 'nullable|string|max:45',
+            'tgl_flight2'    => 'nullable|date',
+            'status'         => 'required|in:pending,issued,canceled,refunded',
+            'jenis_tiket_id' => 'required|exists:jenis_tiket,id',
+            'jenis_bayar_id' => 'required|exists:jenis_bayar,id',
+            'bank_id'        => 'nullable|exists:bank,id',
+            'keterangan'     => 'nullable|string|max:255',
         ]);
 
-        $validated['komisi'] = $validated['harga'] - $validated['nta'] - $validated['diskon'];
-        $validated['jam'] = Carbon::now()->format('H:i');
-        $validated['username'] = Auth::check() ? Auth::user()->username ?? Auth::user()->name : 'Guest';
+        DB::beginTransaction();
+        $kodeBookingInput = strtoupper($request->kode_booking);
 
-        $tiket = Tiket::create($validated);
+        $tiket = Tiket::create([
+            'tgl_issued'     => $request->tgl_issued,
+            'kode_booking'   => $kodeBookingInput,
+            'name'           => strtoupper($request->name),
+            'harga_jual'     => $request->harga_jual,
+            'nta'            => $request->nta,
+            'diskon'         => $request->diskon,
+            'rute'           => strtoupper($request->rute),
+            'tgl_flight'     => $request->tgl_flight,
+            'rute2'          => strtoupper($request->rute2),
+            'tgl_flight2'    => $request->tgl_flight2,
+            'status'         => $request->status,
+            'jenis_tiket_id' => $request->jenis_tiket_id,
+            'keterangan'     => strtoupper($request->keterangan),
+        ]);
 
-        return redirect()->route('input-data.index')->with('success', 'Data tiket berhasil disimpan.');
+        $nota = Nota::create([
+            'tgl_issued' => $tiket->tgl_issued,
+            'tgl_bayar' => null,
+            'jenis_bayar_id' => $request->jenis_bayar_id,
+            'bank_id' => $request->bank_id,
+            'tiket_kode_booking' => $tiket->kode_booking,
+            'harga_bayar' => $tiket->harga_jual,
+        ]);
+
+        if (!$nota) {
+            throw new \Exception('Insert nota gagal');
+        }
+
+        DB::commit();
+
+        return redirect()->route('input-tiket.index')->with('success', 'OK');
     }
 
-    public function getAll()
+
+    /**
+     * Fungsi untuk menyimpan data ke tabel nota secara fleksibel
+     */
+    private function simpanKeNota(Tiket $tiket, Request $request)
     {
-        $tikets = Tiket::orderBy('created_at', 'desc')->get();
-        return response()->json($tikets);
+        // Tentukan tanggal bayar berdasarkan kondisi
+        $tglBayar = null;
+        
+        // Jika status issued dan sudah ada tgl realisasi, gunakan tgl realisasi
+        if ($tiket->status == 'issued' && $request->tgl_realisasi) {
+            $tglBayar = $request->tgl_realisasi;
+        } 
+        // Jika status issued tapi belum realisasi, gunakan tgl issued
+        elseif ($tiket->status == 'issued') {
+            $tglBayar = $tiket->tgl_issued;
+        }
+        // Jika piutang dan sudah direalisasi
+        elseif ($tiket->jenis_bayar_id == 3 && $request->tgl_realisasi) {
+            $tglBayar = $request->tgl_realisasi;
+        }
+        
+        // Tentukan harga bayar (harga jual - diskon - refund jika ada)
+        $hargaBayar = $tiket->harga_jual - $tiket->diskon;
+        
+        // Jika ada refund, kurangkan dari harga bayar
+        if ($tiket->status == 'refunded' && $request->nilai_refund > 0) {
+            $hargaBayar -= $request->nilai_refund;
+        }
+        
+        // Data untuk nota - FLEKSIBEL: hanya ambil data yang relevan
+        $notaData = [
+            'tgl_issued'           => $tiket->tgl_issued,
+            'tgl_bayar'            => $tglBayar,
+            'harga_bayar'          => $hargaBayar,
+            'jenis_bayar_id'       => $tiket->jenis_bayar_id,
+            'bank_id'              => $tiket->bank_id, // NULL jika bukan bank
+            'tiket_kode_booking'   => $tiket->kode_booking,
+        ];
+        
+        // Simpan atau update nota
+        // Nota dibuat fleksibel: jika ada perubahan di tiket, nota otomatis update
+        Nota::updateOrCreate(
+            ['tiket_kode_booking' => $tiket->kode_booking],
+            $notaData
+        );
+
+        if (!$nota->exists) {
+            throw new \Exception('Nota gagal disimpan');
+        }
     }
 
+    /**
+     * Hapus tiket dan nota terkait
+     */
+    public function destroy($kode_booking)
+    {
+        DB::beginTransaction();
+        
+        try {
+            // Hapus nota terkait terlebih dahulu (cascade)
+            Nota::where('tiket_kode_booking', $kode_booking)->delete();
+            
+            // Hapus tiket
+            $tiket = Tiket::where('kode_booking', $kode_booking)->first();
+            
+            if (!$tiket) {
+                throw new \Exception('Data tiket tidak ditemukan.');
+            }
+            
+            $tiket->delete();
+            
+            DB::commit();
+            
+            if (request()->ajax()) {
+                return response()->json([
+                    'success' => true, 
+                    'message' => 'Data tiket dan nota berhasil dihapus.'
+                ]);
+            }
+            
+            return redirect()->route('input-tiket.index')
+                ->with('success', 'Data tiket dan nota berhasil dihapus.');
+                
+        } catch (\Exception $e) {
+            DB::rollback();
+            
+            if (request()->ajax()) {
+                return response()->json([
+                    'success' => false, 
+                    'message' => 'Gagal menghapus data: ' . $e->getMessage()
+                ], 500);
+            }
+            
+            return redirect()->back()
+                ->with('error', 'Gagal menghapus data: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Cari tiket berdasarkan kode booking atau nama
+     */
+    public function search(Request $request)
+    {
+        $search = strtoupper($request->search);
+
+        if (strlen($search) < 3) {
+            return redirect()->route('input-tiket.index')
+                ->with('error', 'Karakter pencarian minimal 3 huruf!');
+        }
+
+        $ticket = Tiket::where('kode_booking', 'like', "%{$search}%")
+            ->orWhere('name', 'like', "%{$search}%")
+            ->with(['jenisTiket', 'jenisBayar', 'bank'])
+            ->get();
+
+        $jenisTiket = JenisTiket::orderBy('name_jenis')->get();
+        $jenisBayar = JenisBayar::orderBy('jenis')->get();
+        $bank = Bank::orderBy('nama_bank')->get();
+
+        return view('input-tiket', compact('ticket', 'jenisTiket', 'jenisBayar', 'bank'));
+    }
+
+    /**
+     * Ambil data tiket berdasarkan ID (untuk AJAX)
+     */
+    public function getTiket($kode_booking)
+    {
+        $tiket = Tiket::where('kode_booking', $kode_booking)
+            ->with(['jenisTiket', 'jenisBayar', 'bank'])
+            ->firstOrFail();
+        
+        return response()->json($tiket);
+    }
+
+    /**
+     * Update tiket
+     */
+    public function update(Request $request, $kode_booking)
+    {
+        // Validasi untuk update
+        $validated = $request->validate([
+            'tgl_issued'     => 'required|date',
+            'kode_booking'   => 'required|string|max:10|unique:tiket,kode_booking,' . $kode_booking . ',kode_booking',
+            'name'           => 'required|string|max:100',
+            'harga_jual'     => 'required|integer',
+            'nta'            => 'required|integer',
+            'rute'           => 'required|string|max:45',
+            'tgl_flight'     => 'required|date',
+            'status'         => 'required|in:pending,issued,canceled,refunded',
+            'jenis_tiket_id' => 'required|exists:jenis_tiket,id',
+            'jenis_bayar_id' => 'required|exists:jenis_bayar,id',
+        ]);
+
+        DB::beginTransaction();
+        
+        try {
+            // Update tiket
+            $tiket = Tiket::where('kode_booking', $kode_booking)->firstOrFail();
+            $tiket->update($validated);
+            
+            // Update nota terkait secara otomatis
+            $this->simpanKeNota($tiket, $request);
+            
+            DB::commit();
+            
+            return redirect()->route('input-tiket.index')
+                ->with('success', 'Data tiket dan nota berhasil diperbarui.');
+                
+        } catch (\Exception $e) {
+            DB::rollback();
+            
+            return redirect()->back()
+                ->withInput($request->all())
+                ->with('error', 'Gagal memperbarui data: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Menampilkan halaman invoice untuk tiket yang dipilih
+     */
     public function showInvoice(Request $request)
     {
         $ids = explode(',', $request->query('ids'));
-        $data = Tiket::whereIn('id', $ids)->get();
+        $data = Tiket::whereIn('kode_booking', $ids)->get();
 
         return view('invoice', compact('data'));
     }

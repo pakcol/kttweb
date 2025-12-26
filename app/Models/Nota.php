@@ -17,6 +17,7 @@ class Nota extends Model
         'tgl_bayar',
         'harga_bayar',
         'jenis_bayar_id',
+        'bank_id',
         'pembayaran_online_id',
         'tiket_kode_booking'
     ];
@@ -30,17 +31,24 @@ class Nota extends Model
     /**
      * Relasi ke Tiket
      */
-    public function tiket(): BelongsTo
+    public function tiket()
     {
         return $this->belongsTo(Tiket::class, 'tiket_kode_booking', 'kode_booking');
     }
     
+    // Relasi Ke Bank
+    public function bank()
+    {
+        return $this->belongsTo(Bank::class);
+    }
+
+
     /**
      * Relasi ke JenisBayar
      */
-    public function jenisBayar(): BelongsTo
+    public function jenisBayar()
     {
-        return $this->belongsTo(JenisBayar::class, 'jenis_bayar_id');
+        return $this->belongsTo(JenisBayar::class);
     }
     
     /**

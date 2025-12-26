@@ -14,17 +14,8 @@ class JenisBayar extends Model
     
     protected $fillable = [
         'jenis',
-        'bank_id',
         'indicacs'
     ];
-    
-    /**
-     * Relasi ke Bank
-     */
-    public function bank(): BelongsTo
-    {
-        return $this->belongsTo(Bank::class, 'bank_id');
-    }
     
     /**
      * Relasi ke Nota

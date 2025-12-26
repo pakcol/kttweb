@@ -66,9 +66,9 @@ class Tiket extends Model
     /**
      * Relasi ke Nota
      */
-    public function notas(): HasMany
+    public function nota()
     {
-        return $this->hasMany(Nota::class, 'tiket_kode_booking', 'kode_booking');
+        return $this->hasOne(Nota::class, 'tiket_kode_booking', 'kode_booking');
     }
     
     /**
