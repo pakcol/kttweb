@@ -5,12 +5,70 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Invoice;
+use App\Models\Tiket;
+use App\Models\Nota;
 
 class InvoiceController extends Controller
 {
+    // public function show($kode_booking)
+    // {
+    //     $tiket = Tiket::with([
+    //         'jenisTiket',
+    //         'nota.jenisBayar',
+    //         'nota.bank'
+    //     ])
+    //     ->where('kode_booking', $kode_booking)
+    //     ->firstOrFail();
+
+    //     return view('invoice', compact('tiket'));
+    // }
+
+    public function show($kode_booking)
+    {
+        $tiket = DB::table('tiket')
+            ->leftJoin('jenis_tiket', 'jenis_tiket.id', '=', 'tiket.jenis_tiket_id')
+            ->select(
+                'tiket.*',
+                'jenis_tiket.name_jenis as jenis_tiket_name'
+            )
+            ->where('tiket.kode_booking', $kode_booking)
+            ->first();
+
+        if (!$tiket) {
+            return redirect()->back()->with('error', 'Data tidak ditemukan!');
+        }
+
+        $tikets = collect([$tiket]);
+
+        // ⚠️ FIELD SALAH DI KODE KAMU
+        // harga ❌ → harga_jual ✅
+        $subtotal = $tiket->harga_jual ?? 0;
+
+        $issued_fee = 25000;
+        $materai = 10000;
+        $total = $subtotal + $issued_fee + $materai;
+
+        $terbilang = $this->terbilang($total) . ' Rupiah';
+
+        $invoiceId = $tiket->kode_booking;
+        $invoice_number = 'INV-' . str_pad(preg_replace('/\D/', '', $invoiceId), 5, '0', STR_PAD_LEFT);
+
+        return view('invoice', compact(
+            'tikets',
+            'subtotal',
+            'issued_fee',
+            'materai',
+            'total',
+            'terbilang',
+            'invoiceId',
+            'invoice_number'
+        ));
+    }
+
+
     public function showSingle($id)
     {
-        $tiket = DB::table('ticket')->where('id', $id)->first();
+        $tiket = DB::table('tiket')->where('kode_boooking', $id)->first();
 
         if (!$tiket) {
             return redirect()->back()->with('error', 'Data tidak ditemukan!');
@@ -25,7 +83,7 @@ class InvoiceController extends Controller
 
         $terbilang = $this->terbilang($total) . ' Rupiah';
 
-        $invoiceId = $tiket->id;
+        $invoiceId = $tiket->kode_booking;
         $invoice_number = 'INV-' . str_pad($invoiceId, 5, '0', STR_PAD_LEFT);
 
         return view('invoice', compact(

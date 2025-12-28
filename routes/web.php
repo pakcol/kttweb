@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\NotaController;
 use App\Http\Controllers\InputDataController;
 use App\Http\Controllers\TiketController;
 use App\Http\Controllers\InvoiceController;
@@ -72,7 +73,7 @@ Route::middleware(['auth'])->group(function () {
     );
 
     // ======== INVOICE CONTROLLER ========
-    Route::get('/invoice/{id}', [InvoiceController::class, 'showSingle'])->name('invoice.single');
+    Route::get('/invoice/{kode_booking}', [InvoiceController::class, 'show'])->name('invoice.show');
     Route::get('/invoice-multi', [InvoiceController::class, 'showMulti'])->name('invoice.multi');
     Route::post('/invoice/{id}/update-materai', [InvoiceController::class, 'updateMaterai'])->name('invoice.updateMaterai');
 

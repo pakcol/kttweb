@@ -20,10 +20,7 @@ class NotaController extends Controller
 
     public function showByKodeBooking($kodeBooking)
     {
-        $nota = Nota::with(['jenisBayar', 'bank'])
-            ->where('tiket_kode_booking', $kodeBooking)
-            ->first();
-
+        $nota = Nota::where('tiket_kode_booking', $kodeBooking)->first();
         if (!$nota) {
             return response()->json([
                 'jenis_bayar_id' => null,

@@ -19,21 +19,14 @@ class TiketController extends Controller
      */
     public function index()
     {
-        $ticket = Tiket::with('jenisTiket')
-            ->orderBy('tgl_issued', 'desc')
-            ->get();
-
-        $jenisTiket = JenisTiket::orderBy('name_jenis')->get();
-        $jenisBayar = JenisBayar::orderBy('jenis')->get();
-        $bank = Bank::orderBy('name')->get();
-
-        return view('input-tiket', compact(
-            'ticket',
-            'jenisTiket',
-            'jenisBayar',
-            'bank'
-        ));
+        return view('input-tiket', [
+            'ticket'      => Tiket::with(['jenisTiket'])->latest()->get(),
+            'jenisBayar'  => JenisBayar::all(),
+            'bank'        => Bank::all(),
+            'jenisTiket'  => JenisTiket::all(),
+        ]);
     }
+
 
 
     /**
@@ -62,9 +55,10 @@ class TiketController extends Controller
         DB::beginTransaction();
         $kodeBookingInput = strtoupper($request->kode_booking);
 
-        $tiket = Tiket::create([
+        $tiket = Tiket::updateOrCreate(
+        ['kode_booking' => $kodeBookingInput],
+        [
             'tgl_issued'     => $request->tgl_issued,
-            'kode_booking'   => $kodeBookingInput,
             'name'           => strtoupper($request->name),
             'harga_jual'     => $request->harga_jual,
             'nta'            => $request->nta,
@@ -78,7 +72,9 @@ class TiketController extends Controller
             'keterangan'     => strtoupper($request->keterangan),
         ]);
 
-        $nota = Nota::create([
+        $nota = Nota::updateOrCreate(
+        ['tiket_kode_booking' => $tiket->kode_booking],
+        [
             'tgl_issued' => $tiket->tgl_issued,
             'tgl_bayar' => null,
             'jenis_bayar_id' => $request->jenis_bayar_id,
@@ -86,10 +82,6 @@ class TiketController extends Controller
             'tiket_kode_booking' => $tiket->kode_booking,
             'harga_bayar' => $tiket->harga_jual,
         ]);
-
-        if (!$nota) {
-            throw new \Exception('Insert nota gagal');
-        }
 
         DB::commit();
 
@@ -224,54 +216,11 @@ class TiketController extends Controller
      */
     public function getTiket($kode_booking)
     {
-        $tiket = Tiket::where('kode_booking', $kode_booking)
-            ->with(['jenisTiket', 'jenisBayar', 'bank'])
-            ->firstOrFail();
-        
-        return response()->json($tiket);
-    }
-
-    /**
-     * Update tiket
-     */
-    public function update(Request $request, $kode_booking)
-    {
-        // Validasi untuk update
-        $validated = $request->validate([
-            'tgl_issued'     => 'required|date',
-            'kode_booking'   => 'required|string|max:10|unique:tiket,kode_booking,' . $kode_booking . ',kode_booking',
-            'name'           => 'required|string|max:100',
-            'harga_jual'     => 'required|integer',
-            'nta'            => 'required|integer',
-            'rute'           => 'required|string|max:45',
-            'tgl_flight'     => 'required|date',
-            'status'         => 'required|in:pending,issued,canceled,refunded',
-            'jenis_tiket_id' => 'required|exists:jenis_tiket,id',
-            'jenis_bayar_id' => 'required|exists:jenis_bayar,id',
-        ]);
-
-        DB::beginTransaction();
-        
-        try {
-            // Update tiket
-            $tiket = Tiket::where('kode_booking', $kode_booking)->firstOrFail();
-            $tiket->update($validated);
-            
-            // Update nota terkait secara otomatis
-            $this->simpanKeNota($tiket, $request);
-            
-            DB::commit();
-            
-            return redirect()->route('input-tiket.index')
-                ->with('success', 'Data tiket dan nota berhasil diperbarui.');
-                
-        } catch (\Exception $e) {
-            DB::rollback();
-            
-            return redirect()->back()
-                ->withInput($request->all())
-                ->with('error', 'Gagal memperbarui data: ' . $e->getMessage());
-        }
+        return response()->json(
+            Tiket::with(['jenisTiket'])
+                ->where('kode_booking', $kode_booking)
+                ->firstOrFail()
+        );
     }
 
     /**

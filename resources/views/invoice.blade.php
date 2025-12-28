@@ -63,12 +63,12 @@
                 @foreach($tikets as $index => $data)
                 <tr>
                     <td>{{ $index + 1 }}</td>
-                    <td>{{ $data->kodeBooking }}</td>
-                    <td>{{ $data->airlines }}</td>
-                    <td>{{ $data->tglFlight1 }}</td>
-                    <td>{{ $data->rute1 }}</td>
-                    <td>{{ $data->nama }}</td>
-                    <td>Rp {{ number_format($data->harga, 0, ',', '.') }}</td>
+                    <td>{{ $data->kode_booking }}</td>
+                    <td>{{ $data->jenis_tiket_name ?? '-' }}</td>
+                    <td>{{ $data->tgl_flight }}</td>
+                    <td>{{ $data->rute }}</td>
+                    <td>{{ $data->name }}</td>
+                    <td>Rp {{ number_format($data->harga_jual, 0, ',', '.') }}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -227,6 +227,9 @@
         materaiInput.addEventListener('input', updateTotal);
         issuedInput.addEventListener('input', updateTotal);
     });
+
+
+    
     </script>
 </body>
 </html>
