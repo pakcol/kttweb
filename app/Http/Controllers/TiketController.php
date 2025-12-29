@@ -75,6 +75,7 @@ class TiketController extends Controller
         $nota = Nota::updateOrCreate(
         ['tiket_kode_booking' => $tiket->kode_booking],
         [
+            'nama'  => $tiket->name,
             'tgl_issued' => $tiket->tgl_issued,
             'tgl_bayar' => null,
             'jenis_bayar_id' => $request->jenis_bayar_id,

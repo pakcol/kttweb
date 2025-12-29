@@ -40,8 +40,6 @@ class InvoiceController extends Controller
 
         $tikets = collect([$tiket]);
 
-        // ⚠️ FIELD SALAH DI KODE KAMU
-        // harga ❌ → harga_jual ✅
         $subtotal = $tiket->harga_jual ?? 0;
 
         $issued_fee = 25000;

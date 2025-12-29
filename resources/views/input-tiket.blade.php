@@ -189,7 +189,13 @@
                 <td>{{ $t->jenisTiket->name_jenis ?? '-' }}</td>
                 <td>{{ $t->keterangan ?? '-' }}</td>
                 <td style="text-align:center;">
-                    <button class="btn-delete" data-id="{{ $t->kode_booking }}">Delete</button>
+                    <form action="{{ route('input-tiket.destroy', $t->kode_booking) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button class="btn-delete" type="submit" onclick="return confirm('Hapus tiket ini?')">
+                            Delete
+                        </button>
+                    </form>
                 </td>
             </tr>
             @endforeach
@@ -362,16 +368,6 @@
     }
 </style>
 
-<div id="modalDelete" class="modal-cari">
-    <div class="modal-content">
-        <p>Are you sure want to <br><b>Delete this Line?</b></p>
-        <div class="modal-buttons">
-            <button id="btnYesDelete" class="btn-ok">YES</button>
-            <button id="btnNoDelete" class="btn-cancel">NO</button>
-        </div>
-    </div>
-</div>
-
 <div id="modalCari" class="modal-cari">
     <div class="modal-content">
         <p>Masukan <b>KODE BOOKING</b> atau <b>NAMA</b> :</p>
@@ -453,43 +449,6 @@ const $ = id => document.getElementById(id);
             fillFormFromRow(row);
         });
     });
-
-    /* ===================== DELETE ===================== */
-    let deleteId = null;
-
-    document.querySelectorAll('.btn-delete').forEach(btn => {
-        btn.onclick = e => {
-            e.stopPropagation();
-            deleteId = btn.dataset.id;
-            $('modalDelete').style.display = 'flex';
-        };
-    });
-
-    $('btnNoDelete').onclick = () => {
-        deleteId = null;
-        $('modalDelete').style.display = 'none';
-    };
-
-    $('btnYesDelete').onclick = () => {
-        if (!deleteId) return;
-
-        fetch(`/${deleteId}`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Accept': 'application/json'
-            }
-        })
-        .then(r => r.json())
-        .then(d => {
-            if (d.success) {
-                document.querySelector(`tr[data-id="${deleteId}"]`)?.remove();
-            }
-            alert(d.message);
-            $('modalDelete').style.display = 'none';
-            deleteId = null;
-        });
-    };
 
     /* ===================== INVOICE ===================== */
     //Cetak Invoice

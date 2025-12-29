@@ -29,6 +29,7 @@ class PpobController extends Controller
         
         $validated = $request->validate([
             'tgl'            => 'required|date',
+            'nama'          => 'required|string|max:50',
             'id_pel'         => 'required|string|max:20',
             'jenis_ppob_id'  => 'required|exists:jenis_ppob,id',
             'nta'            => 'required|integer',
@@ -51,6 +52,7 @@ class PpobController extends Controller
                 ]);
 
                 Nota::create([
+                    'nama'                 => $validated['nama'],
                     'tgl_issued'           => now(),
                     'tgl_bayar'            => $ppob->tgl,
                     'harga_bayar'          => $ppob->harga_jual,
@@ -74,6 +76,7 @@ class PpobController extends Controller
     {
         $validated = $request->validate([
             'tgl'            => 'required|date',
+            'nama'           => 'required|string|max:50',
             'id_pel'         => 'required|string|max:20',
             'jenis_ppob_id'  => 'required|exists:jenis_ppob,id',
             'nta'            => 'required|integer',
@@ -96,6 +99,7 @@ class PpobController extends Controller
 
             $ppob->nota()->update([
                 'tgl_bayar'      => $ppob->tgl,
+                'nama'           => $validated['nama'], 
                 'harga_bayar'    => $ppob->harga_jual,
                 'jenis_bayar_id' => $validated['jenis_bayar_id'],
                 'bank_id'        => $validated['bank_id'] ?? null,

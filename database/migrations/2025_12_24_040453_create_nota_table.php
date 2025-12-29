@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('nota', function (Blueprint $table) {
             $table->id(); // id INT
+            $table->string('nama', 50);
             $table->dateTime('tgl_issued'); // tgj_lssued DATETIME
             $table->dateTime('tgl_bayar')->nullable(); // tgj_bayar DATETIME
             $table->integer('harga_bayar'); // harga_bayar INT

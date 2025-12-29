@@ -19,6 +19,11 @@
             <input type="hidden" name="_method" id="formMethod" value="POST">
             <div class="form-grid">
                 <div class="form-group">
+                    <label for="nama">NAMA PELANGGAN*</label>
+                    <input type="text" id="nama" name="nama" class="form-control" placeholder="Masukkan Nama Pelanggan" required>
+                </div>
+
+                <div class="form-group">
                     <label for="id_pel">ID PELANGGAN*</label>
                     <input type="text" id="id_pel" name="id_pel" class="form-control" placeholder="Masukkan No Pelanggan" required>
                 </div>
@@ -101,6 +106,7 @@
             <thead>
                 <tr>
                     <th>Tanggal</th>
+                    <th>Nama Pelanggan</th>
                     <th>ID Pelanggan</th>
                     <th>Kategori</th>
                     <th>Harga Jual</th>
@@ -114,6 +120,7 @@
                 @foreach ($ppob as $index => $row)
                 <tr>
                     <td>{{ $row->tgl }}</td>
+                    <td>{{ $row->nama }}</td>
                     <td>{{ $row->id_pel }}</td>
                     <td>{{ $row->ppobJenis->jenis_ppob ?? '-' }}</td>
                     <td>{{ number_format($row->harga_jual) }}</td>
@@ -173,6 +180,7 @@
             document.getElementById('ppobForm').action = `/ppob/${data.id}`;
             document.getElementById('formMethod').value = 'PUT';
 
+            document.getElementById('nama').value = data.nama;
             document.getElementById('id_pel').value = data.id_pel;
             document.getElementById('jenis_ppob_id').value = data.jenis_ppob_id;
             document.getElementById('harga_jual').value = data.harga_jual;

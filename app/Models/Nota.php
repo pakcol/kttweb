@@ -13,6 +13,7 @@ class Nota extends Model
     protected $primaryKey = 'id';
     
     protected $fillable = [
+        'nama',
         'tgl_issued',
         'tgl_bayar',
         'harga_bayar',

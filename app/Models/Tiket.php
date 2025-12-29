@@ -37,6 +37,7 @@ class Tiket extends Model
         'tgl_flight2' => 'datetime',
         'nta' => 'integer',
         'harga_jual' => 'integer',
+        'diskon' => 'integer',
     ];
     
     /**
