@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignId('jenis_bayar_id')->constrained('jenis_bayar'); // jenis_bayar_id INT
             $table->foreignId('bank_id')->nullable()->constrained('bank');
             $table->foreignId('pembayaran_online_id')->nullable()->constrained('pembayaran_online'); // pembayaranOnline_id INT
-            $table->string('tiket_kode_booking', 10); // tiket_kodeBooling VARCHAR(10)
+            $table->string('tiket_kode_booking', 10)->nullable(); // tiket_kodeBooling VARCHAR(10)
             $table->timestamps();
             
             $table->foreign('tiket_kode_booking')->references('kode_booking')->on('tiket');

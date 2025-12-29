@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('pembayaran_online', function (Blueprint $table) {
             $table->id(); // id INT
             $table->dateTime('tgl'); // tgj DATETIME
-            $table->date('tgl_pel')->nullable(); // tgj_pel DATE
+            $table->string('id_pel', 20); // tgj_pel DATE
+            $table->foreignId('jenis_ppob_id')->constrained('jenis_ppob');
             $table->integer('nta'); // nta INT
             $table->integer('harga_jual'); // harga_juai INT
-            $table->integer('saldo'); // saldo INT
             $table->timestamps();
         });
     }

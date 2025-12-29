@@ -42,7 +42,6 @@ class Nota extends Model
         return $this->belongsTo(Bank::class);
     }
 
-
     /**
      * Relasi ke JenisBayar
      */

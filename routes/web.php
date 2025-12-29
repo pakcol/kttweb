@@ -10,7 +10,7 @@ use App\Http\Controllers\TutupKasController;
 use App\Http\Controllers\PiutangController;
 use App\Http\Controllers\EviController;
 use App\Http\Controllers\BiayaController;
-use App\Http\Controllers\PlnController;
+use App\Http\Controllers\PpobController;
 use App\Http\Controllers\FindController;
 use App\Http\Controllers\MutasiController;
 use App\Http\Controllers\PlnPiutangController;
@@ -108,14 +108,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/biaya', [BiayaController::class, 'index'])->name('biaya.index');
     Route::post('/biaya', [BiayaController::class, 'store'])->name('biaya.store');
 
-    // ======== PLN CONTROLLER ======== 
-    Route::get('/pln', [PlnController::class, 'index'])->name('pln.index');
-    Route::post('/pln', [PlnController::class, 'store'])->name('pln.store');
+    // ======== PPOB CONTROLLER ======== 
+    Route::resource('ppob', PpobController::class)->only([
+        'index', 'store', 'update', 'destroy'
+    ]);
 
-    //piutang pln
-    Route::get('/plnPiutang', [PlnController::class, 'indexPiutang'])->name('plnPiutang');
-    Route::get('/plnPiutang/{id}', [PlnController::class, 'showPiutang'])->name('plnPiutang.show');
-    Route::put('/plnPiutang/{id}', [PlnController::class, 'updatePiutang'])->name('plnPiutang.update');
+    //piutang ppob
+    Route::get('/ppobPiutang', [PpobController::class, 'indexPiutang'])->name('ppobPiutang');
+    Route::get('/ppobPiutang/{id}', [PpobController::class, 'showPiutang'])->name('ppobPiutang.show');
+    Route::put('/ppobPiutang/{id}', [PpobController::class, 'updatePiutang'])->name('ppobPiutang.update');
 
     // ======== FIND TICKET CONTROLLER ======== 
     Route::prefix('find-ticket')->name('find.')->group(function () {

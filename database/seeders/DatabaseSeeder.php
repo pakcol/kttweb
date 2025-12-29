@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             JenisTiketSeeder::class,
             JenisBayarSeeder::class,
             BankSeeder::class,
+            JenisPpobSeeder::class,
         ]);
     }
 }

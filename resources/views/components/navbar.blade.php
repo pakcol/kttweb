@@ -68,11 +68,11 @@
                            data-bs-toggle="dropdown"
                            aria-expanded="false"
                            onclick="toggleDropdown('plnDropdown')">
-                            PLN
+                            PPOB
                         </a>
                         <ul class="dropdown-menu dropdown-click-menu">
-                            <li><a class="dropdown-item" href="{{ url('/pln') }}">Transaksi</a></li>
-                            <li><a class="dropdown-item" href="{{ url('/plnPiutang') }}">Piutang</a></li>
+                            <li><a class="dropdown-item" href="{{ url('/ppob') }}">Transaksi</a></li>
+                            <li><a class="dropdown-item" href="{{ url('/ppobPiutang') }}">Piutang</a></li>
                         </ul>
                     </li>
 

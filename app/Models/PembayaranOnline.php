@@ -5,6 +5,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class PembayaranOnline extends Model
 {
@@ -13,18 +14,16 @@ class PembayaranOnline extends Model
     
     protected $fillable = [
         'tgl',
-        'tgl_pel',
+        'id_pel',
+        'jenis_ppob_id',
         'nta',
         'harga_jual',
-        'saldo'
     ];
     
     protected $casts = [
-        'tgl' => 'datetime',
-        'tgl_pel' => 'date',
+        'tgl' => 'date',
         'nta' => 'integer',
         'harga_jual' => 'integer',
-        'saldo' => 'integer',
     ];
     
     /**
@@ -38,8 +37,9 @@ class PembayaranOnline extends Model
     /**
      * Relasi ke Nota
      */
-    public function notas(): HasMany
+    public function nota(): HasOne
     {
-        return $this->hasMany(Nota::class, 'pembayaran_online_id');
+        return $this->hasOne(Nota::class, 'pembayaran_online_id');
     }
+
 }
