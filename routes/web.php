@@ -46,10 +46,7 @@ Route::middleware(['auth'])->group(function () {
     // ========  BUKU BANK CONTROLLER ========
     Route::middleware('superuser')->group(function () {
         Route::get('/buku-bank', [BukuBankController::class, 'index'])->name('buku-bank.index');
-        Route::post('/buku-bank', [BukuBankController::class, 'store'])->name('buku-bank.store');
-        Route::get('/buku-bank/search', [BukuBankController::class, 'search'])->name('buku-bank.search');
-        Route::delete('/buku-bank/{id}', [BukuBankController::class, 'destroy'])->name('buku-bank.destroy');
-        Route::post('/buku-bank/delete-multiple', [BukuBankController::class, 'destroyMultiple'])->name('buku-bank.destroy-multiple');
+        Route::post('/buku-bank/topup', [BukuBankController::class, 'topUp'])->name('buku-bank.topup');
 
         // ======== REKAP PENJUALAN CONTROLLER ========
         Route::get('/rekapPenjualan', [RekapPenjualanController::class, 'index'])->name('rekapPenjualan.index');
