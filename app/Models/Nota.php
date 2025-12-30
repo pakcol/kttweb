@@ -28,6 +28,14 @@ class Nota extends Model
         'tgl_bayar' => 'datetime',
         'harga_bayar' => 'integer',
     ];
+
+    public function scopePiutang($query)
+    {
+        return $query->whereHas('jenisBayar', function ($q) {
+            $q->where('jenis', 'piutang');
+        })->whereNull('tgl_bayar');
+    }
+
     
     /**
      * Relasi ke Tiket

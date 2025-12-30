@@ -57,20 +57,21 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/rekapPenjualan/export', [RekapPenjualanController::class, 'exportExcel'])->name('rekapPenjualan.export');
     });
 
-    // ======== PIUTANG CONTROLLER ======== 
-    Route::get('/piutang', [PiutangController::class, 'index'])->name('piutang.index');
-    Route::post('/piutang', [PiutangController::class, 'store'])->name('piutang.store');
-
     // ======== TIKET CONTROLLER  ========
     Route::prefix('tiket')->name('tiket.')->group(function () {
         Route::get('/', [TiketController::class, 'index'])->name('index'); 
         Route::post('/store', [TiketController::class, 'store'])->name('store'); 
     });
 
-    // ======== NOTA CONTROLLER ========
+    // ======== NOTA, PIUTANG CONTROLLER ========
     Route::get('/nota/by-tiket/{kodeBooking}', 
         [NotaController::class, 'showByKodeBooking']
     );
+    Route::get('/piutang', [NotaController::class, 'piutang'])
+        ->name('piutang.index');
+    Route::put('/nota/piutang/update', [NotaController::class, 'updatePiutang'])
+        ->name('nota.updatePiutang');
+
 
     // ======== INVOICE CONTROLLER ========
     Route::get('/invoice/{kode_booking}', [InvoiceController::class, 'show'])->name('invoice.show');
