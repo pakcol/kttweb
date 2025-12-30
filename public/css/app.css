@@ -181,7 +181,7 @@ html, body {
     margin-left: -50vw;
     width: 100vw;
     min-height: 70vh;
-    padding: 120px 0 40px;
+    padding: 40px 0 40px;
     background: url("../images/hero_4.png") center/cover no-repeat;
     display: flex;
     align-items: center;

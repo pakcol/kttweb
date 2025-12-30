@@ -532,16 +532,19 @@
                 };
 
                 const message =
-`Halo Kupang Travel, saya ingin mencari tiket ke:
+`Halo Kupang Tour & Travel,
 
-Nama        : ${nama}
-Airlines    : ${airline}
-Rute 1      : ${rute1}
-Tgl Flight 1: ${formatDate(tgl1)}
-Rute 2      : ${rute2 || '-'}
-Tgl Flight 2: ${tgl2 ? formatDate(tgl2) : '-'}
+Saya ingin menanyakan ketersediaan tiket dengan detail berikut:
 
-Apakah bisa dibantu untuk pemesanannya?`;
+Nama Penumpang  : ${nama}
+Maskapai        : ${airline}
+Rute 1          : ${rute1}
+Tanggal Flight  : ${formatDate(tgl1)}
+Rute 2          : ${rute2 || '-'}
+Tanggal Flight  : ${tgl2 ? formatDate(tgl2) : '-'}
+
+Mohon dibantu untuk pengecekan ketersediaan dan informasi selanjutnya.
+Terima kasih.`;
 
 const waUrl = `https://wa.me/6281237481987?text=${encodeURIComponent(message)}`;
 window.open(waUrl, '_blank');
