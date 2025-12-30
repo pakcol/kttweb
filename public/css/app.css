@@ -59,12 +59,17 @@ html, body {
 .hero::after {
     content: "";
     position: absolute;
-    left: 0;
-    bottom: -70px; /* ⬅️ TURUNKAN KE BAWAH */
-    width: 100%;
-    height: 220px; /* ⬅️ LEBIHKAN TINGGI AGAR LENGKUNG HALUS */
+
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -52px; 
+
+    width: 100vw;
+    height: 120px; 
+
     background: url("../images/hero_6.png") center bottom no-repeat;
-    background-size: 100% auto;
+    background-size: cover;
+
     z-index: 6;
     pointer-events: none;
 }
@@ -111,7 +116,7 @@ html, body {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    bottom: 95px;
+    bottom: 200px;
     width: 100%;
     max-width: 1240px;
     padding: 0 40px;
@@ -169,7 +174,7 @@ html, body {
     .promo-card.center { transform: scale(1.08); }
 }
 
-/* WHAT WE DO section (kept but allow relative z-index) */
+/* WHAT WE DO section */
 .what-section {
     position: relative;
     left: 50%;
@@ -208,19 +213,16 @@ html, body {
 .what-list { list-style: none; padding:0; margin:0; }
 .what-list li { margin-bottom: 14px; display: flex; gap: 12px; align-items: center; font-size: 16px; color: #111; }
 
-/* =========================================================
-   LANDSCAPE PROMO SECTION (FINAL – PERFECT ALIGN)
-========================================================= */
+/* LANDSCAPE PROMO SECTION */
 .landscape-promo-section {
     position: relative;
-    margin-top: -50px;   /* cukup overlap, jangan ekstrem */
-    padding: 0;           /* ❌ HAPUS PADDING BESAR */
-    height: 0;            /* 🔑 BIAR TIDAK BIKIN AREA KOSONG */
+    margin-top: -40px;   
+    padding: 0;           
+    height: 0;            
     z-index: 4;
     overflow: visible;
 }
 
-/* ===== SEPARATOR (hero_6) – FULL SCREEN FIX ===== */
 .landscape-promo-section::before {
     content: "";
     position: absolute;
@@ -229,7 +231,7 @@ html, body {
     transform: translateX(-50%);
 
     width: 100vw;
-    height: 100px;
+    height: 120px; 
 
     background: url("../images/hero_6.png") center bottom no-repeat;
     background-size: cover;
@@ -238,14 +240,13 @@ html, body {
     pointer-events: none;
 }
 
-/* ❌ HAPUS TOTAL BACKGROUND PUTIH */
 .landscape-promo-section::after {
     content: none;
 }
 
 .landscape-promo {
     position: absolute;
-    top: -110px;               /* pas di tengah separator */
+    top: -110px;               
     left: 50%;
     transform: translateX(-50%);
 
@@ -288,7 +289,7 @@ html, body {
     border-radius: 16px;
 }
 
-/* ================= RESPONSIVE ================= */
+/* RESPONSIVE */
 @media (max-width: 992px) {
     .landscape-promo-section {
         margin-top: -120px;
@@ -321,19 +322,27 @@ html, body {
 }
 
 
-/* KTT (glass cards replaced) */
+/* KTT (glass card) */
 .ktt {
     position: relative;
-    z-index: 1;
+    z-index: 2;
 
     min-height: 100vh;
-    padding: 140px 0 200px;
-
+    padding: 80px 0 160px; 
     background: url("../images/hero_2.png") center top / 140% auto no-repeat;
-
-    margin-bottom: -210px; /* ketemu hero 4 */
 }
 
+
+.separator-section {
+    position: relative;
+    width: 100vw;
+    height: 120px;
+    left: 50%;
+    margin-left: -50vw;
+    background-size: cover;
+
+    z-index: 3;
+}
 .ktt::after {
     content: "";
     position: absolute;
@@ -351,8 +360,6 @@ html, body {
     pointer-events: none;
 }
 
-
-/* Glass cards style for three features */
 .glass-card {
     border-radius: 14px;
     padding: 26px 18px;
@@ -378,10 +385,77 @@ html, body {
 
 /* CONTACT */
 .contact-section { position: relative; left: 50%; margin-left: -50vw; width: 100vw; }
-.contact-top { background: #004d61; color: #fff; padding: 60px 20px 40px; text-align:center; }
-.contact-bottom { position: relative; left: 50%; margin-left: -50vw; width: 100vw; background: url("../images/hero_4.png") center/cover no-repeat; padding: 80px 20px; text-align:center; color: #222; }
-.contact-bottom::before { content: ""; position: absolute; inset: 0; background: rgba(255,255,255,0.05); z-index: 1; }
-.contact-bottom > * { position: relative; z-index: 2; }
+.contact-top {
+    background: #004d61;
+    color: #fff;
+    padding: 50px 50px 50px;
+    text-align: center;
+
+    margin-top: -130px;   
+    margin-bottom: 0;    
+}
+.contact-bottom {
+    position: relative;
+    left: 50%;
+    margin-left: -50vw;
+    width: 100vw;
+
+    padding: 70px 20px 40px; 
+
+    text-align: center;
+    color: #222;
+    overflow: hidden;
+}
+
+.contact-bottom::before explains {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background: url("../images/hero_4.png") center / cover no-repeat;
+    z-index: 0;
+}
+
+.contact-bottom > * {
+    position: relative;
+    z-index: 2;
+}
+
+/* CONTACT SOCIAL ICONS */
+.social-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 36px;
+    margin-top: 10px;
+}
+
+.social-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+/* ukuran ikon sesuai design */
+.social-item img {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+/* hover halus */
+.social-item:hover img {
+    transform: translateY(-4px) scale(1.05);
+    filter: drop-shadow(0 6px 14px rgba(0,0,0,0.25));
+}
+
+/* sembunyikan teks link */
+.social-item span {
+    display: none;
+}
+
 
 /* Footer */
 .site-footer { background: #111317; color: #fff; padding: 40px 0; }
@@ -493,5 +567,171 @@ html, body {
     }
 }
 
+@media (max-width: 768px) {
+    .hero::after,
+    .landscape-promo-section::before {
+        height: 90px;
+        bottom: -42px;
+    }
+}
 
+@media (max-width: 576px) {
+    .social-links {
+        gap: 24px;
+    }
+
+    .social-item img {
+        width: 52px;
+        height: 52px;
+    }
+}
+
+@media (max-width: 576px) {
+    .contact-bottom {
+        min-height: 420px;
+    }
+
+    .contact-bottom::before {
+        inset: -180px 0 0 0;
+        clip-path: inset(0 0 180px 0);
+    }
+}
+
+/* ================= BOOK NOW MODAL ================= */
+
+.book-modal {
+    max-width: 860px;
+    width: 92%;
+    padding: 36px 40px;
+    border-radius: 22px;
+
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+
+    box-shadow: 0 30px 80px rgba(0,0,0,0.35);
+    animation: modalFadeUp 0.35s ease;
+}
+
+@keyframes modalFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.book-header {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.book-header h3 {
+    font-weight: 700;
+    color: #004d61;
+    margin-bottom: 6px;
+}
+
+.book-header p {
+    font-size: 0.95rem;
+    color: #666;
+}
+
+/* form layout */
+.book-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.book-form .form-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.book-form input {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.12);
+    font-size: 0.95rem;
+    font-family: 'Poppins', sans-serif;
+    outline: none;
+    transition: all 0.25s ease;
+    background: #fff;
+}
+
+.book-form input:focus {
+    border-color: #0b6b75;
+    box-shadow: 0 0 0 3px rgba(11,107,117,0.15);
+}
+
+.book-form input::placeholder {
+    color: #999;
+}
+
+.form-note {
+    font-size: 0.8rem;
+    color: #777;
+    margin-top: -6px;
+}
+
+/* action */
+.book-action {
+    margin-top: 26px;
+    text-align: right;
+}
+
+.btn-book-submit {
+    background: linear-gradient(135deg, #0b6b75, #004d61);
+    color: #fff;
+    padding: 14px 34px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 12px 28px rgba(0,77,97,0.35);
+    transition: all 0.25s ease;
+}
+
+.btn-book-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 36px rgba(0,77,97,0.45);
+}
+
+/* close button */
+.book-modal .modal-close {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    font-size: 26px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #444;
+}
+
+/* RESPONSIVE */
+@media (max-width: 640px) {
+    .book-modal {
+        padding: 28px 22px;
+    }
+
+    .book-form .form-group {
+        grid-template-columns: 1fr;
+    }
+
+    .book-action {
+        text-align: center;
+    }
+
+    .btn-book-submit {
+        width: 100%;
+    }
+}
 

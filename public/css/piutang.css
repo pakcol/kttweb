@@ -1,13 +1,28 @@
-body {
-    background: linear-gradient(90deg, #0f4d4d 0%, #b8d3d6 100%);
-    font-family: 'Poppins', sans-serif;
+html, body {
+    width: 100%;
+    min-height: 100vh;
     margin: 0;
-    padding: 40px 0;
+    font-family: 'Poppins', sans-serif;
 }
 
+/* BACKGROUND FULL SAMPAI BAWAH */
+.piutang-page {
+    width: 100vw;
+    min-height: 100vh;
+
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+
+    background: linear-gradient(90deg, #0f4d4d 0%, #b8d3d6 100%);
+    padding: 120px 0 100px; /* aman dari navbar */
+}
 .piutang-section {
-    width: 95%;
-    margin: 100px auto 60px; 
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .card-form {
@@ -165,4 +180,13 @@ body {
 @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(30px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+main {
+    background: transparent !important;
+    padding: 0 !important;
+}
+
+body {
+    background: transparent !important;
 }

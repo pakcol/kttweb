@@ -6,7 +6,7 @@
             <p class="lead">Halo, selamat datang</p>
             <h1 class="display-4">PT. KUPANG TOUR & TRAVEL</h1>
             {{-- Tombol login di hero --}}
-            <button id="bookNowBtn" class="btn btn-book" type="button">BOOK NOW</a>
+            <button class="btn btn-book book-now-btn" type="button">BOOK NOW</button>
         </div>
 
         {{-- PROMO STRIP (center-floating) --}}
@@ -35,7 +35,7 @@
 
                     <div class="mt-4 d-flex gap-3">
                         <!-- BOOK NOW -->
-                        <button id="bookNowBtn" class="btn btn-book" type="button">BOOK NOW</button>
+                        <button class="btn btn-book book-now-btn" type="button">BOOK NOW</button>
 
                         <!-- JADWAL PELNI modal trigger -->
                         <button id="jadwalPelniBtn" class="btn btn-outline" type="button" aria-haspopup="dialog" aria-controls="jadwalPelniModal">JADWAL PELNI</button>
@@ -96,6 +96,8 @@
         </div>
     </section>
 
+    <div class="separator-section"></div>
+
     <!-- Kontak -->
     <section class="contact-section" aria-label="Kontak">
         <div class="contact-top">
@@ -109,7 +111,7 @@
                    class="social-item"
                    aria-label="Email Kupang Tour & Travel">
                     <img src="{{ asset('images/gmail.png') }}" alt="Gmail">
-                    <span>Gmail</span>
+                    <span class="visually-hidden">Gmail</span>
                 </a>
 
                 <!-- Facebook -->
@@ -118,7 +120,7 @@
                    class="social-item"
                    aria-label="Facebook Kupang Tour & Travel">
                     <img src="{{ asset('images/facebook.png') }}" alt="Facebook">
-                    <span>Facebook</span>
+                    <span class="visually-hidden">Facebook</span>
                 </a>
 
                 <!-- WhatsApp -->
@@ -127,7 +129,7 @@
                    class="social-item"
                    aria-label="WhatsApp Kupang Tour & Travel">
                     <img src="{{ asset('images/whatsapp.png') }}" alt="WhatsApp">
-                    <span>WhatsApp</span>
+                    <span class="visually-hidden">Whatsapp</span>
                 </a>
             </div>
             <small class="d-block mt-4">Based In, Kupang Nusa Tenggara Timur<br>JL. Garuda No. 4</small>
@@ -166,29 +168,41 @@
     </div>
 
     <!-- ================= BOOK NOW MODAL ================= -->
-    <div class="modal-backdrop" id="bookNowModal" aria-hidden="true">
-        <div class="modal-content book-modal">
-            <button class="modal-close" id="bookNowClose">&times;</button>
+<div class="modal-backdrop" id="bookNowModal" aria-hidden="true">
+    <div class="modal-content book-modal">
+        <button class="modal-close" id="bookNowClose" aria-label="Tutup">&times;</button>
 
-            <h4 class="fw-bold mb-4" style="color: #004d61; text-align: center;">Form Pemesanan Tiket</h4>
+        <div class="book-header">
+            <h3>Form Pemesanan Tiket</h3>
+            <p>Isi data perjalanan Anda, kami akan bantu proses selanjutnya</p>
+        </div>
 
-            <div class="book-form">
+        <div class="book-form">
+            <div class="form-group">
                 <input type="text" id="bn_name" placeholder="Nama Lengkap *" required>
                 <input type="text" id="bn_airline" placeholder="Airlines *" required>
-                <input type="text" id="bn_route1" placeholder="Rute 1 (contoh: Kupang - Surabaya) *" required>
-                <input type="date" id="bn_date1" required>
-                <input type="text" id="bn_route2" placeholder="Rute 2 (Opsional)">
-                <input type="date" id="bn_date2">
-                <small style="color: #666; font-size: 0.85rem; margin-top: -5px; margin-bottom: 10px;">* Wajib diisi</small>
             </div>
 
-            <div class="text-end mt-4">
-                <button id="sendToWa" class="btn btn-book" style="padding: 12px 30px; font-size: 1rem;">
-                    BOOK TIKET
-                </button>
+            <div class="form-group">
+                <input type="text" id="bn_route1" placeholder="Rute 1 (Kupang - Surabaya) *" required>
+                <input type="date" id="bn_date1" required>
             </div>
+
+            <div class="form-group">
+                <input type="text" id="bn_route2" placeholder="Rute 2 (Opsional)">
+                <input type="date" id="bn_date2">
+            </div>
+
+            <small class="form-note">* Wajib diisi</small>
+        </div>
+
+        <div class="book-action">
+            <button id="sendToWa" class="btn-book-submit">
+                BOOK TIKET
+            </button>
         </div>
     </div>
+</div>
 
     {{-- Inline scripts for the front-end only behavior --}}
     @push('scripts')
@@ -477,11 +491,13 @@
         const bookClose = document.getElementById('bookNowClose');
         const sendToWa = document.getElementById('sendToWa');
 
-        if (bookBtn) {
-            bookBtn.addEventListener('click', () => {
-                if (bookModal) bookModal.style.display = 'flex';
-            });
+        document.querySelectorAll('.book-now-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        if (bookModal) {
+            bookModal.style.display = 'flex';
         }
+    });
+});
 
         if (bookClose) {
             bookClose.addEventListener('click', () => {

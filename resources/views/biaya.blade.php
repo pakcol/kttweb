@@ -1,6 +1,7 @@
 <x-layouts.app title="Data Biaya - PT. Kupang Tour & Travel">
     <link rel="stylesheet" href="{{ asset('css/biaya.css') }}">
 
+    <div class="biaya-page">
     <section class="biaya-section">
         <div class="form-container">
             <h2>Input Data Biaya</h2>

@@ -1,6 +1,7 @@
 <x-layouts.app title="Data Piutang - PT. Kupang Tour & Travel">
 <link rel="stylesheet" href="{{ asset('css/piutang.css') }}">
 
+<div class="piutang-page">
 <section class="piutang-section">
     <div class="card-form">
         <h2 class="form-title">Data Piutang</h2>
@@ -86,6 +87,7 @@
         </table>
     </div>
 </section>
+</div>
 
 <script>
     document.querySelectorAll('.btn-edit').forEach(btn => {
