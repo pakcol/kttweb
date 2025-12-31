@@ -116,7 +116,7 @@ html, body {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    bottom: 200px;
+    bottom: 100px;
     width: 100%;
     max-width: 1240px;
     padding: 0 40px;
@@ -246,7 +246,7 @@ html, body {
 
 .landscape-promo {
     position: absolute;
-    top: -110px;               
+    top: -50px;               
     left: 50%;
     transform: translateX(-50%);
 
@@ -266,7 +266,7 @@ html, body {
 .landscape-inner {
     display: flex;
     width: 100%;
-    height: 250px;
+    height: 150px;
     border-radius: 18px;
     overflow: hidden;
 }
@@ -734,4 +734,21 @@ html, body {
         width: 100%;
     }
 }
+.scale-wrapper {
+    width: calc(var(--design-width) * 1px);
+    margin: 0 auto;
+    transform-origin: top center;
+}
+
+/* Auto scale untuk layar lebih kecil */
+@media (max-width: 1440px) {
+    .scale-wrapper {
+        transform: scale(calc(100vw / var(--design-width)));
+    }
+}
+
+:root {
+    --design-width: 1440;
+}
+
 
