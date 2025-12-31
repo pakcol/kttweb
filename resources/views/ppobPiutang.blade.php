@@ -49,108 +49,107 @@
     </div>
 
     <div class="table-section">
-                <table class="pln-table">
-                    <thead>
-                        <tr>
-                            <th>Tanggal</th>
-                            <th>Nama Pelanggan</th>
-                            <th>ID Pelanggan</th>
-                            <th>Kategori PPOB</th>
-                            <th>Harga</th>
-                            <th>Jenis Bayar</th>
-                            <th>Bank</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($ppob as $row)
-                        <tr onclick="selectRow(this)"
-                            data-id="{{ $row->id }}"
-                            data-nama="{{ $row->nota->nama ?? '' }}"
-                            data-id-pel="{{ $row->id_pel }}"
-                            data-harga="{{ $row->harga_jual }}"
-                            data-jenis-bayar="{{ $row->nota->jenisBayar->jenis ?? '' }}"
-                            data-bank="{{ $row->nota->bank->name ?? '' }}"
-                        >
-                            <td>{{ $row->tgl }}</td>
-                            <td>{{ $row->nota->nama ?? '-' }}</td>
-                            <td>{{ $row->id_pel }}</td>
-                            <td>{{ $row->ppobJenis->jenis_ppob ?? '-' }}</td>
-                            <td>{{ number_format($row->harga_jual) }}</td>
-                            <td>{{ $row->nota->jenisBayar->jenis ?? '-' }}</td>
-                            <td>{{ $row->nota->bank->name ?? '-' }}</td>
-                            <td><span class="hint">Klik baris</span></td>
-                        </tr>
-                        @empty
-                        <tr><td colspan="8">DATA KOSONG</td></tr>
-                        @endforelse
-                    </tbody>
-
-                </table>
-    </div>
+    <table id="piutangTable">
+        <thead>
+            <tr>
+                <th>Tanggal</th>
+                <th>Nama Pelanggan</th>
+                <th>ID Pelanggan</th>
+                <th>Kategori PPOB</th>
+                <th>Harga</th>
+                <th>Jenis Bayar</th>
+                <th>Bank</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($piutang as $row)
+                <tr onclick="selectRow(this)"
+                    data-id="{{ $row->id }}"
+                    data-nama="{{ $row->nama }}"
+                    data-id-pel="{{ $row->pembayaranOnline->id_pel ?? '' }}"
+                    data-harga="{{ $row->harga_bayar }}"
+                    data-jenis-bayar="{{ $row->jenisBayar->jenis ?? '' }}"
+                    data-bank="{{ $row->bank->nama ?? '' }}"
+                >
+                    <td>{{ $row->tgl_issued?->format('d-m-Y') }}</td>
+                    <td>{{ $row->nama }}</td>
+                    <td>{{ $row->pembayaranOnline->id_pel ?? '-' }}</td>
+                    <td>{{ $row->pembayaranOnline->jenisPpob->nama ?? '-' }}</td>
+                    <td>{{ number_format($row->harga_bayar) }}</td>
+                    <td>{{ strtoupper($row->jenisBayar->jenis ?? '-') }}</td>
+                    <td>{{ $row->bank->nama ?? '-' }}</td>
+                    <td><span class="hint">Klik baris</span></td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="8" style="text-align:center;font-weight:600;">
+                        DATA KOSONG
+                    </td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
 </section>
 
 <script>
 let selectedRow = null;
 let allPiutangData = @json($piutang);
 
-// Hitung total piutang berdasarkan nama piutang yang dipilih
+/* ================= TOTAL PIUTANG ================= */
 function calculateTotalPiutang(namaPiutang) {
-    if (!namaPiutang || namaPiutang === '') {
+    if (!namaPiutang) {
         document.getElementById('totalPiutang').value = '';
         return;
     }
 
     let total = 0;
+
     if (namaPiutang === 'ALL') {
-        // Hitung total semua piutang
         allPiutangData.forEach(item => {
-            total += parseInt(item.harga_jual) || 0;
+            total += parseInt(item.harga_bayar) || 0;
         });
     } else {
-        // Hitung total untuk nama piutang tertentu
         allPiutangData.forEach(item => {
-            if (item.nama_piutang === namaPiutang) {
-                total += parseInt(item.harga_jual) || 0;
+            if (item.nama === namaPiutang) {
+                total += parseInt(item.harga_bayar) || 0;
             }
         });
     }
 
-    document.getElementById('totalPiutang').value = new Intl.NumberFormat('id-ID').format(total);
+    document.getElementById('totalPiutang').value =
+        new Intl.NumberFormat('id-ID').format(total);
 }
 
 // Event listener untuk perubahan nama piutang
-document.getElementById('namaPiutang').addEventListener('input', function() {
+document.getElementById('nama_piutang').addEventListener('input', function () {
     calculateTotalPiutang(this.value);
 });
 
 // Event listener untuk perubahan nama piutang (change event)
-document.getElementById('namaPiutang').addEventListener('change', function() {
+document.getElementById('nama_piutang').addEventListener('change', function () {
     calculateTotalPiutang(this.value);
 });
 
-let selectedRow = null;
 
 function selectRow(row) {
-    // highlight
-    document.querySelectorAll('.piutang-table tr')
+    document.querySelectorAll('.pln-table tbody tr')
         .forEach(r => r.classList.remove('selected'));
-    row.classList.add('selected');
 
+    row.classList.add('selected');
     selectedRow = row;
 
-    // ambil data
-    const harga = row.dataset.harga;
-    const nama = row.dataset.nama;
-    const jenisBayar = row.dataset.jenisBayar;
-
-    // isi form
-    document.getElementById('nama').value = nama;
+    document.getElementById('nama').value = row.dataset.nama;
     document.getElementById('harga').value =
-        new Intl.NumberFormat('id-ID').format(harga);
-    document.getElementById('pembayaran').value = jenisBayar;
+        new Intl.NumberFormat('id-ID').format(row.dataset.harga);
 
-    calculateTotalPiutang(document.getElementById('nama_piutang').value);
+    document.getElementById('pembayaran').value =
+        row.dataset.jenisBayar;
+
+    calculateTotalPiutang(
+        document.getElementById('nama_piutang').value
+    );
 }
 
 function updateData() {
