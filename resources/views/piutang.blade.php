@@ -38,7 +38,7 @@
 
             <div class="form-group">
                 <label>Tanggal Realisasi</label>
-                <input type="date" name="tgl_bayar" class="form-control" required>
+                <input type="date" name="tgl_bayar" class="form-control" value="{{ date('Y-m-d') }}" required>
             </div>
 
             <button class="btn btn-success">SIMPAN</button>
@@ -52,6 +52,7 @@
             <thead>
                 <tr>
                     <th>Tanggal</th>
+                    <th>Nama</th>
                     <th>Kode Booking</th>
                     <th>Jenis Tiket</th>
                     <th>Nominal</th>
@@ -63,11 +64,12 @@
                     <tr>
                         <td>{{ $row->tgl_issued?->format('Y-m-d') }}</td>
 
+                        <td>{{ $row->nama ?? '-' }}</td>
                         <td>{{ $row->tiket_kode_booking }}</td>
 
                         <td>{{ $row->tiket->jenisTiket->name_jenis ?? '-' }}</td>
 
-                        <td style="text-align:right">
+                        <td>
                             {{ number_format($row->harga_bayar, 0, ',', '.') }}
                         </td>
 

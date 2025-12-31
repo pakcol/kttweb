@@ -64,7 +64,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/nota/by-tiket/{kodeBooking}', 
         [NotaController::class, 'showByKodeBooking']
     );
-    Route::get('/piutang', [NotaController::class, 'piutang'])
+    Route::get('/piutang', [NotaController::class, 'piutangTiket'])
         ->name('piutang.index');
     Route::put('/nota/piutang/update', [NotaController::class, 'updatePiutang'])
         ->name('nota.updatePiutang');
@@ -110,11 +110,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('ppob', PpobController::class)->only([
         'index', 'store', 'update', 'destroy'
     ]);
-
-    //piutang ppob
-    Route::get('/ppobPiutang', [PpobController::class, 'indexPiutang'])->name('ppobPiutang');
-    Route::get('/ppobPiutang/{id}', [PpobController::class, 'showPiutang'])->name('ppobPiutang.show');
-    Route::put('/ppobPiutang/{id}', [PpobController::class, 'updatePiutang'])->name('ppobPiutang.update');
+    Route::get('/ppobPiutang', [PpobController::class, 'ppobPiutang'])
+    ->name('ppob.piutang');
 
     // ======== FIND TICKET CONTROLLER ======== 
     Route::prefix('find-ticket')->name('find.')->group(function () {

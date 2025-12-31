@@ -6,11 +6,17 @@
         <div class="form-left">
             {{-- NAMA PIUTANG --}}
             <label>Nama Piutang</label>
-            <input list="namaPiutangList" id="namaPiutang" placeholder="Ketik atau pilih nama piutang...">
-            <datalist id="namaPiutangList">
+            <input 
+                list="nama_piutang_list"
+                id="nama_piutang"
+                name="nama_piutang"
+                placeholder="Ketik atau pilih nama piutang..."
+            >
+
+            <datalist id="nama_piutang_list">
                 <option value="ALL">
                 @foreach($namaPiutangList as $nama)
-                <option value="{{ $nama }}">
+                    <option value="{{ $nama }}">
                 @endforeach
             </datalist>
 
@@ -43,44 +49,44 @@
     </div>
 
     <div class="table-section">
-        <table id="piutangTable">
-            <thead>
-                <tr>
-                    <th>TANGGAL</th>
-                    <th>JAM</th>
-                    <th>ID_PEL</th>
-                    <th>HARGA_JUAL</th>
-                    <th>TRANSAKSI</th>
-                    <th>BAYAR</th>
-                    <th>NAMA_PIUTANG</th>
-                    <th>TOP_UP</th>
-                    <th>INSENTIF</th>
-                    <th>SALDO</th>
-                    <th>USR</th>
-                    <th>TGL_REALISASI</th>
-                    <th>JAM_REALISASI</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($piutang as $p)
-                <tr onclick="selectRow(this)" data-id="{{ $p->id }}" data-nama-piutang="{{ $p->nama_piutang }}" data-harga="{{ $p->harga_jual }}">
-                    <td>{{ $p->tgl ? \Carbon\Carbon::parse($p->tgl)->format('Y-m-d') : '' }}</td>
-                    <td>{{ $p->tgl ? \Carbon\Carbon::parse($p->tgl)->format('H:i:s') : '' }}</td>
-                    <td>{{ $p->id_pel }}</td>
-                    <td>{{ number_format($p->harga_jual ?? 0, 0, ',', '.') }}</td>
-                    <td>{{ $p->transaksi }}</td>
-                    <td>{{ $p->bayar }}</td>
-                    <td>{{ $p->nama_piutang }}</td>
-                    <td>{{ number_format($p->top_up ?? 0, 0, ',', '.') }}</td>
-                    <td>{{ number_format($p->insentif ?? 0, 0, ',', '.') }}</td>
-                    <td>{{ number_format($p->saldo ?? 0, 0, ',', '.') }}</td>
-                    <td>{{ $p->username }}</td>
-                    <td>{{ $p->tgl_reralisasi ? \Carbon\Carbon::parse($p->tgl_reralisasi)->format('Y-m-d') : '' }}</td>
-                    <td>{{ $p->jam_realisasi ? \Carbon\Carbon::parse($p->jam_realisasi)->format('H:i:s') : '' }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+                <table class="pln-table">
+                    <thead>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Nama Pelanggan</th>
+                            <th>ID Pelanggan</th>
+                            <th>Kategori PPOB</th>
+                            <th>Harga</th>
+                            <th>Jenis Bayar</th>
+                            <th>Bank</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($ppob as $row)
+                        <tr onclick="selectRow(this)"
+                            data-id="{{ $row->id }}"
+                            data-nama="{{ $row->nota->nama ?? '' }}"
+                            data-id-pel="{{ $row->id_pel }}"
+                            data-harga="{{ $row->harga_jual }}"
+                            data-jenis-bayar="{{ $row->nota->jenisBayar->jenis ?? '' }}"
+                            data-bank="{{ $row->nota->bank->name ?? '' }}"
+                        >
+                            <td>{{ $row->tgl }}</td>
+                            <td>{{ $row->nota->nama ?? '-' }}</td>
+                            <td>{{ $row->id_pel }}</td>
+                            <td>{{ $row->ppobJenis->jenis_ppob ?? '-' }}</td>
+                            <td>{{ number_format($row->harga_jual) }}</td>
+                            <td>{{ $row->nota->jenisBayar->jenis ?? '-' }}</td>
+                            <td>{{ $row->nota->bank->name ?? '-' }}</td>
+                            <td><span class="hint">Klik baris</span></td>
+                        </tr>
+                        @empty
+                        <tr><td colspan="8">DATA KOSONG</td></tr>
+                        @endforelse
+                    </tbody>
+
+                </table>
     </div>
 </section>
 
@@ -123,31 +129,28 @@ document.getElementById('namaPiutang').addEventListener('change', function() {
     calculateTotalPiutang(this.value);
 });
 
+let selectedRow = null;
+
 function selectRow(row) {
-    // Hapus selected class dari semua row
-    document.querySelectorAll('#piutangTable tbody tr').forEach(r => {
-        r.classList.remove('selected');
-    });
-    
-    // Tambahkan selected class ke row yang dipilih
+    // highlight
+    document.querySelectorAll('.piutang-table tr')
+        .forEach(r => r.classList.remove('selected'));
     row.classList.add('selected');
+
     selectedRow = row;
-    
-    const cells = row.getElementsByTagName('td');
-    const rowData = row.dataset;
 
-    const namaPiutang = cells[6].innerText.trim();
-    const harga = cells[3].innerText.trim().replace(/\./g, '');
-    const pembayaran = cells[5].innerText.trim();
-    const nama = cells[10].innerText.trim(); 
+    // ambil data
+    const harga = row.dataset.harga;
+    const nama = row.dataset.nama;
+    const jenisBayar = row.dataset.jenisBayar;
 
-    document.getElementById('namaPiutang').value = namaPiutang;
+    // isi form
     document.getElementById('nama').value = nama;
-    document.getElementById('harga').value = harga;
-    calculateTotalPiutang(namaPiutang);
+    document.getElementById('harga').value =
+        new Intl.NumberFormat('id-ID').format(harga);
+    document.getElementById('pembayaran').value = jenisBayar;
 
-    const selectPembayaran = document.getElementById('pembayaran');
-    selectPembayaran.value = pembayaran;
+    calculateTotalPiutang(document.getElementById('nama_piutang').value);
 }
 
 function updateData() {

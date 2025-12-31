@@ -3,6 +3,7 @@
 
 namespace App\Models;
 
+use App\Models\JenisPpob;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -40,6 +41,14 @@ class PembayaranOnline extends Model
     public function nota(): HasOne
     {
         return $this->hasOne(Nota::class, 'pembayaran_online_id');
+    }
+
+    /**
+     * Relasi ke JenisPpob
+     */
+    public function jenisPpob()
+    {
+        return $this->belongsTo(JenisPpob::class);
     }
 
 }

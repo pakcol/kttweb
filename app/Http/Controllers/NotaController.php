@@ -20,7 +20,7 @@ class NotaController extends Controller
         return view('nota.detail', compact('nota'));
     }
 
-    public function piutang()
+    public function piutangTiket()
     {
         $piutang = Nota::with([
                 'jenisBayar',

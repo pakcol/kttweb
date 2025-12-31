@@ -10,7 +10,7 @@ use App\Models\Bank;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class TiketController extends Controller
 {
@@ -75,7 +75,9 @@ class TiketController extends Controller
         $nota = Nota::updateOrCreate(
         ['tiket_kode_booking' => $tiket->kode_booking],
         [
-            'nama'  => $tiket->name,
+            'nama' => $request->nama_piutang
+                    ? $request->nama_piutang . ' - ' . $tiket->name
+                    : $tiket->name,
             'tgl_issued' => $tiket->tgl_issued,
             'tgl_bayar' => null,
             'jenis_bayar_id' => $request->jenis_bayar_id,

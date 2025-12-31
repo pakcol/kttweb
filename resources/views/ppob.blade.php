@@ -85,11 +85,6 @@
                     </select>
                 </div>
                 
-                <div class="form-group" id="namaPiutangContainer">
-                    <label for="nama_piutang">NAMA PIUTANG</label>
-                    <input type="text" id="nama_piutang" name="nama_piutang" class="form-control" placeholder="Masukkan Nama Piutang">
-                </div>
-                
             </div>
 
             <div class="button-group">
@@ -120,7 +115,7 @@
                 @foreach ($ppob as $index => $row)
                 <tr>
                     <td>{{ $row->tgl }}</td>
-                    <td>{{ $row->nama }}</td>
+                    <td>{{ $row->nota->nama ?? '-' }}</td>
                     <td>{{ $row->id_pel }}</td>
                     <td>{{ $row->ppobJenis->jenis_ppob ?? '-' }}</td>
                     <td>{{ number_format($row->harga_jual) }}</td>
@@ -148,26 +143,17 @@
     <script>
         const jenisSelect = document.getElementById('jenis_bayar_id');
         const bankContainer = document.getElementById('bankContainer');
-        const namaPiutangContainer = document.getElementById('namaPiutangContainer');
         const bankInput = document.getElementById('bank_id');
-        const namaPiutangInput = document.getElementById('nama_piutang');
 
         function toggleJenisPembayaran() {
             const jenis = jenisSelect.value;
 
             bankContainer.style.display = 'none';
-            namaPiutangContainer.style.display = 'none';
             bankInput.required = false;
-            namaPiutangInput.required = false;
 
             if (jenis == 1) {
                 bankContainer.style.display = 'block';
                 bankInput.required = true;
-            }
-
-            if (jenis == 3) {
-                namaPiutangContainer.style.display = 'block';
-                namaPiutangInput.required = true;
             }
         }
 
@@ -180,7 +166,7 @@
             document.getElementById('ppobForm').action = `/ppob/${data.id}`;
             document.getElementById('formMethod').value = 'PUT';
 
-            document.getElementById('nama').value = data.nama;
+            document.getElementById('nama').value = data.nota?.nama ?? '';
             document.getElementById('id_pel').value = data.id_pel;
             document.getElementById('jenis_ppob_id').value = data.jenis_ppob_id;
             document.getElementById('harga_jual').value = data.harga_jual;
