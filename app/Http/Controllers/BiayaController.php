@@ -3,37 +3,67 @@
 namespace App\Http\Controllers;
 
 use App\Models\Biaya;
+use App\Models\JenisBayar;
+use App\Models\Bank;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class BiayaController extends Controller
-{
+{   
+
     public function index()
     {
-        $biaya = Biaya::with('account')->orderBy('tgl', 'desc')->get();
-        return view('biaya', compact('biaya'));
+        $biaya = Biaya::with(['jenisBayar', 'bank'])
+            ->orderBy('tgl', 'desc')
+            ->get();
+
+        $jenisBayar = JenisBayar::orderBy('jenis')->get();
+
+        $bank = Bank::orderBy('name')->get();
+
+        return view('biaya', compact(
+            'biaya',
+            'jenisBayar',
+            'bank'
+        ));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'tgl' => 'required|date',
-            'jam' => 'required|date_format:H:i',
-            'biaya' => 'required|integer',
-            'pembayaran' => 'required|string',
-            'keterangan' => 'required|string|max:20'
+            'biaya' => 'required|numeric|min:1',
+            'jenis_bayar_id' => 'required|exists:jenis_bayar,id',
+            'bank_id' => 'nullable|exists:bank,id',
+            'keterangan' => 'nullable|string'
         ]);
 
-        Biaya::create([
-            'tgl' => $request->tgl,
-            'jam' => $request->jam,
-            'biaya' => (int)$request->biaya,
-            'pembayaran' => $request->pembayaran,
-            'keterangan' => $request->keterangan,
-            'username' => Auth::user()->username ?? Auth::user()->name,
-        ]);
+        DB::transaction(function () use ($request) {
 
-        return redirect()->back()->with('success', 'Data biaya berhasil disimpan!');
+            $biaya = Biaya::create([
+                'tgl' => $request->tgl,
+                'biaya' => $request->biaya,
+                'jenis_bayar_id' => $request->jenis_bayar_id,
+                'bank_id' => $request->bank_id,
+                'keterangan' => $request->keterangan,
+            ]);
+
+            // 🔥 POTONG SALDO BANK JIKA ADA
+            if ($request->bank_id) {
+                $bank = Bank::findOrFail($request->bank_id);
+
+                if ($bank->saldo < $request->biaya) {
+                    throw new \Exception('Saldo bank tidak mencukupi');
+                }
+
+                $bank->update([
+                    'saldo' => $bank->saldo - $request->biaya,
+                    'debit' => $bank->debit + $request->biaya,
+                ]);
+            }
+        });
+
+        return redirect()->back()->with('success', 'Data biaya berhasil disimpan');
     }
+
 }

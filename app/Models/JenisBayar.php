@@ -17,6 +17,12 @@ class JenisBayar extends Model
         'indicacs'
     ];
     
+    // Relasi Ke Bank
+    public function bank()
+    {
+        return $this->belongsTo(Bank::class);
+    }
+
     /**
      * Relasi ke Nota
      */

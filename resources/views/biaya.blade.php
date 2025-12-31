@@ -6,58 +6,75 @@
         <div class="form-container">
             <h2>Input Data Biaya</h2>
 
-            <form action="#" method="POST">
+            {{-- PESAN ERROR --}}
+            @if(session('error'))
+                <div style="background:#ffe0e0; color:#900; padding:10px; margin-bottom:15px;">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            {{-- PESAN SUKSES --}}
+            @if(session('success'))
+                <div style="background:#e0ffe0; color:#060; padding:10px; margin-bottom:15px;">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+
+            <form action="{{ route('biaya.store') }}" method="POST">
                 @csrf
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="tgl">Tanggal</label>
-                        <input type="date" id="tgl" name="tgl" required>
-                    </div>
 
-                    <div class="form-group">
-                        <label for="jam">Jam</label>
-                        <input type="time" id="jam" name="jam" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="biaya">Biaya</label>
-                        <input type="text" id="biaya" name="biaya" placeholder="Masukkan jumlah biaya..." required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="pembayaran">Pembayaran</label>
-                        <select id="pembayaran" name="pembayaran" required>
-                            <option value="">-- Pilih Pembayaran --</option>
-                            <option value="Tunai">Tunai</option>
-                            <option value="Transfer">Transfer</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="keterangan">Keterangan</label>
-                        <select id="keterangan" name="keterangan" required>
-                            <option value="">-- Pilih Keterangan --</option>
-                            <option>Biaya Telpon dan Pulsa</option>
-                            <option>Biaya PDAM</option>
-                            <option>Biaya Listrik</option>
-                            <option>Biaya BPJS</option>
-                            <option>Biaya Jamsostek</option>
-                            <option>Biaya ATK</option>
-                            <option>Biaya Transportasi</option>
-                            <option>Biaya Perawatan</option>
-                            <option>Biaya Surat Ijin/Reklame</option>
-                            <option>Pajak</option>
-                            <option>Gaji</option>
-                            <option>Biaya Lain-lain</option>
-                        </select>
-                    </div>
+                <div class="form-group">
+                    <label>Tanggal</label>
+                    <input type="datetime-local" name="tgl" value="{{ date('Y-m-d\TH:i') }}" required>
                 </div>
 
-                <div class="button-group">
-                    <button type="reset" class="btn-hapus">HAPUS</button>
-                    <button type="submit" class="btn-simpan">SIMPAN</button>
+                <div class="form-group">
+                    <label>Biaya</label>
+                    <input type="number" name="biaya" required>
                 </div>
+
+                <div class="form-group">
+                    <label>Jenis Pembayaran</label>
+                    <select name="jenis_bayar_id" id="jenis_bayar_id" required>
+                        <option value="">-- Pilih Jenis Pembayaran --</option>
+                        @foreach($jenisBayar as $jenis)
+                            <option value="{{ $jenis->id }}">{{ $jenis->jenis }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="form-group" id="bankContainer" style="display:none;">
+                    <label>Bank</label>
+                    <select name="bank_id" id="bank_id">
+                        <option value="">-- Pilih Bank --</option>
+                        @foreach($bank as $b)
+                            <option value="{{ $b->id }}">
+                                {{ $b->name }} (Saldo: Rp {{ number_format($b->saldo,0,',','.') }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+
+                <div class="form-group" id="bankInfo" style="display:none;">
+                    <label>Bank</label>
+                    <input type="text" id="bankName" readonly>
+
+                    <label>Saldo Saat Ini</label>
+                    <input type="text" id="bankSaldo" readonly>
+                </div>
+
+
+                <div class="form-group">
+                    <label>Keterangan</label>
+                    <textarea name="keterangan"></textarea>
+                </div>
+
+                <button class="btn-simpan" type="submit">Simpan</button>
             </form>
+
+
         </div>
 
         <div class="table-container">
@@ -66,33 +83,45 @@
                 <thead>
                     <tr>
                         <th>Tanggal</th>
-                        <th>Jam</th>
                         <th>Biaya</th>
-                        <th>Pembayaran</th>
+                        <th>Jenis Bayar</th>
+                        <th>Bank</th>
                         <th>Keterangan</th>
-                        <th>User</th>
-                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($biaya as $row)
+                    @forelse($biaya as $row)
                     <tr>
-                        <td>{{ $row->tgl }}</td>
-                        <td>{{ $row->jam }}</td>
-                        <td>{{ number_format($row->biaya) }}</td>
-                        <td>{{ $row->pembayaran }}</td>
+                        <td>{{ $row->tgl->format('d-m-Y H:i') }}</td>
+                        <td>Rp {{ number_format($row->biaya,0,',','.') }}</td>
+                        <td>{{ $row->jenisBayar->jenis }}</td>
+                        <td>{{ $row->bank->name ?? '-' }}</td>
                         <td>{{ $row->keterangan }}</td>
-                        <td>{{ $row->username }}</td>
-                        <td>
-                            <button class="btn btn-edit">Edit</button>
-                            <button class="btn btn-delete">Delete</button>
-                        </td>
                     </tr>
                     @empty
-                    <tr><td colspan="7" class="text-center">Belum ada data</td></tr>
+                    <tr>
+                        <td colspan="5">Belum ada data</td>
+                    </tr>
                     @endforelse
                 </tbody>
             </table>
+
         </div>
     </section>
+    <script>
+        const jenis = document.getElementById('jenis_bayar_id');
+        const bankBox = document.getElementById('bankContainer');
+        const bankSelect = document.getElementById('bank_id');
+
+        jenis.addEventListener('change', function () {
+            if (this.value == '2') {
+                bankBox.style.display = 'none';
+                bankSelect.value = '';
+                bankSelect.required = false;
+            } else {
+                bankBox.style.display = 'block';
+                bankSelect.required = true;
+            }
+        });
+    </script>
 </x-layouts.app>

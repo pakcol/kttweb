@@ -15,6 +15,7 @@ class Biaya extends Model
         'tgl',
         'biaya',
         'jenis_bayar_id',
+        'bank_id',
         'keterangan'
     ];
     
@@ -22,7 +23,12 @@ class Biaya extends Model
         'tgl' => 'datetime',
         'biaya' => 'integer',
     ];
-    
+
+    public function bank()
+    {
+        return $this->belongsTo(Bank::class);
+    }
+
     /**
      * Relasi ke JenisBayar
      */

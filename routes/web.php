@@ -3,19 +3,15 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\NotaController;
-use App\Http\Controllers\InputDataController;
 use App\Http\Controllers\TiketController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\TutupKasController;
-use App\Http\Controllers\PiutangController;
 use App\Http\Controllers\EviController;
 use App\Http\Controllers\BiayaController;
 use App\Http\Controllers\PpobController;
 use App\Http\Controllers\FindController;
 use App\Http\Controllers\MutasiController;
-use App\Http\Controllers\PlnPiutangController;
 use App\Http\Controllers\BukuBankController; 
-use App\Http\Controllers\RekapanController;
 use App\Http\Controllers\RekapPenjualanController;
 
 Route::get('/', function () {

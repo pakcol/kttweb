@@ -16,6 +16,7 @@ return new class extends Migration
             $table->dateTime('tgl'); // tgj DATETIME
             $table->integer('biaya'); // bisya INT
             $table->foreignId('jenis_bayar_id')->constrained('jenis_bayar'); // jenis_bayar_id INT
+            $table->foreignId('bank_id')->nullable()->constrained('bank'); // bank_id INT
             $table->string('keterangan', 200)->nullable(); // keterangan VARCHAR(200)
             $table->timestamps();
         });
