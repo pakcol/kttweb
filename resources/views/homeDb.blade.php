@@ -2,19 +2,20 @@
     <link rel="stylesheet" href="{{ asset('css/homeDatabase.css') }}">
 
     <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+    overflow-x: hidden;
+}
 
-        main {
-            padding: 0 !important;
-            margin: 0 !important;
-        }
-    </style>
+main {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+</style>
+</style>
 
     <section class="home-database-section">
         <div class="home-db-wrapper">

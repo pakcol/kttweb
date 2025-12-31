@@ -24,16 +24,23 @@ html, body {
 /* WRAPPER (REPLACING BOOTSTRAP GRID) */
 .home-db-wrapper {
     width: 100%;
-    height: 100%;
-    display: flex;
-}
+    max-width: 1400px;
+    padding: 0 60px;
 
-/* ===== LEFT PANEL ===== */
-.left-panel {
-    width: 50%;
-    padding: 80px 60px;
     display: flex;
     align-items: center;
+}
+/* ===== LEFT PANEL ===== */
+.left-panel,
+.right-panel {
+    width: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.left-panel {
+    padding: 80px 40px;
 }
 
 .content-wrapper {
@@ -99,11 +106,10 @@ html, body {
 
 .image-wrapper img {
     width: 100%;
+    max-width: 420px;
     height: auto;
-    max-height: 80vh;
+    max-height: min(70vh, 520px);
     object-fit: contain;
-    filter: drop-shadow(0 15px 30px rgba(0,0,0,0.3));
-    animation: float 3s ease-in-out infinite;
 }
 
 @keyframes float {
@@ -142,4 +148,28 @@ html, body {
 @media (max-width: 576px) {
     .main-title { font-size: 2.2rem; }
     .image-wrapper { max-width: 300px; }
+}
+
+@media (max-width: 992px) {
+    .home-db-wrapper {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .left-panel,
+    .right-panel {
+        width: 100%;
+        padding: 40px 20px;
+    }
+
+    .home-database-section {
+        min-height: auto;
+        padding: 80px 0;
+    }
+}
+
+@media (max-width: 576px) {
+    .main-title {
+        font-size: 2.2rem;
+    }
 }
