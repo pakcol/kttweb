@@ -13,7 +13,9 @@ class NotaController extends Controller
 {
     public function show($kodeBooking)
     {
-        $nota = Nota::with(['jenisBayar', 'bank', 'tiket'])
+        $jenisBayarNonPiutang = JenisBayar::where('id', '!=', 3)->get();
+
+        $nota = Nota::with(['jenisBayar', 'bank', 'tiket', 'jenisBayarNonPiutang'])
             ->where('tiket_kode_booking', $kodeBooking)
             ->firstOrFail();
 
@@ -22,6 +24,7 @@ class NotaController extends Controller
 
     public function piutangTiket()
     {
+        $jenisBayarNonPiutang = JenisBayar::where('id', '!=', 3)->get();
         $piutang = Nota::with([
                 'jenisBayar',
                 'bank',
@@ -38,7 +41,7 @@ class NotaController extends Controller
         $jenisBayar = JenisBayar::all();
         $bank = Bank::all();
 
-        return view('piutang', compact('piutang', 'jenisBayar', 'bank' ));
+        return view('piutang', compact('piutang', 'jenisBayar', 'bank', 'jenisBayarNonPiutang'));
     }
 
     public function updatePiutang(Request $request)

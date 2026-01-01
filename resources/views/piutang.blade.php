@@ -20,7 +20,7 @@
             <div class="form-group">
                 <label>Jenis Pembayaran</label>
                 <select name="jenis_bayar_id" id="jenis_bayar_id" class="form-control" required>
-                    @foreach($jenisBayar as $j)
+                    @foreach($jenisBayarNonPiutang as $j)
                         <option value="{{ $j->id }}">{{ $j->jenis }}</option>
                     @endforeach
                 </select>

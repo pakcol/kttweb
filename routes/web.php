@@ -10,7 +10,6 @@ use App\Http\Controllers\SubagentController;
 use App\Http\Controllers\BiayaController;
 use App\Http\Controllers\PpobController;
 use App\Http\Controllers\FindController;
-use App\Http\Controllers\MutasiController;
 use App\Http\Controllers\BukuBankController; 
 use App\Http\Controllers\RekapPenjualanController;
 use App\Models\Subagent;
@@ -116,11 +115,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/search', [FindController::class, 'search'])->name('search');
     });
 
-    // ======== MUTASI AIRLINES CONTROLLER ======== 
-    Route::get('/mutasi-airlines', [MutasiController::class, 'index'])->name('mutasi-airlines.index');
-    Route::post('/mutasi-airlines', [MutasiController::class, 'store'])->name('mutasi-airlines.store');
-    Route::get('/mutasi-airlines/{airlines}', [MutasiController::class, 'show'])->name('mutasi-airlines.show');
-    Route::get('/mutasi-airlines-all', [MutasiController::class, 'showAll'])->name('mutasi-airlines.all');
+    // ======== MUTASI TIKET CONTROLLER ======== 
+    Route::get('/mutasi-tiket', [TiketController::class, 'indexMutasi'])->name('mutasi-tiket.index');
+    Route::post('/mutasi-tiket', [TiketController::class, 'topupMutasi'])->name('mutasi-tiket.topup');
 
     // ======== ADD USER ======== 
     Route::middleware('superuser')->group(function () {

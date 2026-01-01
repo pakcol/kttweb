@@ -36,4 +36,10 @@ class Biaya extends Model
     {
         return $this->belongsTo(JenisBayar::class, 'jenis_bayar_id');
     }
+
+    public function jenisTiket()
+    {
+        return $this->belongsTo(JenisTiket::class, 'id_jenis_tiket');
+    }
+
 }

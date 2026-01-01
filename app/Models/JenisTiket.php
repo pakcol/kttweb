@@ -24,4 +24,10 @@ class JenisTiket extends Model
     {
         return $this->hasMany(Tiket::class, 'jenis_tiket_id');
     }
+
+    public function biaya()
+    {
+        return $this->hasMany(Biaya::class, 'id_jenis_tiket');
+    }
+
 }

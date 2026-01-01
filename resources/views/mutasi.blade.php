@@ -2,11 +2,11 @@
 
     <link rel="stylesheet" href="{{ asset('css/mutasi.css') }}">
     
-    <section class="mutasi-airlines-section">
+    <section class="mutasi-tiket-section">
     <div class="mutasi-container">
         <h2>MUTASI AIRLINES</h2>
     
-        <form action="{{ route('mutasi-airlines.store') }}" method="POST" class="mutasi-airlines">
+        <form action="{{ route('mutasi-tiket.topup') }}" method="POST" class="mutasi-tiket">
             @csrf
             <div class="form-group">
                 <label>TANGGAL</label>
@@ -19,47 +19,51 @@
             </div>
     
             <div class="form-group">
-                <label>BANK</label>
-                <select name="bank" required>
-                    <option value="">Pilih Bank</option>
-                    <option value="bca" {{ old('bank') == 'bca' ? 'selected' : '' }}>BCA</option>
-                    <option value="btn" {{ old('bank') == 'btn' ? 'selected' : '' }}>BTN</option>
-                    <option value="bni" {{ old('bank') == 'bni' ? 'selected' : '' }}>BNI</option>
-                    <option value="mandiri" {{ old('bank') == 'mandiri' ? 'selected' : '' }}>MANDIRI</option>
-                    <option value="bri" {{ old('bank') == 'bri' ? 'selected' : '' }}>BRI</option>
+                <label for="jenis_bayar_id">JENIS PEMBAYARAN*</label>
+                <select id="jenis_bayar_id" name="jenis_bayar_id" class="text-uppercase" required>
+                    <option value="">-- Pilih Jenis Pembayaran --</option>
+                    @if(isset($jenisBayar) && $jenisBayar->count() > 0)
+                        @foreach($jenisBayar as $jenis)
+                            <option value="{{ $jenis->id }}">
+                                {{ $jenis->jenis }}
+                            </option>
+                        @endforeach
+                    @else
+                        <option value="" disabled>Data jenis pembayaran tidak ditemukan</option>
+                    @endif
                 </select>
             </div>
-    
-            <div class="form-group">
-                <label>BIAYA (Transaksi)</label>
-                <input type="number" name="biaya" placeholder="Masukkan biaya transaksi" value="{{ old('biaya') }}" min="0" step="1">
+            
+            <div class="form-group" id="bankContainer" style="display: none;">
+                <label for="bank_id">BANK</label>
+                <select id="bank_id" name="bank_id" class="text-uppercase">
+                    <option value="">-- Pilih Bank --</option>
+                    @if(isset($bank) && $bank->count() > 0)
+                        @foreach($bank as $bank)
+                            <option value="{{ $bank->id }}">{{ $bank->name }}</option>
+                        @endforeach
+                    @endif
+                </select>
             </div>
-    
+
             <div class="form-group">
-                <label>INSENTIF</label>
-                <input type="number" name="insentif" placeholder="Masukkan insentif" value="{{ old('insentif') }}" min="0" step="1">
+                <label>JENIS TIKET</label>
+                <select id="jenis_tiket_id" name="jenis_tiket_id" class="text-uppercase" required>
+                    <option value="">-- Pilih Jenis Tiket --</option>
+                    @if(isset($jenisTiket) && $jenisTiket->count() > 0)
+                        @foreach($jenisTiket as $jenis)
+                            <option value="{{ $jenis->id }}">{{ $jenis->name_jenis }}</option>
+                        @endforeach
+                    @else
+                        <option value="" disabled>Data jenis tiket tidak ditemukan</option>
+                    @endif
+                </select>
             </div>
     
             <div class="form-group">
                 <label>KETERANGAN</label>
                 <input type="text" name="keterangan" placeholder="Contoh: Pengeluaran tiket, bonus, dll" value="{{ old('keterangan') }}" maxlength="30">
                 <small class="char-count">0/30 karakter</small>
-            </div>
-    
-            <div class="form-group">
-                <label>AIRLINES</label>
-                <select name="airlines" required>
-                    <option value="">Pilih Maskapai</option>
-                    <option value="citilink" {{ old('airlines') == 'citilink' ? 'selected' : '' }}>Citilink</option>
-                    <option value="garuda" {{ old('airlines') == 'garuda' ? 'selected' : '' }}>Garuda</option>
-                    <option value="lion" {{ old('airlines') == 'lion' ? 'selected' : '' }}>Lion</option>
-                    <option value="sriwijaya" {{ old('airlines') == 'sriwijaya' ? 'selected' : '' }}>Sriwijaya</option>
-                    <option value="qgcorner" {{ old('airlines') == 'qgcorner' ? 'selected' : '' }}>QGCorner</option>
-                    <option value="transnusa" {{ old('airlines') == 'transnusa' ? 'selected' : '' }}>Transnusa</option>
-                    <option value="pelni" {{ old('airlines') == 'pelni' ? 'selected' : '' }}>Pelni</option>
-                    <option value="airasia" {{ old('airlines') == 'airasia' ? 'selected' : '' }}>Air Asia</option>
-                    <option value="dlu" {{ old('airlines') == 'dlu' ? 'selected' : '' }}>DLU</option>
-                </select>
             </div>
     
             <button type="submit" class="btn-update">SIMPAN</button>
@@ -83,33 +87,44 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Tanggal</th>
-                        <th>Jam</th>
-                        <th>Top Up</th>
-                        <th>Transaksi</th>
-                        <th>Insentif</th>
-                        <th>Saldo</th>
-                        <th>Keterangan</th>
-                        <th>Username</th>
+                        <th style="width: 15%">Tanggal</th>
+                    <th>Keterangan</th>
+                    <th style="width: 20%" class="text-end">Nominal</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($allData as $row)
-                    <tr>
-                        <td>{{ \Carbon\Carbon::parse($row->tgl)->format('d/m/Y') }}</td>
-                        <td>{{ $row->jam }}</td>
-                        <td>Rp {{ $row->top_up ? number_format($row->top_up, 0, ',', '.') : '0' }}</td>
-                        <td>Rp {{ $row->transaksi ? number_format($row->transaksi, 0, ',', '.') : '0' }}</td>
-                        <td>Rp {{ $row->insentif ? number_format($row->insentif, 0, ',', '.') : '0' }}</td>
-                        <td>Rp {{ number_format($row->saldo, 0, ',', '.') }}</td>
-                        <td>{{ $row->keterangan }}</td>
-                        <td>{{ $row->username }}</td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="8" class="text-center">Tidak ada data</td>
-                    </tr>
-                    @endforelse
+                    @foreach ($mutasiTiket as $jenis)
+                        <tr class="table-secondary">
+                            <td colspan="4">
+                                <strong>{{ $jenis->name_jenis }}</strong>
+                            </td>
+                        </tr>
+
+                        @php
+                            $total = 0;
+                        @endphp
+
+                        @foreach ($jenis->biaya as $b)
+                            <tr>
+                                <td>{{ $b->created_at->format('d-m-Y') }}</td>
+                                <td>{{ $b->nama_biaya }}</td>
+                                <td class="text-end">
+                                    Rp {{ number_format($b->nominal, 0, ',', '.') }}
+                                </td>
+                            </tr>
+
+                            @php
+                                $total += $b->nominal;
+                            @endphp
+                        @endforeach
+
+                        <tr class="fw-bold">
+                            <td colspan="2">TOTAL {{ strtoupper($jenis->name_jenis) }}</td>
+                            <td class="text-end">
+                                Rp {{ number_format($total, 0, ',', '.') }}
+                            </td>
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
@@ -168,5 +183,30 @@
         padding: 10px;
     }
     </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const jenisBayar = document.getElementById('jenis_bayar_id');
+            const bankContainer = document.getElementById('bankContainer');
+            const bankSelect = document.getElementById('bank_id');
+
+            function toggleBank() {
+                const jenis = jenisBayar.value;
+
+                // Asumsi: 1 = TRANSFER / BANK
+                if (jenis === '1') {
+                    bankContainer.style.display = 'block';
+                    bankSelect.required = true;
+                } else {
+                    bankContainer.style.display = 'none';
+                    bankSelect.required = false;
+                    bankSelect.value = '';
+                }
+            }
+
+            jenisBayar.addEventListener('change', toggleBank);
+            toggleBank(); // initial state
+        });
+    </script>
     
     </x-layouts.app>

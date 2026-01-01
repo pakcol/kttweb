@@ -7,6 +7,7 @@ use App\Models\Nota;
 use App\Models\JenisTiket;
 use App\Models\JenisBayar;
 use App\Models\Bank;
+use App\Models\Biaya;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -22,11 +23,70 @@ class TiketController extends Controller
         return view('input-tiket', [
             'ticket'      => Tiket::with(['jenisTiket'])->latest()->get(),
             'jenisBayar'  => JenisBayar::all(),
+            'jenisBayarNonPiutang' => JenisBayar::where('id', '!=', 3)->get(),
             'bank'        => Bank::all(),
             'jenisTiket'  => JenisTiket::all(),
         ]);
     }
 
+    public function indexMutasi()
+    {
+        $jenisTiket = JenisTiket::all();
+        $jenisBayar  = JenisBayar::where('id', '!=', 3)->get();
+        $bank        = Bank::all();
+        $mutasiTiket = JenisTiket::with([
+            'biaya' => function ($q) {
+                $q->orderBy('created_at');
+            }
+        ])->get();
+
+        return view('mutasi', compact('mutasiTiket', 'jenisTiket', 'jenisBayar', 'bank'));
+    }
+    
+    public function topupMutasi(Request $request)
+    {
+        $request->validate([
+            'tanggal'         => 'required|date',
+            'topup'           => 'required|numeric|min:1',
+            'jenis_tiket_id'  => 'required|exists:jenis_tiket,id',
+            'jenis_bayar_id'  => 'required|exists:jenis_bayar,id',
+            'bank_id'         => 'nullable|exists:bank,id',
+            'keterangan'      => 'nullable|string|max:30',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            /* ===================== SIMPAN KE BIAYA ===================== */
+            Biaya::create([
+                'tgl'             => $request->tanggal,
+                'nominal'         => $request->topup,
+                'id_jenis_tiket'  => $request->jenis_tiket_id,
+                'jenis_bayar_id'  => $request->jenis_bayar_id,
+                'bank_id'         => $request->bank_id,
+                'nama_biaya'      => $request->keterangan 
+                                    ?? 'Top Up Saldo Tiket',
+            ]);
+
+            /* ===================== UPDATE SALDO JENIS TIKET ===================== */
+            $jenisTiket = JenisTiket::findOrFail($request->jenis_tiket_id);
+
+            $jenisTiket->saldo += $request->topup;
+            $jenisTiket->save();
+
+            DB::commit();
+
+            return redirect()
+                ->back()
+                ->with('success', 'Top up mutasi tiket berhasil');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return redirect()
+                ->back()
+                ->with('error', 'Gagal menyimpan mutasi tiket');
+        }
+    }
 
 
     /**
@@ -85,6 +145,17 @@ class TiketController extends Controller
             'tiket_kode_booking' => $tiket->kode_booking,
             'harga_bayar' => $tiket->harga_jual,
         ]);
+
+        if ($request->jenis_bayar_id != 3) { // 3 = PIUTANG
+                Biaya::create([
+                    'tgl'            => Carbon::now(),
+                    'biaya'          => $tiket->nta,
+                    'id_jenis_tiket' => $tiket->jenis_tiket_id,
+                    'jenis_bayar_id' => $request->jenis_bayar_id,
+                    'bank_id'        => $request->bank_id,
+                    'keterangan'     => 'Pembelian tiket ' . $tiket->jenisTiket->name_jenis,
+                ]);
+            }
 
         DB::commit();
 

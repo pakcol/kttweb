@@ -19,6 +19,7 @@ class PpobController extends Controller
             'ppob'       => PembayaranOnline::latest()->get(),
             'jenisPpob'  => JenisPpob::all(),
             'jenisBayar' => JenisBayar::all(),
+            'jenisBayarNonPiutang' => JenisBayar::where('id', '!=', 3)->get(),
             'bank'       => Bank::all(),
         ]);
     }
