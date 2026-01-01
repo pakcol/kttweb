@@ -13,13 +13,9 @@ return new class extends Migration
     {
         Schema::create('subagents', function (Blueprint $table) {
             $table->id(); // id INT
-            $table->dateTime('tgl_issued'); // tglistued DATETIME
-            $table->string('name', 45); // name VARCHAR(45)
-            $table->string('tiket_kode_booking', 10); // tiket_kodeBooling VARCHAR(10)
+            $table->string('nama', 45); // name VARCHAR(45)
             $table->integer('saldo'); // saldo INT
             $table->timestamps();
-            
-            $table->foreign('tiket_kode_booking')->references('kode_booking')->on('tiket');
         });
     }
 

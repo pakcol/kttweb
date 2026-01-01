@@ -6,13 +6,14 @@ use App\Http\Controllers\NotaController;
 use App\Http\Controllers\TiketController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\TutupKasController;
-use App\Http\Controllers\EviController;
+use App\Http\Controllers\SubagentController;
 use App\Http\Controllers\BiayaController;
 use App\Http\Controllers\PpobController;
 use App\Http\Controllers\FindController;
 use App\Http\Controllers\MutasiController;
 use App\Http\Controllers\BukuBankController; 
 use App\Http\Controllers\RekapPenjualanController;
+use App\Models\Subagent;
 
 Route::get('/', function () {
     if (auth()->check()) {
@@ -87,15 +88,15 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/tutupKas', 'tutup-kas')->name('tutupKas');
     Route::get('/tutup-kas/search', [TutupKasController::class, 'search'])->name('tutup-kas.search');
 
-    // ======== EVI CONTROLLER ======== 
-    Route::prefix('evi')->name('evi.')->group(function () {
-        Route::get('/', [EviController::class, 'index'])->name('index');
-        Route::post('/store', [EviController::class, 'store'])->name('store');
-        Route::get('/search', [EviController::class, 'search'])->name('search');
-        Route::get('/{id}', [EviController::class, 'show'])->name('show');
-        Route::put('/{id}', [EviController::class, 'update'])->name('update');
-        Route::delete('/{id}', [EviController::class, 'destroy'])->name('destroy');
-        Route::get('/export', [EviController::class, 'exportExcel'])->name('export');
+    // ======== SUBAGENT CONTROLLER ======== 
+    Route::prefix('subagent')->name('subagent.')->group(function () {
+        Route::get('/', [SubagentController::class, 'index'])->name('index');
+        Route::post('/topup',[SubagentController::class, 'topup'])->name('topup');
+        Route::get('/search', [SubagentController::class, 'search'])->name('search');
+        Route::get('/{id}', [SubagentController::class, 'show'])->name('show');
+        Route::put('/{id}', [SubagentController::class, 'update'])->name('update');
+        Route::delete('/{id}', [SubagentController::class, 'destroy'])->name('destroy');
+        Route::get('/export', [SubagentController::class, 'exportExcel'])->name('export');
     });
 
     // ======== BIAYA CONTROLLER ======== 

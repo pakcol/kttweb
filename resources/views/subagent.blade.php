@@ -1,29 +1,59 @@
-<x-layouts.app title="EVI - PT. Kupang Tour & Travel">
+<x-layouts.app title="Subagent - PT. Kupang Tour & Travel">
 <link rel="stylesheet" href="{{ asset('css/evi.css') }}">
 
 <section class="evi-section">
     <div class="card-container">
-        <form id="formEvi" method="POST" action="{{ route('evi.store') }}">
+        <form id="formEvi" method="POST" action="{{ route('subagent.topup') }}">
             @csrf
             <div class="form-header">
                 <div class="form-group">
-                    <label for="tgl">TANGGAL</label>
-                    <input type="date" id="tgl" name="tgl" class="form-control" required>
-                </div>
+                <select name="subagent_id" id="subagent_id" required>
+                    <option value="">-- Pilih Subagent --</option>
+
+                    @forelse($subagents as $subagent)
+                        <option 
+                            value="{{ $subagent->id }}"
+                            data-saldo="{{ $subagent->saldo }}"
+                >
+                            {{ $subagent->nama }}
+                        </option>
+                    @empty
+                        <option value="" disabled>Data subagent belum tersedia</option>
+                    @endforelse
+                </select>
+            </div>
 
                 <div class="form-group">
-                    <label for="topup">TOP UP</label>
-                    <input type="number" id="topup" name="topup" class="form-control" placeholder="Masukkan jumlah" required>
+                    <label for="nominal">TOP UP</label>
+                    <input type="number" id="nominal" name="nominal" class="form-control" placeholder="Masukkan jumlah" required>
                 </div>
 
+                                
+                {{-- JENIS BAYAR --}}
                 <div class="form-group">
-                    <label for="keterangan">KETERANGAN</label>
-                    <input type="text" id="keterangan" name="keterangan" class="form-control" placeholder="Keterangan..." required>
+                    <select name="jenis_bayar_id" id="jenis_bayar_id" required>
+                        <option value="">-- Pilih Jenis Pembayaran --</option>
+                        @foreach($jenisBayar as $jb)
+                            <option value="{{ $jb->id }}">
+                                {{ $jb->jenis }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- BANK --}}
+                <div class="form-group" id="bankContainer" style="display:none;">
+                    <select name="bank_id" id="bank_id">
+                        <option value="">-- Pilih Bank --</option>
+                        @foreach($bank as $b)
+                            <option value="{{ $b->id }}">{{ $b->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <div class="form-group saldo-group">
                     <label for="saldo">SISA SALDO</label>
-                    <input type="text" id="saldo" name="saldo" class="form-control saldo" readonly value="{{ $saldo ?? '' }}">
+                    <input type="text" id="saldoSubagent" name="saldo" class="form-control saldo" readonly>
                 </div>
 
                 <div class="btn-group">
@@ -45,7 +75,7 @@
 
             <div class="btn-group">
                 <button id="tampilBtn" class="btn btn-blue">TAMPIL</button>
-                <a href="{{ route('evi.export') }}" id="exportBtn" class="btn btn-green">EXPORT EXCEL</a>
+                <a href="{{ route('subagent.export') }}" id="exportBtn" class="btn btn-green">EXPORT EXCEL</a>
             </div>
         </div>
     </div>
@@ -53,51 +83,32 @@
     <div class="table-container">
         <table class="table-evi">
             <thead>
-                <tr>
-                    <th>TGL_ISSUED</th>
-                    <th>JAM</th>
-                    <th>KODE BOOKING</th>
-                    <th>AIRLINES</th>
-                    <th>NAMA</th>
-                    <th>RUTE1</th>
-                    <th>TGL_FLIGHT1</th>
-                    <th>RUTE2</th>
-                    <th>TGL_FLIGHT2</th>
-                    <th>HARGA</th>
-                    <th>NTA</th>
-                    <th>TOP_UP</th>
-                    <th>SALDO</th>
-                    <th>KETERANGAN</th>
-                    <th>USER</th>
-                    <th>ACTION</th>
-                </tr>
+            <tr>
+                <th>Tanggal</th>
+                <th>Subagent</th>
+                <th>Keterangan</th>
+                <th>Debit</th>
+                <th>Kredit</th>
+                <th>Saldo</th>
+            </tr>
             </thead>
             <tbody id="dataEvi">
-                @forelse ($data as $row)
-                    <tr data-id="{{ $row->id }}">
-                        <td>{{ $row->tgl_issued }}</td>
-                        <td>{{ $row->jam }}</td>
-                        <td>{{ $row->kode_booking }}</td>
-                        <td>{{ $row->airlines }}</td>
-                        <td>{{ $row->nama }}</td>
-                        <td>{{ $row->rute1 }}</td>
-                        <td>{{ $row->tgl_flight1 }}</td>
-                        <td>{{ $row->rute2 }}</td>
-                        <td>{{ $row->tgl_flight2 }}</td>
-                        <td>{{ number_format($row->harga) }}</td>
-                        <td>{{ number_format($row->nta) }}</td>
-                        <td>{{ number_format($row->top_up) }}</td>
-                        <td>{{ number_format($row->saldo) }}</td>
-                        <td>{{ $row->keterangan }}</td>
-                        <td>{{ $row->user }}</td>
-                        <td>
-                            <button class="btn btn-delete" data-id="{{ $row->id }}">Delete</button>
-                        </td>
-                    </tr>
+                @forelse($histories as $row)
+                <tr>
+                    <td>{{ $row->created_at->format('d-m-Y H:i') }}</td>
+                    <td>{{ $row->subagent->name ?? '-' }}</td>
+                    <td>{{ $row->keterangan }}</td>
+                    <td>Rp {{ number_format($row->debit,0,',','.') }}</td>
+                    <td>Rp {{ number_format($row->kredit,0,',','.') }}</td>
+                    <td>Rp {{ number_format($row->saldo,0,',','.') }}</td>
+                </tr>
                 @empty
-                    <tr><td colspan="16" class="text-center">Tidak ada data</td></tr>
+                <tr>
+                    <td colspan="6">Belum ada data history subagent</td>
+                </tr>
                 @endforelse
             </tbody>
+
         </table>
     </div>
 </section>
@@ -125,12 +136,36 @@
 document.addEventListener('DOMContentLoaded', function() {
     const deleteModal = document.getElementById('deleteModal');
     const successModal = document.getElementById('successModal');
+
+    const subagentSelect = document.getElementById('subagent_id');
+    const saldoInput = document.getElementById('saldoSubagent');
+
+    const jenisBayar = document.getElementById('jenis_bayar_id');
+    const bankContainer = document.getElementById('bankContainer');
+    const bankSelect = document.getElementById('bank_id');
+
     let selectedId = null;
 
     document.body.addEventListener('click', function(e) {
         if (e.target.classList.contains('btn-delete')) {
             selectedId = e.target.dataset.id;
             deleteModal.style.display = 'flex';
+        }
+    });
+
+    subagentSelect.addEventListener('change', function () {
+        const saldo = this.options[this.selectedIndex].dataset.saldo || 0;
+        saldoInput.value = 'Rp ' + Number(saldo).toLocaleString('id-ID');
+    });
+
+    jenisBayar.addEventListener('change', function () {
+        if (this.value === '1') { // BANK
+            bankContainer.style.display = 'block';
+            bankSelect.required = true;
+        } else {
+            bankContainer.style.display = 'none';
+            bankSelect.required = false;
+            bankSelect.value = '';
         }
     });
 

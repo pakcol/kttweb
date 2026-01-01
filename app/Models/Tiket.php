@@ -49,14 +49,6 @@ class Tiket extends Model
     }
     
     /**
-     * Relasi ke Hutang
-     */
-    public function hutang(): HasOne
-    {
-        return $this->hasOne(Hutang::class, 'tiket_kode_booking', 'kode_booking');
-    }
-    
-    /**
      * Relasi ke Subagent
      */
     public function subagent(): HasOne
@@ -71,12 +63,10 @@ class Tiket extends Model
     {
         return $this->hasOne(Nota::class, 'tiket_kode_booking', 'kode_booking');
     }
-    
-    /**
-     * Relasi ke HistoryPembayaran
-     */
-    public function historyPembayaran(): HasMany
+
+    public function subagentHistories()
     {
-        return $this->hasMany(HistoryPembayaran::class, 'tiket_kode_booking', 'kode_booking');
+        return $this->hasMany(SubagentHistory::class, 'kode_booking', 'kode_booking');
     }
+
 }

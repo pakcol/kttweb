@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             JenisBayarSeeder::class,
             BankSeeder::class,
             JenisPpobSeeder::class,
+            SubagentSeeder::class,
         ]);
     }
 }
