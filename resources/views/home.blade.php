@@ -107,7 +107,11 @@
         <div class="contact-bottom">
             <div class="social-links">
                 <!-- Gmail -->
-                <a href="mailto:kupang_tt@yahoo.com"
+                <a href="https://mail.google.com/mail/?view=cm&fs=1
+&to=kupang_tt@yahoo.com
+&su=Permintaan%20Informasi%20Kupang%20Tour%20%26%20Travel
+&body=Halo%20Kupang%20Tour%20%26%20Travel%2C%0A%0ASaya%20ingin%20menanyakan%20informasi%20terkait%20layanan%20perjalanan.%0A%0ATerima%20kasih."
+   class="social-item"
                    class="social-item"
                    aria-label="Email Kupang Tour & Travel">
                     <img src="{{ asset('images/gmail.png') }}" alt="Gmail">
