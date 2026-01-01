@@ -52,7 +52,7 @@ class SubagentController extends Controller
                 'biaya' => $request->nominal,
                 'jenis_bayar_id' => $request->jenis_bayar_id,
                 'bank_id' => $request->bank_id,
-                'keterangan' => 'Top Up Subagent: ' . $subagent->name,
+                'keterangan' => 'Top Up Subagent: ' . $subagent->nama,
             ]);
         });
 
