@@ -16,7 +16,7 @@ class RekapPenjualanController extends Controller
         
         $data = $this->getRekapData($startDate, $endDate);
         
-        return view('rekapPenjualan', compact('data', 'startDate', 'endDate'));
+        return view('rekap-penjualan', compact('data', 'startDate', 'endDate'));
     }
 
     public function tampil(Request $request)
@@ -31,7 +31,7 @@ class RekapPenjualanController extends Controller
         
         $data = $this->getRekapData($startDate, $endDate);
 
-        return view('rekapPenjualan', compact('data', 'startDate', 'endDate'));
+        return view('rekap-penjualan', compact('data', 'startDate', 'endDate'));
     }
 
     private function getRekapData($startDate, $endDate)

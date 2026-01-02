@@ -10,7 +10,6 @@ use App\Http\Controllers\SubagentController;
 use App\Http\Controllers\BiayaController;
 use App\Http\Controllers\PpobController;
 use App\Http\Controllers\BukuBankController; 
-use App\Http\Controllers\RekapPenjualanController;
 use App\Http\Controllers\InsentifController;
 
 Route::get('/', function () {
@@ -36,7 +35,6 @@ Route::middleware(['auth'])->group(function () {
     Route::view('/sub-agent', 'sub-agent')->name('sub-agent');
     Route::view('/pln', 'pln')->name('pln');
     Route::view('/admin', 'admin')->middleware('superuser')->name('admin');
-    Route::view('/cash-flow', 'cash-flow')->name('cash-flow'); // Perbaiki: hapus spasi
 
     // ========  BUKU BANK CONTROLLER ========
     Route::middleware('superuser')->group(function () {
@@ -44,9 +42,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/buku-bank/topup', [BukuBankController::class, 'topUp'])->name('buku-bank.topup');
 
         // ======== REKAP PENJUALAN CONTROLLER ========
-        Route::get('/rekapPenjualan', [RekapPenjualanController::class, 'index'])->name('rekapPenjualan.index');
-        Route::post('/rekapPenjualan/tampil', [RekapPenjualanController::class, 'tampil'])->name('rekapPenjualan.tampil');
-        Route::post('/rekapPenjualan/export', [RekapPenjualanController::class, 'exportExcel'])->name('rekapPenjualan.export');
+        Route::get('/rekap-penjualan', [NotaController::class, 'rekap'])
+            ->name('rekap.penjualan');
     });
 
     // ======== TIKET CONTROLLER  ========
@@ -120,6 +117,7 @@ Route::middleware(['auth'])->group(function () {
 
     // ======== ADD USER ======== 
     Route::middleware('superuser')->group(function () {
+         Route::view('/cash-flow', 'cash-flow')->name('cash-flow');
         Route::get('/register', [UserController::class, 'create'])->name('register.create'); // Menggunakan method create
         Route::post('/register', [UserController::class, 'store'])->name('register.store');
         Route::delete('/register/{username}', [UserController::class, 'destroy'])->name('register.destroy');

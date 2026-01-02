@@ -5,9 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Nota;
 use App\Models\JenisBayar;
 use App\Models\Bank;
+use App\Models\Biaya;
+use App\Models\Insentif;
+use App\Models\SubagentHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+
 
 class NotaController extends Controller
 {
@@ -87,6 +92,85 @@ class NotaController extends Controller
             'nilai_refund'   => $nota->nilai_refund,
         ]);
     }
-}
 
+    public function rekap(Request $request)
+    {
+        $tanggal_awal  = $request->tanggal_awal;
+        $tanggal_akhir = $request->tanggal_akhir;
+
+        if (!$tanggal_awal || !$tanggal_akhir) {
+            return view('rekap-penjualan');
+        }
+
+        /* ======================
+           TOTAL PENJUALAN
+        ====================== */
+        $TTL_PENJUALAN = DB::table('nota')
+            ->whereBetween('tgl_issued', [$tanggal_awal, $tanggal_akhir])
+            ->sum('harga_bayar');
+
+        /* ======================
+           PIUTANG
+        ====================== */
+        $PIUTANG = DB::table('nota')
+            ->whereNull('tgl_bayar')
+            ->whereBetween('tgl_issued', [$tanggal_awal, $tanggal_akhir])
+            ->sum('harga_bayar');
+
+        /* ======================
+           BIAYA
+        ====================== */
+        $BIAYA = DB::table('biaya')
+            ->whereBetween('tgl', [$tanggal_awal, $tanggal_akhir])
+            ->sum('biaya');
+
+        /* ======================
+           INSENTIF
+        ====================== */
+        $INSENTIF = DB::table('insentif')
+            ->whereBetween('tgl', [$tanggal_awal, $tanggal_akhir])
+            ->sum('jumlah');
+
+        /* ======================
+           REFUND (jika ada)
+        ====================== */
+        $REFUND = DB::table('nota')
+            ->where('harga_bayar', '<', 0)
+            ->whereBetween('tgl_issued', [$tanggal_awal, $tanggal_akhir])
+            ->sum('harga_bayar');
+
+        /* ======================
+           CASH FLOW
+        ====================== */
+        $CASH_FLOW = $TTL_PENJUALAN - $PIUTANG - $BIAYA - $INSENTIF;
+
+        /* ======================
+           DATA TABLE (BAWAH)
+        ====================== */
+        $penjualan = DB::table('nota')
+            ->whereBetween('tgl_issued', [$tanggal_awal, $tanggal_akhir])
+            ->selectRaw("
+                DATE(tgl_issued) as TANGGAL,
+                TIME(tgl_issued) as JAM,
+                SUM(harga_bayar) as TTL_PENJUALAN,
+                SUM(CASE WHEN tgl_bayar IS NULL THEN harga_bayar ELSE 0 END) as PIUTANG,
+                0 as REFUND,
+                SUM(harga_bayar) as CASH_FLOW
+            ")
+            ->groupBy(DB::raw('DATE(tgl_issued), TIME(tgl_issued)'))
+            ->get();
+
+        return view('rekap-penjualan', compact(
+            'TTL_PENJUALAN',
+            'PIUTANG',
+            'BIAYA',
+            'INSENTIF',
+            'REFUND',
+            'CASH_FLOW',
+            'penjualan',
+            'tanggal_awal',
+            'tanggal_akhir'
+        ));
+    }
+}
 ?>
