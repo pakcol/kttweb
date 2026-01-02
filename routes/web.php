@@ -11,7 +11,7 @@ use App\Http\Controllers\BiayaController;
 use App\Http\Controllers\PpobController;
 use App\Http\Controllers\BukuBankController; 
 use App\Http\Controllers\RekapPenjualanController;
-use App\Models\Subagent;
+use App\Http\Controllers\InsentifController;
 
 Route::get('/', function () {
     if (auth()->check()) {
@@ -123,7 +123,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/register', [UserController::class, 'create'])->name('register.create'); // Menggunakan method create
         Route::post('/register', [UserController::class, 'store'])->name('register.store');
         Route::delete('/register/{username}', [UserController::class, 'destroy'])->name('register.destroy');
-        Route::view('/insentif', 'insentif')->middleware('superuser')->name('insentif');
+        Route::get('/insentif', [InsentifController::class, 'index'])
+            ->name('insentif.index');
+
+        Route::post('/insentif', [InsentifController::class, 'store'])
+            ->name('insentif.store');
+
     });
 
     // ======== LOGOUT ========
