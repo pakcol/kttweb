@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="{{ asset('css/find.css') }}">
 </head>
 <body>
-        <form action="{{ route('find.search') }}" method="GET" class="form-section">
+        <form action="{{ route('find.searchTiket') }}" method="GET" class="form-section">
             <div class="grid-container">
                 <div class="left">
                     <div class="form-group">
@@ -56,66 +56,94 @@
             </div>
         </form>
 
-    @if(isset($results))
+    @if(isset($ticket))
     <div class="result-section">
         <div class="table-info">
-            Menampilkan {{ $results->count() }} hasil pencarian
+            Menampilkan {{ $ticket->count() }} hasil pencarian
         </div>
         <div class="table-responsive">
             <table class="result-table">
                 <thead>
                     <tr>
-                        <th>Pilih</th>
+                        <th><input type="checkbox" id="checkAll"></th>
                         <th>No</th>
                         <th>Tgl Issued</th>
-                        <th>Jam</th>
                         <th>Kode Booking</th>
-                        <th>Airlines</th>
                         <th>Nama</th>
-                        <th>Rute 1</th>
-                        <th>Tgl Flight 1</th>
+                        <th>Rute</th>
+                        <th>Tgl Flight</th>
                         <th>Rute 2</th>
                         <th>Tgl Flight 2</th>
-                        <th>Harga</th>
+                        <th>Harga Jual</th>
                         <th>NTA</th>
                         <th>Diskon</th>
-                        <th>Komisi</th>
-                        <th>Pembayaran</th>
-                        <th>Nama Piutang</th>
-                        <th>Tanggal Realisasi</th>
-                        <th>Jam Realisasi</th>
-                        <th>Nilai Refund</th>
+                        <th>Status</th>
+                        <th>Jenis Tiket</th>
                         <th>Keterangan</th>
+                        <th style="text-align:center;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($results as $index => $r)
-                    <tr>
-                        <td><input type="checkbox" class="select-checkbox"></td>
+                    @forelse ($ticket as $index => $t)
+                    <tr data-id="{{ $t->kode_booking }}"
+                        data-jenis-tiket-id="{{ $t->jenis_tiket_id }}">
+
+                        <td>
+                            <input type="checkbox" class="check-row" value="{{ $t->kode_booking }}">
+                        </td>
+
                         <td>{{ $index + 1 }}</td>
-                        <td>{{ $r->tgl_issued ? \Carbon\Carbon::parse($r->tgl_issued)->format('d/m/Y') : '' }}</td>
-                        <td>{{ $r->jam ?? '' }}</td>
-                        <td>{{ $r->kode_booking ?? '' }}</td>
-                        <td>{{ $r->airlines ?? '' }}</td>
-                        <td>{{ $r->nama ?? '' }}</td>
-                        <td>{{ $r->rute_1 ?? '' }}</td>
-                        <td>{{ $r->tgl_flight_1 ? \Carbon\Carbon::parse($r->tgl_flight_1)->format('d/m/Y') : '' }}</td>
-                        <td>{{ $r->rute_2 ?? '' }}</td>
-                        <td>{{ $r->tgl_flight_2 ? \Carbon\Carbon::parse($r->tgl_flight_2)->format('d/m/Y') : '' }}</td>
-                        <td class="text-right">{{ $r->harga ? number_format($r->harga, 0, ',', '.') : '0' }}</td>
-                        <td class="text-right">{{ $r->nta ? number_format($r->nta, 0, ',', '.') : '0' }}</td>
-                        <td class="text-right">{{ $r->diskon ? number_format($r->diskon, 0, ',', '.') : '0' }}</td>
-                        <td class="text-right">{{ $r->komisi ? number_format($r->komisi, 0, ',', '.') : '0' }}</td>
-                        <td>{{ $r->pembayaran ?? '' }}</td>
-                        <td>{{ $r->nama_piutang ?? '' }}</td>
-                        <td>{{ $r->tgl_realisasi ? \Carbon\Carbon::parse($r->tgl_realisasi)->format('d/m/Y') : '' }}</td>
-                        <td>{{ $r->jam_realisasi ?? '' }}</td>
-                        <td class="text-right">{{ $r->nilai_refund ? number_format($r->nilai_refund, 0, ',', '.') : '0' }}</td>
-                        <td class="keterangan">{{ $r->keterangan ?? '' }}</td>
+
+                        <td>
+                            {{ $t->tgl_issued ? \Carbon\Carbon::parse($t->tgl_issued)->format('Y-m-d') : '-' }}
+                        </td>
+
+                        <td>{{ $t->kode_booking }}</td>
+
+                        <td>{{ $t->name }}</td>
+
+                        <td>{{ $t->rute }}</td>
+
+                        <td>
+                            {{ $t->tgl_flight ? \Carbon\Carbon::parse($t->tgl_flight)->format('Y-m-d') : '-' }}
+                        </td>
+
+                        <td>{{ $t->rute2 ?? '-' }}</td>
+
+                        <td>
+                            {{ $t->tgl_flight2 ? \Carbon\Carbon::parse($t->tgl_flight2)->format('Y-m-d') : '-' }}
+                        </td>
+
+                        <td>{{ number_format($t->harga_jual ?? 0, 0, ',', '.') }}</td>
+
+                        <td>{{ number_format($t->nta ?? 0, 0, ',', '.') }}</td>
+
+                        <td>
+                            {{ $t->diskon ? number_format($t->diskon, 0, ',', '.') : '-' }}
+                        </td>
+
+                        <td>
+                            <span class="status {{ $t->status }}">
+                                {{ ucfirst($t->status) }}
+                            </span>
+                        </td>
+
+                        <td>{{ $t->jenisTiket->name_jenis ?? '-' }}</td>
+
+                        <td>{{ $t->keterangan ?? '-' }}</td>
+
+                        <td style="text-align:center;">
+                            <form action="{{ route('input-tiket.destroy', $t->kode_booking) }}" method="POST"
+                                onsubmit="return confirm('Hapus tiket ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn-delete" type="submit">Delete</button>
+                            </form>
+                        </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="21" class="no-data">Tidak ada data ditemukan.</td>
+                        <td colspan="16" style="text-align:center;">Data tiket tidak ditemukan</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -128,7 +156,7 @@
         function resetForm() {
             document.querySelectorAll('input[type="date"]').forEach(input => input.value = '');
             document.querySelectorAll('input[type="text"]').forEach(input => input.value = '');
-            window.location.href = "{{ route('find.search') }}";
+            window.location.href = "{{ route('find.searchTiket') }}";
         }
         document.addEventListener('DOMContentLoaded', function() {
             const dateInputs = document.querySelectorAll('input[type="date"]');

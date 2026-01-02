@@ -42,6 +42,49 @@ class TiketController extends Controller
 
         return view('mutasi', compact('mutasiTiket', 'jenisTiket', 'jenisBayar', 'bank'));
     }
+
+    public function indexFind()
+    {
+        return view('find', [
+            'tiket'      => Tiket::with(['jenisTiket'])->latest()->get(),
+            'jenisBayar'  => JenisBayar::all(),
+            'jenisTiket'  => JenisTiket::all(),
+            'bank'        => Bank::all(),
+        ]);
+    }
+
+    public function searchTiket(Request $request)
+    {
+        $query = Tiket::query()->with('jenisTiket');
+
+        if ($request->filled('kode_booking')) {
+            $query->where('kode_booking', 'like', '%' . strtoupper($request->kode_booking) . '%');
+        }
+
+        if ($request->filled('nama_pax')) {
+            $query->where('name', 'like', '%' . strtoupper($request->nama_pax) . '%');
+        }
+
+        if ($request->filled('tgl_flight')) {
+            $query->whereDate('tgl_flight', $request->tgl_flight);
+        }
+
+        if ($request->filled('tgl_issued')) {
+            $query->whereDate('tgl_issued', $request->tgl_issued);
+        }
+
+        // 🔹 nama piutang ada di NOTA
+        if ($request->filled('nama_piutang')) {
+            $query->whereHas('nota', function ($q) use ($request) {
+                $q->where('nama', 'like', '%' . strtoupper($request->nama_piutang) . '%');
+            });
+        }
+
+        $ticket = $query->orderBy('tgl_issued', 'desc')->get();
+
+        return view('find', compact('ticket'));
+    }
+
     
     public function topupMutasi(Request $request)
     {

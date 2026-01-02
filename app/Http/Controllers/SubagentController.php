@@ -14,8 +14,8 @@ class SubagentController extends Controller
 {
     public function index()
     {
+        $jenisBayar = JenisBayar::where('id', '!=', 3)->get();
         $subagents = Subagent::orderBy('nama')->get();
-        $jenisBayar = JenisBayar::orderBy('jenis')->get();
         $bank = Bank::orderBy('name')->get();
 
         $histories = SubagentHistory::with('subagent')

@@ -9,7 +9,6 @@ use App\Http\Controllers\TutupKasController;
 use App\Http\Controllers\SubagentController;
 use App\Http\Controllers\BiayaController;
 use App\Http\Controllers\PpobController;
-use App\Http\Controllers\FindController;
 use App\Http\Controllers\BukuBankController; 
 use App\Http\Controllers\RekapPenjualanController;
 use App\Models\Subagent;
@@ -111,8 +110,8 @@ Route::middleware(['auth'])->group(function () {
 
     // ======== FIND TICKET CONTROLLER ======== 
     Route::prefix('find-ticket')->name('find.')->group(function () {
-        Route::get('/', [FindController::class, 'index'])->name('index');
-        Route::get('/search', [FindController::class, 'search'])->name('search');
+        Route::get('/', [TiketController::class, 'indexFind'])->name('indexFind');
+        Route::get('/search', [TiketController::class, 'searchTiket'])->name('searchTiket');
     });
 
     // ======== MUTASI TIKET CONTROLLER ======== 
