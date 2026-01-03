@@ -34,53 +34,62 @@
                 </div>
                 <div class="card">
                     <h3>TRANSFER</h3>
-                    <label>TRANSFER BCA</label>
-                    <input type="text" name="TRF_BCA" id="TRF_BCA">
-                    <label>TRANSFER BRI</label>
-                    <input type="text" name="TRF_BRI" id="TRF_BRI">
-                    <label>TRANSFER BNI</label>
-                    <input type="text" name="TRF_BNI" id="TRF_BNI">
-                    <label>TRANSFER BTN</label>
-                    <input type="text" name="TRF_BTN" id="TRF_BTN">
-                </div>
-                <div class="card">
-                    <h3>SETORAN</h3>
-                    <label>SETORAN BCA</label>
-                    <input type="text" name="STR_BCA" id="STR_BCA">
-                    <label>SETORAN BRI</label>
-                    <input type="text" name="STR_BRI" id="STR_BRI">
-                    <label>SETORAN BNI</label>
-                    <input type="text" name="STR_BNI" id="STR_BNI">
-                    <label>SETORAN MANDIRI</label>
-                    <input type="text" name="STR_MDR" id="STR_MDR">
-                </div>
-                <div class="card">
-                    <h3>SALDO AIRLINES</h3>
-                    @foreach(['CITILINK','GARUDA','QGCORNER','LION','SRIWIJAYA','TRANSNUSA','PELNI','AIRASIA','DLU'] as $air)
-                        <label>{{ $air }}</label>
-                        <input type="text" name="SO{{ strtoupper($air) }}" id="SO{{ strtoupper($air) }}">
+                    @foreach($banks as $bank)
+                        <label>TRANSFER {{ strtoupper($bank->name) }}</label>
+                        <input type="text"
+                            value="{{ number_format($transfer[$bank->id] ?? 0, 0, ',', '.') }}"
+                            readonly>
                     @endforeach
                 </div>
                 <div class="card">
-                    <h3>TOP UP AIRLINES</h3>
-                    @foreach(['CITILINK','GARUDA','QGCORNER','LION','SRIWIJAYA','TRANSNUSA','PELNI','AIRASIA','DLU'] as $air)
-                        <label>{{ $air }}</label>
-                        <input type="text" name="TU{{ strtoupper($air) }}" id="TU{{ strtoupper($air) }}">
+                    <h3>SETORAN</h3>
+                    @foreach($banks as $bank)
+                        <label>SETORAN {{ strtoupper($bank->name) }}</label>
+                        <input type="text"
+                            value="{{ number_format($setoran[$bank->id] ?? 0, 0, ',', '.') }}">
+                    @endforeach
+                </div>
+                <div class="card">
+                    <h3>SALDO TIKET</h3>
+                    @foreach($jenisTiket as $tiket)
+                        <label>{{ strtoupper($tiket->name_jenis) }}</label>
+                        <input type="text"
+                            value="{{ number_format($tiket->saldo ?? 0, 0, ',', '.') }}"
+                            readonly>
+                    @endforeach
+                </div>
+                <div class="card">
+                    <h3>TOP UP SALDO TIKET</h3>
+                    @foreach($topupJenisTiket as $topup)
+                        <label>{{ strtoupper($topup->name_jenis) }}</label>
+                        <input type="text"
+                            value="{{ number_format($topup->total_topup, 0, ',', '.') }}"
+                            readonly>
                     @endforeach
                 </div>
                 <div class="card sub-agent">
                     <h3>SALDO SUB AGENT</h3>
-                    <label>EVI</label>
-                    <input type="text" name="SOEVI" id="SOEVI">
+                    @foreach($subagents as $sa)
+                        <label>{{ strtoupper($sa->nama) }}</label>
+                        <input type="text"
+                            value="{{ number_format($sa->saldo, 0, ',', '.') }}"
+                            readonly>
+                    @endforeach
                     <label>CASH</label>
-                    <input type="text" name="CASH_FLOW" id="CASH_FLOW">
+                    <input type="text"
+                        value="{{ number_format($cashFlowSubagent ?? 0, 0, ',', '.') }}"
+                        readonly>
                 </div>
                 <div class="card pln">
-                    <h3>PLN</h3>
-                    <label>PLN</label>
-                    <input type="text" name="PLN" id="PLN">
-                    <label>SISA SALDO</label>
-                    <input type="text" name="SALDOPLN" id="SALDOPLN">
+                    <h3>PPOB</h3>
+                    @forelse($ppobs as $ppob)
+                        <label>{{ strtoupper($ppob->jenis_ppob) }}</label>
+                        <input type="text"
+                            value="{{ number_format($ppob->saldo ?? 0, 0, ',', '.') }}"
+                            readonly>
+                    @empty
+                        <p class="no-data">Data PPOB belum tersedia</p>
+                    @endforelse
                 </div>
             </div>
 

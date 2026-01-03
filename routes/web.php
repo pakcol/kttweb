@@ -117,9 +117,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/mutasi-tiket', [TiketController::class, 'indexMutasi'])->name('mutasi-tiket.index');
     Route::post('/mutasi-tiket', [TiketController::class, 'topupMutasi'])->name('mutasi-tiket.topup');
 
+    // ======== CASH FLOW CONTROLLER ========
+    Route::get('/cash-flow', [NotaController::class, 'cashFlow'])
+        ->name('cash-flow.cashFlow');
     // ======== ADD USER ======== 
     Route::middleware('superuser')->group(function () {
-         Route::view('/cash-flow', 'cash-flow')->name('cash-flow');
         Route::get('/register', [UserController::class, 'create'])->name('register.create'); // Menggunakan method create
         Route::post('/register', [UserController::class, 'store'])->name('register.store');
         Route::delete('/register/{username}', [UserController::class, 'destroy'])->name('register.destroy');

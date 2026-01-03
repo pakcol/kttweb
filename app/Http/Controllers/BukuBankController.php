@@ -37,6 +37,7 @@ class BukuBankController extends Controller
             Biaya::create([
                 'tgl' => now(),
                 'biaya' => $request->nominal,
+                'kategori' => 'top_up',
                 'jenis_bayar_id' => 1,
                 'bank_id' => $bank->id,
                 'keterangan' => $request->keterangan ?? 'Top up saldo bank '.$bank->name,
