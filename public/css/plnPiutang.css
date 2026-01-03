@@ -1,3 +1,4 @@
+/* ================= RESET ================= */
 html, body {
     height: 100%;
     margin: 0;
@@ -11,114 +12,140 @@ body {
     background-size: cover;
 }
 
+/* ================= PAGE WRAPPER ================= */
 .pln-piutang-container {
     width: 100%;
-    min-height: 100%;
-    padding: 100px 0 60px;
+    min-height: 100vh;
+    padding: 120px 0 80px;
 }
 
+/* ================= FORM CARD ================= */
 .piutang-form {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    background: url('../images/hero_4.png') no-repeat center center / cover;
-    margin: 0 auto;
-    padding: 30px 40px;
-    border-radius: 16px;
+
     width: 90%;
-    max-width: 1100px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    max-width: 1150px;
+    margin: 0 auto;
+
+    padding: 36px 44px;
+    border-radius: 20px;
+
+    background: rgba(255, 255, 255, 0.78);
+    backdrop-filter: blur(14px);
+
+    box-shadow:
+        0 12px 30px rgba(0,0,0,0.12),
+        inset 0 0 0 1px rgba(255,255,255,0.35);
 }
 
+
+/* ================= FORM LEFT ================= */
 .form-left {
     display: grid;
-    grid-template-columns: 150px 1fr;
-    row-gap: 14px;
-    column-gap: 16px;
+    grid-template-columns: 160px 1fr;
+    row-gap: 18px;
+    column-gap: 20px;
     flex: 1;
 }
 
 .form-left label {
     font-weight: 600;
-    color: #2c3e50;
     font-size: 14px;
-    text-shadow: none;
+    color: #1f3a3a;
+    align-self: center;
 }
 
 .form-left input,
 .form-left select {
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background: #fff;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #ccdada;
+    background: #ffffff;
     font-size: 14px;
     color: #333;
-    transition: 0.2s ease-in-out;
+    transition: 0.25s ease;
+}
+
+.form-left input::placeholder {
+    color: #999;
 }
 
 .form-left input:focus,
 .form-left select:focus {
-    background: #fff;
-    border-color: #06c167;
-    box-shadow: 0 0 0 2px rgba(6, 193, 103, 0.2);
     outline: none;
+    border-color: #06c167;
+    box-shadow: 0 0 0 3px rgba(6, 193, 103, 0.25);
 }
 
+/* ================= FORM RIGHT (BUTTON) ================= */
 .form-right {
     display: flex;
     align-items: flex-end;
     justify-content: flex-end;
-    width: 180px;
+    width: 200px;
 }
 
 #updateBtn {
-    background: linear-gradient(135deg, #06c167, #04a85a);
+    background: linear-gradient(135deg, #06c167, #049f57);
     border: none;
     color: #fff;
     font-weight: 600;
     font-size: 14px;
-    padding: 10px 24px;
-    border-radius: 10px;
+
+    padding: 12px 30px;
+    border-radius: 12px;
     cursor: pointer;
-    transition: 0.3s;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+
+    box-shadow: 0 10px 22px rgba(6, 193, 103, 0.35);
+    transition: all 0.3s ease;
 }
 
 #updateBtn:hover {
-    background: linear-gradient(135deg, #04a85a, #03864c);
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 14px 28px rgba(6, 193, 103, 0.45);
 }
 
+/* ================= TABLE SECTION ================= */
 .table-section {
-    margin: 40px auto 0;
+    margin: 60px auto 0;
     width: 92%;
-    background: url('../images/hero_4.png') no-repeat center center / cover;
-    border-radius: 16px;
-    padding: 25px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    max-width: 1200px;
+
+    padding: 28px;
+    border-radius: 20px;
+
+    background: rgba(255,255,255,0.82);
+    backdrop-filter: blur(12px);
+
+    box-shadow:
+        0 10px 28px rgba(0,0,0,0.12),
+        inset 0 0 0 1px rgba(255,255,255,0.35);
+
     overflow-x: auto;
 }
 
+/* ================= TABLE ================= */
 #piutangTable {
     width: 100%;
     border-collapse: collapse;
-    background: #fff;
-    border-radius: 10px;
+    background: #ffffff;
+    border-radius: 14px;
     overflow: hidden;
 }
 
 #piutangTable thead {
-    background: #009879;
-    color: #fff;
+    background: linear-gradient(135deg, #009879, #00b894);
 }
 
 #piutangTable th {
-    padding: 10px 12px;
+    padding: 12px 14px;
     text-align: center;
     font-size: 13px;
     font-weight: 600;
-    text-transform: capitalize;
-    border-right: 1px solid #fff;
+    color: #ffffff;
+    border-right: 1px solid rgba(255,255,255,0.4);
 }
 
 #piutangTable th:last-child {
@@ -126,28 +153,34 @@ body {
 }
 
 #piutangTable td {
-    padding: 10px 12px;
+    padding: 12px 14px;
     text-align: center;
     font-size: 13px;
     color: #333;
-    border-bottom: 1px solid #e5e5e5;
+    border-bottom: 1px solid #e8e8e8;
 }
 
 #piutangTable tr:nth-child(even) {
-    background-color: #f3f9f7;
+    background-color: #f4fbf9;
 }
 
 #piutangTable tr:hover {
     background-color: #e6f7ef;
-    transition: background 0.2s;
-    cursor: pointer;
+    transition: background 0.25s;
 }
 
+/* ================= EMPTY DATA ================= */
+#piutangTable td[colspan] {
+    font-style: italic;
+    color: #777;
+    padding: 20px;
+}
+
+/* ================= RESPONSIVE ================= */
 @media (max-width: 768px) {
     .piutang-form {
         flex-direction: column;
-        align-items: stretch;
-        padding: 20px;
+        padding: 24px;
     }
 
     .form-left {
@@ -155,8 +188,9 @@ body {
     }
 
     .form-right {
+        width: 100%;
         justify-content: center;
-        margin-top: 20px;
+        margin-top: 24px;
     }
 
     #updateBtn {
@@ -166,6 +200,6 @@ body {
     #piutangTable th,
     #piutangTable td {
         font-size: 12px;
-        padding: 8px;
+        padding: 10px;
     }
 }

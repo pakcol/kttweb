@@ -1,3 +1,4 @@
+/* ================= RESET ================= */
 html, body {
     width: 100%;
     min-height: 100vh;
@@ -5,35 +6,49 @@ html, body {
     font-family: 'Poppins', sans-serif;
 }
 
-/* BACKGROUND FULL SAMPAI BAWAH */
-.piutang-page {
-    width: 100vw;
-    min-height: 100vh;
-    
-
-    position: relative;
-    left: 50%;
-    right: 50%;
-    margin-left: -50vw;
-    margin-right: -50vw;
-
+/* ================= BODY BACKGROUND FULL ================= */
+body {
     background: linear-gradient(90deg, #0f4d4d 0%, #b8d3d6 100%);
-    padding: 120px 0 100px; /* aman dari navbar */
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
+
+/* ================= MAIN WRAPPER ================= */
+main {
+    background: transparent;
+    padding: 0;
+}
+
+/* ================= PAGE FULL WIDTH ================= */
+.piutang-page {
+    width: 100%;
+    min-height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding-top: 140px;  /* JARAK AMAN DARI NAVBAR */
+    padding-bottom: 120px;
+}
+
+/* ================= CONTENT ================= */
 .piutang-section {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
 }
 
+/* ================= CARD FORM ================= */
 .card-form {
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(12px);
     border-radius: 20px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
     padding: 30px 40px;
-    margin-bottom: 40px;
-    animation: fadeInUp 0.8s ease-in-out;
+    margin-top: 150px;
+    margin-bottom: 50px;
+    animation: fadeInUp 0.8s ease;
 }
 
 .form-title {
@@ -43,11 +58,11 @@ html, body {
     margin-bottom: 20px;
 }
 
+/* ================= FORM ================= */
 .form-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 18px 25px;
-    width: 100%;
 }
 
 .form-group label {
@@ -68,7 +83,7 @@ html, body {
     outline: none;
     font-size: 0.95rem;
     transition: 0.3s;
-    background: rgba(255,255,255,0.8);
+    background: rgba(255,255,255,0.9);
 }
 
 .form-group input:focus,
@@ -80,24 +95,13 @@ html, body {
 
 .form-group textarea {
     min-height: 100px;
-    resize: vertical;
 }
 
 .form-group.full-width {
     grid-column: 1 / -1;
-    width: 100%;
-    max-width: 100%;
 }
 
-.piutang-section .form-group.full-width textarea,
-.card-form .form-group.full-width textarea {
-    width: 100% !important;
-    max-width: 100% !important;
-    box-sizing: border-box;
-    display: block;
-}
-
-/* BUTTONS */
+/* ================= BUTTON ================= */
 .btn-actions {
     margin-top: 25px;
     display: flex;
@@ -107,7 +111,7 @@ html, body {
 
 .btn-update,
 .btn-print {
-    padding: 10px 20px;
+    padding: 10px 22px;
     border-radius: 10px;
     border: none;
     cursor: pointer;
@@ -135,26 +139,27 @@ html, body {
     transform: translateY(-2px);
 }
 
-/* TABLE */
+/* ================= TABLE ================= */
 .card-table {
-    background: rgba(240, 249, 255, 0.8);
-    padding: 25px;
+    background: rgba(240, 249, 255, 0.85);
+    padding: 30px;
     border-radius: 20px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    margin-top: 60px; /* JARAK DARI FORM */
 }
 
 .card-table h3 {
     font-size: 1.3rem;
     font-weight: 600;
     color: #00466e;
-    margin-bottom: 15px;
+    margin-bottom: 18px;
 }
 
 .table-piutang {
     width: 100%;
     border-collapse: collapse;
+    border-radius: 12px;
     overflow: hidden;
-    border-radius: 10px;
 }
 
 .table-piutang th {
@@ -166,28 +171,33 @@ html, body {
 
 .table-piutang td {
     padding: 12px;
-    background: rgba(255,255,255,0.8);
+    background: rgba(255,255,255,0.9);
     border-bottom: 1px solid #e0e0e0;
 }
 
+/* ================= STATUS ================= */
 .status-lunas {
     background: #00a86b;
     color: white;
-    padding: 5px 10px;
+    padding: 6px 12px;
     border-radius: 8px;
     font-size: 0.85rem;
 }
 
+/* ================= ANIMATION ================= */
 @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(30px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-main {
-    background: transparent !important;
-    padding: 0 !important;
-}
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
 
-body {
-    background: transparent !important;
+    .btn-actions {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
 }
