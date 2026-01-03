@@ -58,10 +58,10 @@
                         <label for="status">STATUS*</label>
                         <select id="status" name="status" required>
                             <option value="">Pilih Status</option>
-                            <option value="pending">Pending</option>
-                            <option value="issued">Issued</option>
-                            <option value="canceled">Canceled</option>
-                            <option value="refunded">Refunded</option>
+                            <option value="pending" class="status-basic">Pending</option>
+                            <option value="issued" class="status-basic">Issued</option>
+                            <option value="canceled" class="status-advanced">Canceled</option>
+                            <option value="refunded" class="status-advanced">Refunded</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -118,17 +118,7 @@
                         <input type="text" id="nama_piutang" name="nama_piutang" class="text-uppercase">
                     </div>
                     
-                    <div class="form-group">
-                        <label for="tgl_realisasi">TGL REALISASI</label>
-                        <input type="date" id="tgl_realisasi" name="tgl_realisasi">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="jam_realisasi">JAM REALISASI</label>
-                        <input type="time" id="jam_realisasi" name="jam_realisasi">
-                    </div>
-                    
-                    <div class="form-group">
+                    <div class="form-group" id="refundContainer" style="display:none;">
                         <label for="nilai_refund">NILAI REFUND</label>
                         <input type="number" id="nilai_refund" name="nilai_refund" value="0">
                     </div>
@@ -384,6 +374,29 @@
 <script>
 /* ===================== UTIL ===================== */
 const $ = id => document.getElementById(id);
+$('status').dispatchEvent(new Event('change'));
+
+    const showBasicStatus = () => {
+        document.querySelectorAll('.status-advanced').forEach(o => o.style.display = 'none');
+        document.querySelectorAll('.status-basic').forEach(o => o.style.display = 'block');
+    };
+
+    const showAllStatus = () => {
+        document.querySelectorAll('.status-advanced, .status-basic')
+            .forEach(o => o.style.display = 'block');
+    };
+
+    const toggleRefund = () => {
+        const status = $('status').value;
+        $('refundContainer').style.display = status === 'refunded' ? 'block' : 'none';
+        $('nilai_refund').required = status === 'refunded';
+        if (status !== 'refunded') {
+            $('nilai_refund').value = 0;
+        }
+
+    };
+
+    $('status').addEventListener('change', toggleRefund);
 
     /* ===================== TOGGLE JENIS BAYAR ===================== */
     function toggleJenisPembayaran() {
@@ -413,6 +426,7 @@ const $ = id => document.getElementById(id);
 
     /* ===================== FILL FORM ===================== */
     function fillFormFromRow(row) {
+        showAllStatus();
         const td = row.children;
 
         $('kode_booking').value = row.dataset.id;
@@ -425,6 +439,7 @@ const $ = id => document.getElementById(id);
         $('status').value = td[12].innerText.toLowerCase();
         $('keterangan').value = td[14].innerText !== '-' ? td[14].innerText : '';
 
+        toggleRefund();
         // tanggal
         $('tgl_issued').value = `${td[2].innerText}T00:00`;
         $('tgl_flight').value = `${td[6].innerText}T00:00`;
@@ -468,8 +483,13 @@ const $ = id => document.getElementById(id);
     $('btnBatal').onclick = () => {
         $('inputDataForm').reset();
         $('btnInputData').textContent = 'INPUT DATA';
+        showBasicStatus();
         toggleJenisPembayaran();
+        toggleRefund()
     };
+
+    showBasicStatus();
+    toggleRefund();
 </script>
 
 </x-layouts.app>
