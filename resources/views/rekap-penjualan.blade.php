@@ -1,18 +1,16 @@
-<x-layouts.app title="Cash Flow - PT. Kupang Tour & Travel">
+<x-layouts.app title="Rekap Penjuaan - PT. Kupang Tour & Travel">
 
 <link rel="stylesheet" href="{{ asset('css/cash-flow.css') }}">
 
 <div class="cash-flow-wrapper">
     <div class="cash-flow-card">
-        <h2 class="page-title">CASH FLOW</h2>
-        <form action="{{ route('rekap.penjualan') }}" method="GET" class="search-form">
-            <label for="tanggal_awal">LAPORAN PENJUALAN TANGGAL :</label>
-            <input type="date" id="tanggal_awal" name="tanggal_awal" value="{{ request('tanggal_awal') }}">
-            <label for="tanggal_akhir">s/d</label>
-            <input type="date" id="tanggal_akhir" name="tanggal_akhir" value="{{ request('tanggal_akhir') }}">
+        <h2 class="page-title">REKAP PENJUALAN</h2>
+        <form action="{{ route('rekap-penjualan.rekap') }}" method="GET" class="search-form">
+            <label for="tanggal">LAPORAN PENJUALAN TANGGAL :</label>
+            <input type="date" id="tanggal" name="tanggal" value="{{ date('Y-m-d') }}">
             <button type="submit" class="search-btn">CARI</button>
         </form>
-        <form action="{{ route('tutup-kas.store') }}" method="POST" id="formTutupKas">
+        <form action="{{ route('rekap-penjualan.rekapPenjualan') }}" method="POST" id="formRekapPenjualan">
             @csrf
             <input type="hidden" name="id" id="recordId">
 
@@ -20,11 +18,17 @@
                 <div class="card">
                     <h3>PENJUALAN</h3>
                     <label>PENJUALAN</label>
-                    <input type="text" name="TTL_PENJUALAN" id="TTL_PENJUALAN">
+                    <input type="text"
+                        value="{{ number_format($TTL_PENJUALAN ?? 0,0,',','.') }}"
+                        readonly>
                     <label>PIUTANG</label>
-                    <input type="text" name="PIUTANG" id="PIUTANG">
+                    <input type="text"
+                        value="{{ number_format($PIUTANG ?? 0,0,',','.') }}"
+                        readonly>
                     <label>PENGELUARAN</label>
-                    <input type="text" name="BIAYA" id="BIAYA">
+                    <input type="text"
+                        value="{{ number_format($BIAYA ?? 0,0,',','.') }}"
+                        readonly>
                     <label>REFUND</label>
                     <input type="text" name="REFUND" id="REFUND">
                 </div>

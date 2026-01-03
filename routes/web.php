@@ -43,7 +43,9 @@ Route::middleware(['auth'])->group(function () {
 
         // ======== REKAP PENJUALAN CONTROLLER ========
         Route::get('/rekap-penjualan', [NotaController::class, 'rekap'])
-            ->name('rekap.penjualan');
+            ->name('rekap-penjualan.rekap');
+        Route::post('/rekap-penjualan', [NotaController::class, 'rekapPenjualan'])
+            ->name('rekap-penjualan.rekapPenjualan');
     });
 
     // ======== TIKET CONTROLLER  ========

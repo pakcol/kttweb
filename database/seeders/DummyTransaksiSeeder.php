@@ -26,6 +26,7 @@ class DummyTransaksiSeeder extends Seeder
                     'name'           => fake()->name(),
                     'nta'            => $nta = rand(500_000, 1_500_000),
                     'harga_jual'     => $hargaJual = $nta + rand(50_000, 300_000),
+                    'komisi'         => $hargaJual-$nta,
                     'diskon'         => rand(0, 1) ? 'PROMO' : null,
                     'rute'           => 'SUB-JKT',
                     'tgl_flight'     => Carbon::now()->addDays(rand(5, 40)),

@@ -66,12 +66,4 @@ class Nota extends Model
     {
         return $this->belongsTo(PembayaranOnline::class, 'pembayaran_online_id');
     }
-    
-    /**
-     * Relasi ke HistoryPembayaran
-     */
-    public function historyPembayaran(): HasMany
-    {
-        return $this->hasMany(HistoryPembayaran::class, 'nota_id');
-    }
 }

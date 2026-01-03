@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Nota;
 use App\Models\JenisBayar;
 use App\Models\Bank;
@@ -95,81 +96,51 @@ class NotaController extends Controller
 
     public function rekap(Request $request)
     {
-        $tanggal_awal  = $request->tanggal_awal;
-        $tanggal_akhir = $request->tanggal_akhir;
+        $tanggal = $request->tanggal ?? Carbon::today()->toDateString();
 
-        if (!$tanggal_awal || !$tanggal_akhir) {
-            return view('rekap-penjualan');
-        }
-
-        /* ======================
-           TOTAL PENJUALAN
-        ====================== */
+        /* PENJUALAN (NON PIUTANG) */
         $TTL_PENJUALAN = DB::table('nota')
-            ->whereBetween('tgl_issued', [$tanggal_awal, $tanggal_akhir])
+            ->whereDate('tgl_bayar', $tanggal)
+            ->where('jenis_bayar_id', '!=', '3')
             ->sum('harga_bayar');
 
-        /* ======================
-           PIUTANG
-        ====================== */
+        /* PIUTANG */
         $PIUTANG = DB::table('nota')
-            ->whereNull('tgl_bayar')
-            ->whereBetween('tgl_issued', [$tanggal_awal, $tanggal_akhir])
+            ->whereDate('tgl_issued', $tanggal)
+            ->where('jenis_bayar_id', '3')
             ->sum('harga_bayar');
 
-        /* ======================
-           BIAYA
-        ====================== */
+        /* PENGELUARAN */
         $BIAYA = DB::table('biaya')
-            ->whereBetween('tgl', [$tanggal_awal, $tanggal_akhir])
+            ->whereDate('tgl', $tanggal)
             ->sum('biaya');
-
-        /* ======================
-           INSENTIF
-        ====================== */
-        $INSENTIF = DB::table('insentif')
-            ->whereBetween('tgl', [$tanggal_awal, $tanggal_akhir])
-            ->sum('jumlah');
-
-        /* ======================
-           REFUND (jika ada)
-        ====================== */
-        $REFUND = DB::table('nota')
-            ->where('harga_bayar', '<', 0)
-            ->whereBetween('tgl_issued', [$tanggal_awal, $tanggal_akhir])
-            ->sum('harga_bayar');
-
-        /* ======================
-           CASH FLOW
-        ====================== */
-        $CASH_FLOW = $TTL_PENJUALAN - $PIUTANG - $BIAYA - $INSENTIF;
-
-        /* ======================
-           DATA TABLE (BAWAH)
-        ====================== */
-        $penjualan = DB::table('nota')
-            ->whereBetween('tgl_issued', [$tanggal_awal, $tanggal_akhir])
-            ->selectRaw("
-                DATE(tgl_issued) as TANGGAL,
-                TIME(tgl_issued) as JAM,
-                SUM(harga_bayar) as TTL_PENJUALAN,
-                SUM(CASE WHEN tgl_bayar IS NULL THEN harga_bayar ELSE 0 END) as PIUTANG,
-                0 as REFUND,
-                SUM(harga_bayar) as CASH_FLOW
-            ")
-            ->groupBy(DB::raw('DATE(tgl_issued), TIME(tgl_issued)'))
-            ->get();
 
         return view('rekap-penjualan', compact(
             'TTL_PENJUALAN',
             'PIUTANG',
             'BIAYA',
-            'INSENTIF',
-            'REFUND',
-            'CASH_FLOW',
-            'penjualan',
-            'tanggal_awal',
-            'tanggal_akhir'
+            'tanggal'
+        ));
+    }
+    
+    public function rekapPenjualan(Request $request)
+    {
+        $tanggal = $request->tanggal ?? Carbon::today();
+
+        $TTL_PENJUALAN = Nota::whereDate('tgl_bayar', $tanggal)
+            ->whereHas('jenisBayar', fn($q) => $q->where('jenis', '!=', 'piutang'))
+            ->sum('harga_bayar');
+
+        $PIUTANG = Nota::whereDate('tgl_bayar', $tanggal)
+            ->whereHas('jenisBayar', fn($q) => $q->where('jenis', 'piutang'))
+            ->sum('harga_bayar');
+
+        $BIAYA = Biaya::whereDate('tgl', $tanggal)->sum('jumlah');
+
+        return view('rekap-penjualan', compact(
+            'TTL_PENJUALAN',
+            'PIUTANG',
+            'BIAYA'
         ));
     }
 }

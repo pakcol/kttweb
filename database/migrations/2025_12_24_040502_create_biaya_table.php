@@ -15,7 +15,11 @@ return new class extends Migration
             $table->id(); // id INT
             $table->dateTime('tgl'); // tgj DATETIME
             $table->integer('biaya'); // bisya INT
-
+   
+            // KATEGORI BIAYA
+            $table->enum('kategori', ['top_up', 'setoran', 'lainnya'])
+                ->default('lainnya');
+                
             // Relasi ke jenis tiket (airlines)
             $table->foreignId('id_jenis_tiket')
                   ->nullable()
