@@ -1,29 +1,9 @@
-<x-layouts.app title="PLN - Piutang">
+<x-layouts.app title="PPOB - Piutang">
 <link rel="stylesheet" href="{{ asset('css/plnPiutang.css') }}">
 
 <section class="pln-piutang-container">
     <div class="piutang-form">
         <div class="form-left">
-            {{-- NAMA PIUTANG --}}
-            <label>Nama Piutang</label>
-            <input 
-                list="nama_piutang_list"
-                id="nama_piutang"
-                name="nama_piutang"
-                placeholder="Ketik atau pilih nama piutang..."
-            >
-
-            <datalist id="nama_piutang_list">
-                <option value="ALL">
-                @foreach($namaPiutangList as $nama)
-                    <option value="{{ $nama }}">
-                @endforeach
-            </datalist>
-
-            {{-- TOTAL PIUTANG --}}
-            <label>Total Piutang</label>
-            <input type="text" id="totalPiutang" readonly>
-
             {{-- NAMA --}}
             <label>Nama</label>
             <input type="text" id="nama" readonly>
@@ -33,18 +13,35 @@
             <input type="text" id="harga" readonly>
 
             {{-- PEMBAYARAN --}}
-            <label>Pembayaran</label>
-            <select id="pembayaran">
-                <option value="BCA">BCA</option>
-                <option value="BNI">BNI</option>
-                <option value="MANDIRI">MANDIRI</option>
-                <option value="BRI">BRI</option>
-                <option value="LUNAS">LUNAS</option>
+            <label for="jenis_bayar_id">Pembayaran</label>
+            <select id="jenis_bayar_id" name="jenis_bayar_id" class="form-control" required>
+                <option value="">-- Pilih Jenis Pembayaran --</option>
+                @if(isset($jenisBayarNonPiutang) && $jenisBayarNonPiutang->count() > 0)
+                    @foreach($jenisBayarNonPiutang as $jenis)
+                        <option value="{{ $jenis->id }}">
+                            {{ $jenis->jenis }}
+                        </option>
+                    @endforeach
+                @else
+                    <option value="" disabled>Data jenis pembayaran tidak ditemukan</option>
+                @endif
             </select>
+
+            <div id="bankContainer">
+                <label for="bank_id">BANK</label>
+                <select id="bank_id" name="bank_id" class="form-control">
+                    <option value="">-- Pilih Bank --</option>
+                    @if(isset($bank) && $bank->count() > 0)
+                        @foreach($bank as $bank)
+                            <option value="{{ $bank->id }}">{{ $bank->name }}</option>
+                        @endforeach
+                    @endif
+                </select>
+            </div>
         </div>
 
         <div class="form-right">
-            <button id="updateBtn" onclick="updateData()">UPDATE</button>
+            <button id="updateBtn" onclick="updateData()">BAYAR</button>
         </div>
     </div>
 
@@ -57,8 +54,6 @@
                 <th>ID Pelanggan</th>
                 <th>Kategori PPOB</th>
                 <th>Harga</th>
-                <th>Jenis Bayar</th>
-                <th>Bank</th>
                 <th>Aksi</th>
             </tr>
         </thead>
@@ -69,16 +64,12 @@
                     data-nama="{{ $row->nama }}"
                     data-id-pel="{{ $row->pembayaranOnline->id_pel ?? '' }}"
                     data-harga="{{ $row->harga_bayar }}"
-                    data-jenis-bayar="{{ $row->jenisBayar->jenis ?? '' }}"
-                    data-bank="{{ $row->bank->nama ?? '' }}"
                 >
                     <td>{{ $row->tgl_issued?->format('d-m-Y') }}</td>
                     <td>{{ $row->nama }}</td>
                     <td>{{ $row->pembayaranOnline->id_pel ?? '-' }}</td>
-                    <td>{{ $row->pembayaranOnline->jenisPpob->nama ?? '-' }}</td>
+                    <td>{{ $row->pembayaranOnline->jenisPpob->jenis_ppob ?? '-' }}</td>
                     <td>{{ number_format($row->harga_bayar) }}</td>
-                    <td>{{ strtoupper($row->jenisBayar->jenis ?? '-') }}</td>
-                    <td>{{ $row->bank->nama ?? '-' }}</td>
                     <td><span class="hint">Klik baris</span></td>
                 </tr>
             @empty
@@ -96,6 +87,26 @@
 <script>
 let selectedRow = null;
 let allPiutangData = @json($piutang);
+const bankContainer = document.getElementById('bankContainer');
+const jenisSelect = document.getElementById('jenis_bayar_id');
+const bankInput  = document.getElementById('bank_id');
+
+function toggleJenisPembayaran() {
+    const jenis = jenisSelect.value;
+
+    bankContainer.style.display = 'none';
+    bankInput.required = false;
+
+    if (jenis == 1) {
+        bankContainer.style.display = 'block';
+        bankInput.required = true;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    jenisSelect.addEventListener('change', toggleJenisPembayaran);
+    toggleJenisPembayaran();
+});
 
 /* ================= TOTAL PIUTANG ================= */
 function calculateTotalPiutang(namaPiutang) {
@@ -212,21 +223,21 @@ function updateData() {
 </script>
 
 <style>
-.alert-dummy {
-    background: #fff3cd;
-    color: #856404;
-    border: 1px solid #ffeeba;
-    padding: 10px 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    font-size: 15px;
-}
-.alert-dummy code {
-    background: #f9f2f4;
-    color: #c7254e;
-    padding: 2px 5px;
-    border-radius: 4px;
-}
+    .alert-dummy {
+        background: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeeba;
+        padding: 10px 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 15px;
+    }
+    .alert-dummy code {
+        background: #f9f2f4;
+        color: #c7254e;
+        padding: 2px 5px;
+        border-radius: 4px;
+    }
 </style>
 
 </x-layouts.app>

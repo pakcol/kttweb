@@ -147,11 +147,16 @@ class PpobController extends Controller
             ->filter()
             ->unique()
             ->values();
+        
+        $bank = Bank::all();
+        $jenisBayarNonPiutang = JenisBayar::where('id', '!=', 3)->get();
 
         return view('ppobPiutang', [
             'ppob'    => $notaPiutang->pluck('pembayaranOnline')->filter(),
             'piutang' => $notaPiutang,          // ⬅️ DATA UTAMA
-            'namaPiutangList' => $namaPiutang   // ⬅️ UNTUK FORM
+            'namaPiutangList' => $namaPiutang,   // ⬅️ UNTUK FORM
+            'bank'   => $bank,
+            'jenisBayarNonPiutang' => $jenisBayarNonPiutang,
         ]);
     }
 
