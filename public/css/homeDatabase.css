@@ -1,3 +1,4 @@
+/* ================= RESET ================= */
 * {
     margin: 0;
     padding: 0;
@@ -11,26 +12,48 @@ html, body {
     overflow: hidden;
 }
 
-/* ===== MAIN SECTION ===== */
+/* ================= MAIN SECTION ================= */
 .home-database-section {
     width: 100vw;
     height: 100vh;
-    background: linear-gradient(90deg, #0f4d4d 0%, #b8d3d6 100%);
+    background: linear-gradient(
+        110deg,
+        #0f4d4d 0%,
+        #3c7f86 45%,
+        #b8d3d6 100%
+    );
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
 }
 
-/* WRAPPER (REPLACING BOOTSTRAP GRID) */
+/* soft overlay */
+.home-database-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        circle at left,
+        rgba(0,0,0,0.25),
+        transparent 65%
+    );
+    z-index: 0;
+}
+
+/* ================= WRAPPER ================= */
 .home-db-wrapper {
     width: 100%;
     max-width: 1400px;
-    padding: 0 60px;
-
+    padding: 0 70px;
     display: flex;
     align-items: center;
+    position: relative;
+    z-index: 2;
 }
-/* ===== LEFT PANEL ===== */
+
+/* ================= PANELS ================= */
 .left-panel,
 .right-panel {
     width: 50%;
@@ -39,19 +62,21 @@ html, body {
     justify-content: center;
 }
 
+/* ================= LEFT CONTENT ================= */
 .left-panel {
     padding: 80px 40px;
 }
 
 .content-wrapper {
-    max-width: 520px;
+    max-width: 540px;
 }
 
 .welcome-text {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 600;
-    margin-bottom: 1rem;
+    margin-bottom: 0.6rem;
     color: #a3dbea;
+    letter-spacing: 0.5px;
 }
 
 .user-name {
@@ -60,116 +85,127 @@ html, body {
 }
 
 .main-title {
-    font-size: 4rem;
+    font-size: 4.2rem;
     font-weight: 800;
     margin-bottom: 1rem;
     color: #ffffff;
-    line-height: 1.1;
+    line-height: 1.05;
+    letter-spacing: 1px;
 }
 
 .company-name {
-    font-size: 1.2rem;
-    margin-bottom: 2.5rem;
+    font-size: 1.1rem;
+    margin-bottom: 2.8rem;
     color: #dce5e8;
+    max-width: 420px;
 }
 
-/* BUTTON */
+/* ================= BUTTON ================= */
 .btn-input {
-    background: #0b505f;
+    background: linear-gradient(135deg, #0b505f, #0f6a7a);
     color: #ffffff;
     border: none;
-    padding: 15px 40px;
-    font-size: 1.1rem;
+    padding: 15px 46px;
+    font-size: 1.05rem;
     font-weight: 600;
-    border-radius: 10px;
+    border-radius: 12px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    transition: all 0.35s ease;
+    box-shadow:
+        0 10px 30px rgba(0,0,0,0.35),
+        inset 0 0 0 rgba(255,255,255,0.2);
 }
 
 .btn-input:hover {
-    background: #09424f;
-    transform: translateY(-3px);
+    transform: translateY(-4px);
+    box-shadow:
+        0 16px 40px rgba(0,0,0,0.45),
+        inset 0 0 20px rgba(255,255,255,0.08);
+    background: linear-gradient(135deg, #0f6a7a, #0b505f);
 }
 
-/* ===== RIGHT PANEL ===== */
+/* ================= RIGHT IMAGE ================= */
 .right-panel {
-    width: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: relative;
 }
 
 .image-wrapper {
-    max-width: 420px;
+    max-width: 440px;
+    position: relative;
+    animation: float 6s ease-in-out infinite;
+}
+
+.image-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: 15%;
+    background: rgba(0,0,0,0.25);
+    filter: blur(40px);
+    z-index: -1;
 }
 
 .image-wrapper img {
     width: 100%;
-    max-width: 420px;
     height: auto;
     max-height: min(70vh, 520px);
     object-fit: contain;
 }
 
+/* ================= ANIMATION ================= */
 @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-20px); }
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-18px);
+    }
 }
 
-/* ===== RESPONSIVE ===== */
+/* ================= RESPONSIVE ================= */
 @media (max-width: 992px) {
     .home-db-wrapper {
         flex-direction: column;
         text-align: center;
+        padding: 0 40px;
     }
 
     .left-panel,
     .right-panel {
         width: 100%;
-        padding: 40px 20px;
-        justify-content: center;
+        padding: 50px 20px;
     }
 
     .main-title {
-        font-size: 3rem;
+        font-size: 3.2rem;
     }
 
-    .image-wrapper {
-        max-width: 380px;
+    .company-name {
+        margin-left: auto;
+        margin-right: auto;
     }
 }
 
 @media (max-width: 768px) {
-    .main-title { font-size: 2.5rem; }
-    .btn-input { font-size: 1rem; padding: 12px 30px; }
-}
-
-@media (max-width: 576px) {
-    .main-title { font-size: 2.2rem; }
-    .image-wrapper { max-width: 300px; }
-}
-
-@media (max-width: 992px) {
-    .home-db-wrapper {
-        flex-direction: column;
-        text-align: center;
+    .main-title {
+        font-size: 2.6rem;
     }
 
-    .left-panel,
-    .right-panel {
-        width: 100%;
-        padding: 40px 20px;
+    .btn-input {
+        font-size: 1rem;
+        padding: 12px 34px;
     }
 
-    .home-database-section {
-        min-height: auto;
-        padding: 80px 0;
+    .image-wrapper {
+        max-width: 360px;
     }
 }
 
 @media (max-width: 576px) {
     .main-title {
-        font-size: 2.2rem;
+        font-size: 2.3rem;
+    }
+
+    .image-wrapper {
+        max-width: 300px;
     }
 }

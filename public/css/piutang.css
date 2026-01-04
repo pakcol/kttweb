@@ -72,7 +72,9 @@ main {
     margin-bottom: 5px;
     display: block;
 }
-
+.form-group {
+    margin-bottom: 22px; 
+}
 .form-group input,
 .form-group select,
 .form-group textarea {
@@ -201,3 +203,5 @@ main {
         flex-wrap: wrap;
     }
 }
+
+
