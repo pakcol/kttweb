@@ -53,43 +53,64 @@
             @endif
     
             <!-- Tabel Data -->
+            <form method="GET" action="{{ route('buku-bank.index') }}" class="filter-form">
+                <label for="bank_id">Pilih Bank</label>
+                <select name="bank_id" id="bank_id" onchange="this.form.submit()">
+                    @foreach ($bankList as $bank)
+                        <option value="{{ $bank->id }}" {{ $bank->id == $bankId ? 'selected' : '' }}>
+                            {{ $bank->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </form>
+
             <div class="table-section">
                 <table>
                     <thead>
                         <tr>
                             <th>Tanggal</th>
-                            <th>Bank</th>
-                            <th>Saldo</th>
-                            <th>Aksi</th>
+                            <th>Keterangan</th>
+                            <th class="text-right">Kredit</th>
+                            <th class="text-right">Debit</th>
+                            <th class="text-right">Saldo</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($banks as $item)
+                        @forelse ($bukuBank as $item)
                             <tr>
-                                <td>{{ \Carbon\Carbon::parse($item->tgl)->format('d/m/Y') }}</td>
-                                <td>{{ $item->name }}</td>
-                                <td>Rp {{ number_format($item->saldo, 2, ',', '.') }}</td>
-                                <td>
-                                    <button class="btn-delete" onclick="confirmDelete({{ $item->id }}, '{{ $item->bank }}')">
-                                        Hapus
-                                    </button>
+                                <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d/m/Y') }}</td>
+                                <td>{{ $item->keterangan }}</td>
+                                <td class="text-right text-success">
+                                    @if ($item->kredit > 0)
+                                        Rp {{ number_format($item->kredit, 0, ',', '.') }}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                                <td class="text-right text-danger">
+                                    @if ($item->debit > 0)
+                                        Rp {{ number_format($item->debit, 0, ',', '.') }}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                                <td class="text-right {{ $item->saldo < 0 ? 'text-danger' : '' }}">
+                                    @if ($item->saldo < 0)
+                                        -Rp {{ number_format(abs($item->saldo), 0, ',', '.') }}
+                                    @else
+                                        Rp {{ number_format($item->saldo, 0, ',', '.') }}
+                                    @endif
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center">Tidak ada data</td>
+                                <td colspan="5" class="text-center">Tidak ada transaksi</td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
-                
-                <!-- Tambahkan form untuk hapus -->
-                <form id="deleteForm" method="POST" style="display: none;">
-                    @csrf
-                    @method('DELETE')
-                    <input type="hidden" name="bank" id="deleteBank">
-                </form>
             </div>
+
         </div>
     </section>
     

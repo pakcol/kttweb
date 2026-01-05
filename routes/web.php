@@ -5,7 +5,6 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\NotaController;
 use App\Http\Controllers\TiketController;
 use App\Http\Controllers\InvoiceController;
-use App\Http\Controllers\TutupKasController;
 use App\Http\Controllers\SubagentController;
 use App\Http\Controllers\BiayaController;
 use App\Http\Controllers\PpobController;
@@ -30,11 +29,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/homeDb', function () {
         return view('homeDb');
     })->name('homeDb');
-
-    // ======== HALAMAN TAMBAHAN ========
-    Route::view('/sub-agent', 'sub-agent')->name('sub-agent');
-    Route::view('/pln', 'pln')->name('pln');
-    Route::view('/admin', 'admin')->middleware('superuser')->name('admin');
 
     // ========  BUKU BANK CONTROLLER ========
     Route::middleware('superuser')->group(function () {
@@ -78,12 +72,6 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/{kode_booking}', [TiketController::class, 'update'])->name('update');
         Route::delete('/{kode_booking}', [TiketController::class, 'destroy'])->name('destroy');
     });
-
-    // ======== TUTUP KAS ========
-    Route::get('/tutup-kas', [TutupKasController::class, 'index'])->name('tutup-kas');
-    Route::post('/tutup-kas', [TutupKasController::class, 'store'])->name('tutup-kas.store');
-    Route::view('/tutupKas', 'tutup-kas')->name('tutupKas');
-    Route::get('/tutup-kas/search', [TutupKasController::class, 'search'])->name('tutup-kas.search');
 
     // ======== SUBAGENT CONTROLLER ======== 
     Route::prefix('subagent')->name('subagent.')->group(function () {
