@@ -57,100 +57,85 @@
         </form>
 
     @if(isset($ticket))
-    <div class="result-section">
-        <div class="table-info">
+<div class="modal-overlay" id="resultModal">
+    <div class="modal-box">
+
+        <div class="modal-header">
+            <h3>Hasil Pencarian Tiket</h3>
+            <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+
+        <div class="modal-info">
             Menampilkan {{ $ticket->count() }} hasil pencarian
         </div>
-        <div class="table-responsive">
-            <table class="result-table">
-                <thead>
-                    <tr>
-                        <th><input type="checkbox" id="checkAll"></th>
-                        <th>No</th>
-                        <th>Tgl Issued</th>
-                        <th>Kode Booking</th>
-                        <th>Nama</th>
-                        <th>Rute</th>
-                        <th>Tgl Flight</th>
-                        <th>Rute 2</th>
-                        <th>Tgl Flight 2</th>
-                        <th>Harga Jual</th>
-                        <th>NTA</th>
-                        <th>Diskon</th>
-                        <th>Status</th>
-                        <th>Jenis Tiket</th>
-                        <th>Keterangan</th>
-                        <th style="text-align:center;">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($ticket as $index => $t)
-                    <tr data-id="{{ $t->kode_booking }}"
-                        data-jenis-tiket-id="{{ $t->jenis_tiket_id }}">
 
-                        <td>
-                            <input type="checkbox" class="check-row" value="{{ $t->kode_booking }}">
-                        </td>
-
-                        <td>{{ $index + 1 }}</td>
-
-                        <td>
-                            {{ $t->tgl_issued ? \Carbon\Carbon::parse($t->tgl_issued)->format('Y-m-d') : '-' }}
-                        </td>
-
-                        <td>{{ $t->kode_booking }}</td>
-
-                        <td>{{ $t->name }}</td>
-
-                        <td>{{ $t->rute }}</td>
-
-                        <td>
-                            {{ $t->tgl_flight ? \Carbon\Carbon::parse($t->tgl_flight)->format('Y-m-d') : '-' }}
-                        </td>
-
-                        <td>{{ $t->rute2 ?? '-' }}</td>
-
-                        <td>
-                            {{ $t->tgl_flight2 ? \Carbon\Carbon::parse($t->tgl_flight2)->format('Y-m-d') : '-' }}
-                        </td>
-
-                        <td>{{ number_format($t->harga_jual ?? 0, 0, ',', '.') }}</td>
-
-                        <td>{{ number_format($t->nta ?? 0, 0, ',', '.') }}</td>
-
-                        <td>
-                            {{ $t->diskon ? number_format($t->diskon, 0, ',', '.') : '-' }}
-                        </td>
-
-                        <td>
-                            <span class="status {{ $t->status }}">
-                                {{ ucfirst($t->status) }}
-                            </span>
-                        </td>
-
-                        <td>{{ $t->jenisTiket->name_jenis ?? '-' }}</td>
-
-                        <td>{{ $t->keterangan ?? '-' }}</td>
-
-                        <td style="text-align:center;">
-                            <form action="{{ route('input-tiket.destroy', $t->kode_booking) }}" method="POST"
-                                onsubmit="return confirm('Hapus tiket ini?')">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn-delete" type="submit">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="16" style="text-align:center;">Data tiket tidak ditemukan</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+        <div class="modal-body">
+            <div class="table-responsive">
+                <table class="result-table">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="checkAll"></th>
+                            <th>No</th>
+                            <th>Tgl Issued</th>
+                            <th>Kode Booking</th>
+                            <th>Nama</th>
+                            <th>Rute</th>
+                            <th>Tgl Flight</th>
+                            <th>Rute 2</th>
+                            <th>Tgl Flight 2</th>
+                            <th>Harga Jual</th>
+                            <th>NTA</th>
+                            <th>Diskon</th>
+                            <th>Status</th>
+                            <th>Jenis Tiket</th>
+                            <th>Keterangan</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($ticket as $index => $t)
+                        <tr>
+                            <td><input type="checkbox"></td>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $t->tgl_issued ? \Carbon\Carbon::parse($t->tgl_issued)->format('Y-m-d') : '-' }}</td>
+                            <td>{{ $t->kode_booking }}</td>
+                            <td>{{ $t->name }}</td>
+                            <td>{{ $t->rute }}</td>
+                            <td>{{ $t->tgl_flight ? \Carbon\Carbon::parse($t->tgl_flight)->format('Y-m-d') : '-' }}</td>
+                            <td>{{ $t->rute2 ?? '-' }}</td>
+                            <td>{{ $t->tgl_flight2 ? \Carbon\Carbon::parse($t->tgl_flight2)->format('Y-m-d') : '-' }}</td>
+                            <td>{{ number_format($t->harga_jual ?? 0, 0, ',', '.') }}</td>
+                            <td>{{ number_format($t->nta ?? 0, 0, ',', '.') }}</td>
+                            <td>{{ $t->diskon ? number_format($t->diskon, 0, ',', '.') : '-' }}</td>
+                            <td>
+                                <span class="status {{ $t->status }}">
+                                    {{ ucfirst($t->status) }}
+                                </span>
+                            </td>
+                            <td>{{ $t->jenisTiket->name_jenis ?? '-' }}</td>
+                            <td>{{ $t->keterangan ?? '-' }}</td>
+                            <td>
+                                <form action="{{ route('input-tiket.destroy', $t->kode_booking) }}" method="POST"
+                                      onsubmit="return confirm('Hapus tiket ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn-delete">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="16" style="text-align:center;">Data tiket tidak ditemukan</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
+
     </div>
-    @endif
+</div>
+@endif
 
     <script>
         function resetForm() {
