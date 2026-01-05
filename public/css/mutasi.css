@@ -179,3 +179,105 @@ body {
         font-size: 13px;
     }
 }
+.table-responsive {
+    overflow-x: auto;
+}
+
+.table-section table th.text-end,
+.table-section table td.text-end {
+    text-align: right;
+}
+
+/* Alignment kolom tabel */
+.text-right {
+    text-align: right;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* Warna transaksi */
+.trx-plus {
+    color: #1b8f3c;
+    font-weight: 600;
+}
+
+.trx-minus {
+    color: #c62828;
+    font-weight: 600;
+}
+
+/* ===== MUTASI TABLE POLISH ===== */
+.mutasi-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+/* Header */
+.mutasi-table thead th {
+    background: linear-gradient(135deg, #0099cc, #0077b6);
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 14px 20px;
+}
+
+/* Rounded header */
+.mutasi-table thead th:first-child {
+    border-top-left-radius: 10px;
+}
+.mutasi-table thead th:last-child {
+    border-top-right-radius: 10px;
+}
+
+/* Body cells */
+.mutasi-table tbody td {
+    padding: 14px 20px;
+    font-size: 14px;
+    color: #333;
+    border-bottom: 1px solid #e6f0f7;
+    vertical-align: middle;
+}
+
+/* Hover effect */
+.mutasi-table tbody tr:hover {
+    background: #f2f9ff;
+}
+
+/* Column widths (biar balance) */
+.col-date {
+    width: 25%;
+}
+
+.col-trx {
+    width: 30%;
+}
+
+.col-desc {
+    width: 45%;
+}
+
+/* Alignment helpers */
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+    padding-right: 30px; /* biar tidak mepet */
+}
+
+/* Transaksi color */
+.trx-plus {
+    color: #1b8f3c;
+    font-weight: 600;
+}
+
+.trx-minus {
+    color: #c62828;
+    font-weight: 600;
+}
+
+

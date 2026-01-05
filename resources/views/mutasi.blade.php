@@ -95,44 +95,58 @@
         </form>
 
         @if ($mutasi->isEmpty())
-            <div class="text-center mt-3 fw-bold">
-                Belum ada mutasi untuk jenis tiket ini
-            </div>
-        @else
-        <table>
+    <div class="text-center mt-3 fw-bold">
+        Belum ada mutasi untuk jenis tiket ini
+    </div>
+@else
+
+<div class="table-section">
+    <h3>Riwayat Mutasi Airlines</h3>
+
+    <div class="table-responsive">
+        <table class="mutasi-table">
             <thead>
                 <tr>
-                    <th>Tanggal</th>
-                    <th>Keterangan</th>
-                    <th class="text-end">Transaksi</th>
+                    <th class="col-date">Tanggal</th>
+                    <th class="col-trx text-center">Transaksi</th>
+                    <th class="col-desc text-right">Keterangan</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($mutasi as $m)
-                    <tr>
-                        <td>{{ \Carbon\Carbon::parse($m['tanggal'])->format('d-m-Y') }}</td>
-                        <td>{{ $m['keterangan'] }}</td>
-                        <td class="text-end">
-                            @if ($m['transaksi'] > 0)
-                                <span class="text-success">
-                                    +Rp {{ number_format($m['transaksi'], 0, ',', '.') }}
-                                </span>
-                            @else
-                                <span class="text-danger">
-                                    -Rp {{ number_format(abs($m['transaksi']), 0, ',', '.') }}
-                                </span>
-                            @endif
-                        </td>
-                    </tr>
+                <tr>
+                    <td class="col-date">
+                        {{ \Carbon\Carbon::parse($m['tanggal'])->format('d-m-Y') }}
+                    </td>
+
+                    <td class="col-trx text-center">
+                        @if ($m['transaksi'] > 0)
+                            <span class="trx-plus">
+                                +Rp {{ number_format($m['transaksi'], 0, ',', '.') }}
+                            </span>
+                        @else
+                            <span class="trx-minus">
+                                -Rp {{ number_format(abs($m['transaksi']), 0, ',', '.') }}
+                            </span>
+                        @endif
+                    </td>
+
+                    <td class="col-desc text-right">
+                        {{ $m['keterangan'] }}
+                    </td>
+                </tr>
                 @endforeach
             </tbody>
         </table>
+    </div>
 
-        <div class="mt-3 fw-bold">
-            Saldo Tiket:
-            Rp {{ number_format($saldoTiket, 0, ',', '.') }}
-        </div>
-    @endif
+    <div style="margin-top:20px; font-weight:700; color:#004d73;">
+        Saldo Tiket:
+        Rp {{ number_format($saldoTiket, 0, ',', '.') }}
+    </div>
+</div>
+
+@endif
 
 
     </div>
