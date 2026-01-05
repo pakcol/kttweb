@@ -82,52 +82,59 @@
             </div>
         @endif
     
-        <div class="table-section">
-            <h3>Data Mutasi Airlines</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 15%">Tanggal</th>
+        <form method="GET">
+            <select name="jenis_tiket_id" onchange="this.form.submit()">
+                <option value="">-- Pilih Jenis Tiket --</option>
+                @foreach ($jenisTiket as $j)
+                    <option value="{{ $j->id }}"
+                        {{ $jenisTiketId == $j->id ? 'selected' : '' }}>
+                        {{ $j->name_jenis }}
+                    </option>
+                @endforeach
+            </select>
+        </form>
+
+        @if ($mutasi->isEmpty())
+            <div class="text-center mt-3 fw-bold">
+                Belum ada mutasi untuk jenis tiket ini
+            </div>
+        @else
+        <table>
+            <thead>
+                <tr>
+                    <th>Tanggal</th>
                     <th>Keterangan</th>
-                    <th style="width: 20%" class="text-end">Nominal</th>
+                    <th class="text-end">Transaksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($mutasi as $m)
+                    <tr>
+                        <td>{{ \Carbon\Carbon::parse($m['tanggal'])->format('d-m-Y') }}</td>
+                        <td>{{ $m['keterangan'] }}</td>
+                        <td class="text-end">
+                            @if ($m['transaksi'] > 0)
+                                <span class="text-success">
+                                    +Rp {{ number_format($m['transaksi'], 0, ',', '.') }}
+                                </span>
+                            @else
+                                <span class="text-danger">
+                                    -Rp {{ number_format(abs($m['transaksi']), 0, ',', '.') }}
+                                </span>
+                            @endif
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach ($mutasiTiket as $jenis)
-                        <tr class="table-secondary">
-                            <td colspan="4">
-                                <strong>{{ $jenis->name_jenis }}</strong>
-                            </td>
-                        </tr>
+                @endforeach
+            </tbody>
+        </table>
 
-                        @php
-                            $total = 0;
-                        @endphp
-
-                        @foreach ($jenis->biaya as $b)
-                            <tr>
-                                <td>{{ $b->created_at->format('d-m-Y') }}</td>
-                                <td>{{ $b->nama_biaya }}</td>
-                                <td class="text-end">
-                                    Rp {{ number_format($b->nominal, 0, ',', '.') }}
-                                </td>
-                            </tr>
-
-                            @php
-                                $total += $b->nominal;
-                            @endphp
-                        @endforeach
-
-                        <tr class="fw-bold">
-                            <td colspan="2">TOTAL {{ strtoupper($jenis->name_jenis) }}</td>
-                            <td class="text-end">
-                                Rp {{ number_format($total, 0, ',', '.') }}
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+        <div class="mt-3 fw-bold">
+            Saldo Tiket:
+            Rp {{ number_format($saldoTiket, 0, ',', '.') }}
         </div>
+    @endif
+
+
     </div>
     </section>
     

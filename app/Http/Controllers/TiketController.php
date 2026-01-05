@@ -29,19 +29,63 @@ class TiketController extends Controller
         ]);
     }
 
-    public function indexMutasi()
+    public function indexMutasi(Request $request)
     {
-        $jenisTiket = JenisTiket::all();
-        $jenisBayar  = JenisBayar::where('id', '!=', 3)->get();
-        $bank        = Bank::all();
-        $mutasiTiket = JenisTiket::with([
-            'biaya' => function ($q) {
-                $q->orderBy('created_at');
-            }
-        ])->get();
+        // dropdown
+        $jenisTiket = JenisTiket::orderBy('name_jenis')->get();
+        $jenisTiketId = $request->jenis_tiket_id ?? $jenisTiket->first()->id;
 
-        return view('mutasi', compact('mutasiTiket', 'jenisTiket', 'jenisBayar', 'bank'));
+        /* ================= NOTA (KELUAR) ================= */
+        $nota = DB::table('nota')
+            ->join('tiket', 'nota.tiket_kode_booking', '=', 'tiket.kode_booking')
+            ->where('tiket.jenis_tiket_id', $jenisTiketId)
+            ->whereNotNull('nota.tgl_bayar')
+            ->select(
+                'nota.tgl_bayar as tanggal',
+                'nota.harga_bayar'
+            )
+            ->get()
+            ->map(function ($n) {
+                return [
+                    'tanggal'    => $n->tanggal,
+                    'transaksi'  => -$n->harga_bayar,
+                    'keterangan' => 'Pembelian Tiket',
+                ];
+            });
+
+
+        /* ================= BIAYA (MASUK) ================= */
+        $biaya = Biaya::where('kategori', 'top_up')
+            ->get()
+            ->map(function ($b) {
+                return [
+                    'tanggal'    => $b->tgl,
+                    'transaksi'  => +$b->biaya,
+                    'keterangan' => 'Top Up Tiket',
+                ];
+            });
+
+        /* ================= GABUNG & SORT ================= */
+        $mutasi = collect()
+            ->merge($nota)
+            ->merge($biaya)
+            ->sortByDesc('tanggal')
+            ->values();
+
+
+        /* ================= SALDO ================= */
+        $jenisTiketAktif = JenisTiket::find($jenisTiketId);
+        $saldoTiket = $jenisTiketAktif?->saldo ?? 0;
+
+        return view('mutasi', [
+            'jenisTiket'   => JenisTiket::orderBy('name_jenis')->get(),
+            'jenisTiketId' => $jenisTiketId,
+            'mutasi'       => $mutasi,
+            'saldoTiket'   => $saldoTiket
+        ]);
+
     }
+
 
     public function indexFind()
     {
@@ -100,20 +144,19 @@ class TiketController extends Controller
         DB::beginTransaction();
 
         try {
+            $jenisTiket = JenisTiket::findOrFail($request->jenis_tiket_id);
             /* ===================== SIMPAN KE BIAYA ===================== */
             Biaya::create([
                 'tgl'             => $request->tanggal,
-                'nominal'         => $request->topup,
+                'biaya'           => $request->topup,
+                'kategori'       => 'top_up',
                 'id_jenis_tiket'  => $request->jenis_tiket_id,
                 'jenis_bayar_id'  => $request->jenis_bayar_id,
                 'bank_id'         => $request->bank_id,
-                'nama_biaya'      => $request->keterangan 
-                                    ?? 'Top Up Saldo Tiket',
+                'keterangan'      => $request->keterangan ?? 'Top Up Saldo Tiket '.$jenisTiket->name_jenis,
             ]);
 
             /* ===================== UPDATE SALDO JENIS TIKET ===================== */
-            $jenisTiket = JenisTiket::findOrFail($request->jenis_tiket_id);
-
             $jenisTiket->saldo += $request->topup;
             $jenisTiket->save();
 

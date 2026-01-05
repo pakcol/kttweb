@@ -14,6 +14,7 @@ class Biaya extends Model
     protected $fillable = [
         'tgl',
         'biaya',
+        'kategori',
         'jenis_bayar_id',
         'bank_id',
         'keterangan'

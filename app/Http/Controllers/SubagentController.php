@@ -50,6 +50,7 @@ class SubagentController extends Controller
             Biaya::create([
                 'tgl' => now(),
                 'biaya' => $request->nominal,
+                'kategori' => 'top_up',
                 'jenis_bayar_id' => $request->jenis_bayar_id,
                 'bank_id' => $request->bank_id,
                 'keterangan' => 'Top Up Subagent: ' . $subagent->nama,
