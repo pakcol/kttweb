@@ -299,10 +299,6 @@ class TiketController extends Controller
             ['tiket_kode_booking' => $tiket->kode_booking],
             $notaData
         );
-
-        if (!$nota->exists) {
-            throw new \Exception('Nota gagal disimpan');
-        }
     }
 
     /**
