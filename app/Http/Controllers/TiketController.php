@@ -31,6 +31,9 @@ class TiketController extends Controller
 
     public function indexMutasi(Request $request)
     {
+        $jenisBayar = JenisBayar::where('id', '!=', 3)->get();
+        $bank = Bank::all();
+
         // dropdown
         $jenisTiket = JenisTiket::orderBy('name_jenis')->get();
         $jenisTiketId = $request->jenis_tiket_id ?? $jenisTiket->first()->id;
@@ -81,7 +84,9 @@ class TiketController extends Controller
             'jenisTiket'   => JenisTiket::orderBy('name_jenis')->get(),
             'jenisTiketId' => $jenisTiketId,
             'mutasi'       => $mutasi,
-            'saldoTiket'   => $saldoTiket
+            'saldoTiket'   => $saldoTiket,
+            'jenisBayar'   => $jenisBayar,
+            'bank'         => $bank
         ]);
 
     }
