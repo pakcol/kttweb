@@ -7,21 +7,22 @@
             @csrf
             <div class="form-header">
                 <div class="form-group">
-                <select name="subagent_id" id="subagent_id" required>
-                    <option value="">-- Pilih Subagent --</option>
+    <label for="subagent_id">SUB AGENT</label>
+    <select name="subagent_id" id="subagent_id" class="form-control" required>
+        <option value="">Pilih Subagent</option>
 
-                    @forelse($subagents as $subagent)
-                        <option 
-                            value="{{ $subagent->id }}"
-                            data-saldo="{{ $subagent->saldo }}"
-                >
-                            {{ $subagent->nama }}
-                        </option>
-                    @empty
-                        <option value="" disabled>Data subagent belum tersedia</option>
-                    @endforelse
-                </select>
-            </div>
+        @forelse($subagents as $subagent)
+            <option 
+                value="{{ $subagent->id }}"
+                data-saldo="{{ $subagent->saldo }}"
+            >
+                {{ $subagent->nama }}
+            </option>
+        @empty
+            <option value="" disabled>Data subagent belum tersedia</option>
+        @endforelse
+    </select>
+</div>
 
                 <div class="form-group">
                     <label for="nominal">TOP UP</label>
@@ -31,15 +32,16 @@
                                 
                 {{-- JENIS BAYAR --}}
                 <div class="form-group">
-                    <select name="jenis_bayar_id" id="jenis_bayar_id" required>
-                        <option value="">-- Pilih Jenis Pembayaran --</option>
-                        @foreach($jenisBayar as $jb)
-                            <option value="{{ $jb->id }}">
-                                {{ $jb->jenis }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+    <label for="jenis_bayar_id">JENIS PEMBAYARAN</label>
+    <select name="jenis_bayar_id" id="jenis_bayar_id" class="form-control" required>
+        <option value="">Pilih Jenis Pembayaran</option>
+        @foreach($jenisBayar as $jb)
+            <option value="{{ $jb->id }}">
+                {{ $jb->jenis }}
+            </option>
+        @endforeach
+    </select>
+</div>
 
                 {{-- BANK --}}
                 <div class="form-group" id="bankContainer" style="display:none;">
