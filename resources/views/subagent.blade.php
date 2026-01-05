@@ -44,14 +44,15 @@
 </div>
 
                 {{-- BANK --}}
-                <div class="form-group" id="bankContainer" style="display:none;">
-                    <select name="bank_id" id="bank_id">
-                        <option value="">-- Pilih Bank --</option>
-                        @foreach($bank as $b)
-                            <option value="{{ $b->id }}">{{ $b->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
+<div class="form-group" id="bankContainer" style="display:none;">
+    <label for="bank_id">Bank</label>
+    <select name="bank_id" id="bank_id" class="form-control">
+        <option value="">-- Pilih Bank --</option>
+        @foreach($bank as $b)
+            <option value="{{ $b->id }}">{{ $b->name }}</option>
+        @endforeach
+    </select>
+</div>
 
                 <div class="form-group saldo-group">
                     <label for="saldo">SISA SALDO</label>
