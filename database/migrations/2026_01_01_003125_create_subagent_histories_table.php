@@ -17,12 +17,11 @@ return new class extends Migration {
                 ->cascadeOnDelete();
 
             // RELASI TIKET (PK = kode_booking STRING)
-            $table->string('kode_booking');
+            $table->string('kode_booking') ->nullable();
+            $table->enum('status', ['top_up', 'pesan_tiket']);
             
-            $table->integer('harga_beli');
-            $table->integer('harga_jual')->nullable();
-            $table->integer('saldo_awal');
-            $table->integer('saldo_akhir');
+            // NILAI TRANSAKSI (+ topup, - pesan tiket)
+            $table->integer('transaksi');
 
             $table->timestamps();
 

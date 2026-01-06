@@ -71,6 +71,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{kode_booking}', [TiketController::class, 'getTiket'])->name('get');
         Route::put('/{kode_booking}', [TiketController::class, 'update'])->name('update');
         Route::delete('/{kode_booking}', [TiketController::class, 'destroy'])->name('destroy');
+        Route::post('/subagent', [SubagentController::class, 'store'])->name('subagent');
     });
 
     // ======== SUBAGENT CONTROLLER ======== 

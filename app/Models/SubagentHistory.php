@@ -10,9 +10,11 @@ class SubagentHistory extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'tgl_issued',
         'subagent_id',
-        'tiket_kode_booking',
-        'saldo'
+        'kode_booking',
+        'status',
+        'transaksi'
     ];
 
     public function subagent()

@@ -104,13 +104,13 @@ class BukuBankController extends Controller
         $saldo = 0;
 
         $bukuBank = $bukuBank
-            ->reverse() // 🔥 mulai dari transaksi TERLAMA
+            ->reverse()
             ->map(function ($row) use (&$saldo) {
                 $saldo += ($row->kredit ?? 0) - ($row->debit ?? 0);
                 $row->saldo = $saldo;
                 return $row;
             })
-            ->reverse() // 🔥 balik lagi agar tampil DESC
+            ->reverse()
             ->values();
 
 

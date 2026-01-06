@@ -23,8 +23,10 @@ return new class extends Migration
             $table->dateTime('tgl_flight'); // tgl_flight DATETIME
             $table->string('rute2', 45)->nullable(); // rute2 VARCHAR(45)
             $table->dateTime('tgl_flight2')->nullable(); // tgl_flight2 DATETIME
-            $table->enum('status', ['pending', 'issued', 'canceled', 'refunded']); // status ENUM
+            $table->enum('status', ['issued', 'canceled', 'refunded']); // status ENUM
             $table->foreignId('jenis_tiket_id')->constrained('jenis_tiket'); // jenis_tiket_id INT
+            $table->integer('nilai_refund')->nullable(); // nilai_refund INT
+            $table->dateTime('tgl_realisasi')->nullable(); // biaya_refund INT
             $table->string('keterangan', 200)->nullable(); // keterangan VARCHAR(200)
             $table->timestamps();
         });

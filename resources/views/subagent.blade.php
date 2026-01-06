@@ -89,21 +89,17 @@
             <tr>
                 <th>Tanggal</th>
                 <th>Subagent</th>
-                <th>Keterangan</th>
-                <th>Debit</th>
-                <th>Kredit</th>
-                <th>Saldo</th>
+                <th>Transaksi</th>
+                <th>Status</th>
             </tr>
             </thead>
             <tbody id="dataEvi">
                 @forelse($histories as $row)
                 <tr>
-                    <td>{{ $row->created_at->format('d-m-Y H:i') }}</td>
-                    <td>{{ $row->subagent->name ?? '-' }}</td>
-                    <td>{{ $row->keterangan }}</td>
-                    <td>Rp {{ number_format($row->debit,0,',','.') }}</td>
-                    <td>Rp {{ number_format($row->kredit,0,',','.') }}</td>
-                    <td>Rp {{ number_format($row->saldo,0,',','.') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($row->tgl_issued)->format('d-m-Y H:i') }}</td>
+                    <td>{{ $row->subagent->nama ?? '-' }}</td>
+                    <td>{{ number_format($row->transaksi,0,',','.') }}</td>
+                    <td>{{ $row->status }}</td>
                 </tr>
                 @empty
                 <tr>

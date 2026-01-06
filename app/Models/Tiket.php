@@ -23,6 +23,7 @@ class Tiket extends Model
         'harga_jual',
         'nta',
         'diskon',
+        'komisi',
         'rute',
         'tgl_flight',
         'rute2',
@@ -69,14 +70,4 @@ class Tiket extends Model
     {
         return $this->hasMany(SubagentHistory::class, 'kode_booking', 'kode_booking');
     }
-
-    public function getKomisiAttribute()
-    {
-        if ($this->harga_jual === null || $this->nta === null) {
-            return 0;
-        }
-
-        return $this->harga_jual - $this->nta;
-    }
-
 }

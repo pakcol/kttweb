@@ -1,15 +1,18 @@
-<x-layouts.app title="Rekap Penjuaan - PT. Kupang Tour & Travel">
+<x-layouts.app title="Cash Flow - PT. Kupang Tour & Travel">
 
 <link rel="stylesheet" href="{{ asset('css/cash-flow.css') }}">
 
 <div class="cash-flow-wrapper">
     <div class="cash-flow-card">
         <h2 class="page-title">REKAP PENJUALAN</h2>
-        <form action="{{ route('rekap-penjualan.rekap') }}" method="GET" class="search-form">
-            <label for="tanggal">LAPORAN PENJUALAN TANGGAL :</label>
-            <input type="date" id="tanggal" name="tanggal" value="{{ date('Y-m-d') }}" readonly>
+        <form action="{{ route('cash-flow.cashFlow') }}" method="GET" class="search-form">
+            <label for="tanggal_awal">LAPORAN PENJUALAN TANGGAL :</label>
+            <input type="date" name="tanggal_awal" value="{{ $tanggalAwal ?? date('Y-m-d') }}">
+            <label for="tanggal_akhir">s/d</label>
+            <input type="date" name="tanggal_akhir" value="{{ $tanggalAkhir ?? date('Y-m-d') }}">
+            <button type="submit" class="search-btn">CARI</button>
         </form>
-        <form action="{{ route('rekap-penjualan.rekapPenjualan') }}" method="POST" id="formRekapPenjualan">
+        <form action="{{ route('cash-flow.cashFlow') }}" method="POST" id="formRekapPenjualan">
             @csrf
             <input type="hidden" name="id" id="recordId">
 

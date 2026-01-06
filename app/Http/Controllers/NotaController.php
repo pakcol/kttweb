@@ -160,7 +160,7 @@ class NotaController extends Controller
 
         $cashFlowSubagent = DB::table('subagent_histories')
             ->whereDate('tgl_issued', $tanggal)
-            ->sum('harga_jual');
+            ->sum('transaksi');
 
 
         return view('rekap-penjualan', compact(
@@ -240,7 +240,7 @@ class NotaController extends Controller
         /* ================= SUBAGENT CASH FLOW ================= */
         $cashFlowSubagent = DB::table('subagent_histories')
             ->whereBetween('tgl_issued', [$tanggalAwal, $tanggalAkhir])
-            ->sum('harga_jual');
+            ->sum('transaksi');
 
         return view('cash-flow', compact(
             'tanggalAwal',

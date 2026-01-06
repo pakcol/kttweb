@@ -8,6 +8,7 @@ use App\Models\JenisTiket;
 use App\Models\JenisBayar;
 use App\Models\Bank;
 use App\Models\Biaya;
+use App\Models\Subagent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -21,6 +22,7 @@ class TiketController extends Controller
     public function index()
     {
         return view('input-tiket', [
+            'subagents'   => Subagent::all(),
             'ticket'      => Tiket::with(['jenisTiket'])->latest()->get(),
             'jenisBayar'  => JenisBayar::all(),
             'jenisBayarNonPiutang' => JenisBayar::where('id', '!=', 3)->get(),
@@ -203,15 +205,19 @@ class TiketController extends Controller
             'harga_jual'     => 'required|integer',
             'nta'            => 'required|integer',
             'diskon'         => 'required|integer',
+            'komisi'         => 'required|integer',
             'rute'           => 'required|string|max:45',
             'tgl_flight'     => 'required|date',
             'rute2'          => 'nullable|string|max:45',
             'tgl_flight2'    => 'nullable|date',
-            'status'         => 'required|in:pending,issued,canceled,refunded',
+            'status'         => 'required|in:issued,canceled,refunded',
             'jenis_tiket_id' => 'required|exists:jenis_tiket,id',
             'jenis_bayar_id' => 'required|exists:jenis_bayar,id',
             'bank_id'        => 'nullable|exists:bank,id',
             'keterangan'     => 'nullable|string|max:255',
+            'nama_piutang'   => 'nullable|string|max:100',
+            'nilai_refund'   => 'nullable|integer|min:0',
+            'tgl_realisasi'  => 'nullable|date',
         ]);
 
         DB::beginTransaction();
@@ -225,6 +231,7 @@ class TiketController extends Controller
             'harga_jual'     => $request->harga_jual,
             'nta'            => $request->nta,
             'diskon'         => $request->diskon,
+            'komisi'         => $request->komisi,
             'rute'           => strtoupper($request->rute),
             'tgl_flight'     => $request->tgl_flight,
             'rute2'          => strtoupper($request->rute2),
@@ -232,6 +239,9 @@ class TiketController extends Controller
             'status'         => $request->status,
             'jenis_tiket_id' => $request->jenis_tiket_id,
             'keterangan'     => strtoupper($request->keterangan),
+            'nilai_refund'   => $request->nilai_refund,
+            'tgl_realisasi'  => $request->tgl_realisasi,
+
         ]);
 
         $nota = Nota::updateOrCreate(
