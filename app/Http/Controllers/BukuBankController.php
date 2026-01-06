@@ -24,9 +24,10 @@ class BukuBankController extends Controller
             ->where('nota.bank_id', $bankId)
             ->whereNotNull('nota.tgl_bayar')
             ->select(
+                'nota.id as order_id',
                 'nota.tgl_bayar as tanggal',
-                DB::raw('0 as kredit'),
-                'nota.harga_bayar as debit',
+                'nota.harga_bayar as kredit',
+                DB::raw('0 as debit'),
                 DB::raw("
                     CASE
                         WHEN nota.pembayaran_online_id IS NOT NULL
@@ -39,12 +40,16 @@ class BukuBankController extends Controller
             )
             ->get();
 
+
         /* ================= BIAYA TOP UP (DEBIT / KELUAR) ================= */
-        $biaya = DB::table('biaya')
+
+        $kredit = DB::table('biaya')
             ->where('kategori', 'top_up')
+            ->whereNull('id_jenis_tiket')
             ->where('jenis_bayar_id', 1) // BANK
             ->where('bank_id', $bankId)
             ->select(
+                'biaya.id as order_id',
                 'tgl as tanggal',
                 'biaya as kredit',
                 DB::raw('0 as debit'),
@@ -52,11 +57,45 @@ class BukuBankController extends Controller
             )
             ->get();
 
+        $debitTopupTiket = DB::table('biaya')
+            ->where('kategori', 'top_up')
+            ->whereNotNull('id_jenis_tiket')
+            ->where('jenis_bayar_id', 1) // BANK
+            ->where('bank_id', $bankId)
+            ->select(
+                'biaya.id as order_id',
+                'tgl as tanggal',
+                DB::raw('0 as kredit'),
+                'biaya as debit',
+                'keterangan'
+            )
+            ->get();
+
+
+        $debitLainnya = DB::table('biaya')
+            ->where('kategori', 'lainnya')
+            ->where('jenis_bayar_id', 1) // BANK
+            ->where('bank_id', $bankId)
+            ->select(
+                'biaya.id as order_id',
+                'tgl as tanggal',
+                DB::raw('0 as kredit'),
+                'biaya as debit',
+                'keterangan'
+            )
+            ->get();
+
+
         /* ================= GABUNG & SORT ================= */
         $bukuBank = collect()
             ->merge($nota)
-            ->merge($biaya)
-            ->sortByDesc('tanggal')
+            ->merge($kredit)
+            ->merge($debitTopupTiket)
+            ->merge($debitLainnya)
+            ->sortBy([
+                ['tanggal', 'asc'],
+                ['order_id', 'asc'],
+            ])
             ->values();
 
 
@@ -64,14 +103,17 @@ class BukuBankController extends Controller
         /* ================= SALDO BERJALAN ================= */
         $saldo = 0;
 
+        $bukuBank = $bukuBank->map(function ($row) use (&$saldo) {
+            $saldo += ($row->kredit ?? 0) - ($row->debit ?? 0);
+            $row->saldo = $saldo;
+            return $row;
+        });
+
         $bukuBank = $bukuBank
-            ->reverse() // 🔥 mulai dari transaksi TERLAMA
-            ->map(function ($row) use (&$saldo) {
-                $saldo += ($row->kredit ?? 0) - ($row->debit ?? 0);
-                $row->saldo = $saldo;
-                return $row;
-            })
-            ->reverse() // 🔥 balik lagi agar tampil DESC
+            ->sortByDesc([
+                ['tanggal', 'desc'],
+                ['order_id', 'desc'],
+            ])
             ->values();
 
 

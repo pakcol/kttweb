@@ -1,10 +1,10 @@
-<x-layouts.app title="Mutasi Airlines">
+<x-layouts.app title="Mutasi Tiket">
 
     <link rel="stylesheet" href="{{ asset('css/mutasi.css') }}">
     
     <section class="mutasi-tiket-section">
     <div class="mutasi-container">
-        <h2>MUTASI AIRLINES</h2>
+        <h2>MUTASI TIKET</h2>
     
         <form action="{{ route('mutasi-tiket.topup') }}" method="POST" class="mutasi-tiket">
             @csrf
@@ -101,7 +101,7 @@
 @else
 
 <div class="table-section">
-    <h3>Riwayat Mutasi Airlines</h3>
+    <h3>Riwayat Mutasi Tiket</h3>
 
     <div class="table-responsive">
         <table class="mutasi-table">
@@ -109,6 +109,7 @@
                 <tr>
                     <th class="col-date">Tanggal</th>
                     <th class="col-trx text-center">Transaksi</th>
+                    <th class="col-trx text-center">Saldo</th>
                     <th class="col-desc text-right">Keterangan</th>
                 </tr>
             </thead>
@@ -116,23 +117,25 @@
                 @foreach ($mutasi as $m)
                 <tr>
                     <td class="col-date">
-                        {{ \Carbon\Carbon::parse($m['tanggal'])->format('d-m-Y') }}
+                        {{ \Carbon\Carbon::parse($m->tanggal)->format('d/m/Y') }}
                     </td>
 
                     <td class="col-trx text-center">
-                        @if ($m['transaksi'] > 0)
+                        @if ($m->transaksi > 0)
                             <span class="trx-plus">
-                                +Rp {{ number_format($m['transaksi'], 0, ',', '.') }}
+                                +Rp {{ number_format($m->transaksi, 0, ',', '.') }}
                             </span>
                         @else
                             <span class="trx-minus">
-                                -Rp {{ number_format(abs($m['transaksi']), 0, ',', '.') }}
+                                -Rp {{ number_format(abs($m->transaksi), 0, ',', '.') }}
                             </span>
                         @endif
                     </td>
-
+                    <td class="col-trx text-center {{ $m->saldo < 0 ? 'text-danger' : '' }}">
+                        {{ ($m->saldo < 0 ? '-' : '') . 'Rp ' . number_format(abs($m->saldo), 0, ',', '.') }}
+                    </td>
                     <td class="col-desc text-right">
-                        {{ $m['keterangan'] }}
+                        {{ $m->keterangan }}
                     </td>
                 </tr>
                 @endforeach

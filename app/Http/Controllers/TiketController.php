@@ -34,62 +34,73 @@ class TiketController extends Controller
         $jenisBayar = JenisBayar::where('id', '!=', 3)->get();
         $bank = Bank::all();
 
-        // dropdown
+        // Dropdown jenis tiket
         $jenisTiket = JenisTiket::orderBy('name_jenis')->get();
-        $jenisTiketId = $request->jenis_tiket_id ?? $jenisTiket->first()->id;
+        $jenisTiketId = $request->jenis_tiket_id ?? $jenisTiket->first()?->id;
 
-        /* ================= NOTA (KELUAR) ================= */
+        /* ================= KELUAR (PEMBELIAN TIKET) ================= */
         $nota = DB::table('nota')
             ->join('tiket', 'nota.tiket_kode_booking', '=', 'tiket.kode_booking')
             ->where('tiket.jenis_tiket_id', $jenisTiketId)
             ->whereNotNull('nota.tgl_bayar')
             ->select(
+                'nota.id as order_id',
                 'nota.tgl_bayar as tanggal',
-                'nota.harga_bayar'
+                DB::raw('-nota.harga_bayar as transaksi'),
+                DB::raw("'Pembelian Tiket' as keterangan")
             )
-            ->get()
-            ->map(function ($n) {
-                return [
-                    'tanggal'    => $n->tanggal,
-                    'transaksi'  => -$n->harga_bayar,
-                    'keterangan' => 'Pembelian Tiket',
-                ];
-            });
+            ->get();
 
+        /* ================= MASUK (TOP UP TIKET) ================= */
+        $biaya = DB::table('biaya')
+            ->where('kategori', 'top_up')
+            ->where('id_jenis_tiket', $jenisTiketId)
+            ->select(
+                'biaya.id as order_id',
+                'tgl as tanggal',
+                'biaya as transaksi',
+                DB::raw("COALESCE(keterangan, 'Top Up Tiket') as keterangan")
+            )
+            ->get();
 
-        /* ================= BIAYA (MASUK) ================= */
-        $biaya = Biaya::where('kategori', 'top_up')
-            ->get()
-            ->map(function ($b) {
-                return [
-                    'tanggal'    => $b->tgl,
-                    'transaksi'  => +$b->biaya,
-                    'keterangan' => 'Top Up Tiket',
-                ];
-            });
-
-        /* ================= GABUNG & SORT ================= */
+        /* ================= GABUNG & SORT ASC ================= */
         $mutasi = collect()
             ->merge($nota)
             ->merge($biaya)
-            ->sortByDesc('tanggal')
+            ->sortBy([
+                ['tanggal', 'asc'],
+                ['order_id', 'asc'],
+            ])
             ->values();
 
+        /* ================= SALDO BERJALAN ================= */
+        $saldo = 0;
 
-        /* ================= SALDO ================= */
-        $jenisTiketAktif = JenisTiket::find($jenisTiketId);
-        $saldoTiket = $jenisTiketAktif?->saldo ?? 0;
+        $mutasi = $mutasi->map(function ($row) use (&$saldo) {
+            $saldo += $row->transaksi;
+            $row->saldo = $saldo;
+            return $row;
+        });
+
+        /* ================= BALIK UNTUK TAMPILAN (DESC) ================= */
+        $mutasi = $mutasi
+            ->sortByDesc([
+                ['tanggal', 'desc'],
+                ['order_id', 'desc'],
+            ])
+            ->values();
 
         return view('mutasi', [
-            'jenisTiket'   => JenisTiket::orderBy('name_jenis')->get(),
+            'jenisTiket'   => $jenisTiket,
             'jenisTiketId' => $jenisTiketId,
             'mutasi'       => $mutasi,
-            'saldoTiket'   => $saldoTiket,
+            'saldoTiket'   => $saldo,
             'jenisBayar'   => $jenisBayar,
-            'bank'         => $bank
+            'bank'         => $bank,
         ]);
-
     }
+
+
 
 
     public function indexFind()
@@ -230,7 +241,7 @@ class TiketController extends Controller
                     ? $request->nama_piutang . ' - ' . $tiket->name
                     : $tiket->name,
             'tgl_issued' => $tiket->tgl_issued,
-            'tgl_bayar' => null,
+            'tgl_bayar' => $tiket->tgl_issued,
             'jenis_bayar_id' => $request->jenis_bayar_id,
             'bank_id' => $request->bank_id,
             'tiket_kode_booking' => $tiket->kode_booking,

@@ -15,6 +15,7 @@ class Biaya extends Model
         'tgl',
         'biaya',
         'kategori',
+        'id_jenis_tiket',
         'jenis_bayar_id',
         'bank_id',
         'keterangan'
