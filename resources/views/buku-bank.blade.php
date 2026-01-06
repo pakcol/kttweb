@@ -31,7 +31,7 @@
                     </div>
     
                     <div class="form-right">
-                        <button type="submit" class="btn-action save">Top Up</button>
+                        <button type="submit" class="btn-action save">Setor</button>
                         <button type="button" class="btn-action delete" onclick="resetForm()">Hapus</button>
                     </div>
                 </div>

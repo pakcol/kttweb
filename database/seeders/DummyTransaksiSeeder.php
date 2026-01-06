@@ -11,9 +11,40 @@ class DummyTransaksiSeeder extends Seeder
 {
     public function run(): void
     {
+        // SALDO AWAL JENIS TIKET
+        DB::table('jenis_tiket')->get()->each(function ($jt) {
+            DB::table('jenis_tiket')
+                ->where('id', $jt->id)
+                ->update([
+                    'saldo' => rand(50_000_000, 150_000_000),
+                ]);
+        });
+
+        // SALDO AWAL JENIS PPOB
+        DB::table('jenis_ppob')->get()->each(function ($jp) {
+            DB::table('jenis_ppob')
+                ->where('id', $jp->id)
+                ->update([
+                    'saldo' => rand(20000000, 100000000),
+                ]);
+        });
+
         for ($i = 1; $i <= 50; $i++) {
 
             DB::transaction(function () use ($i) {
+                 /* ===============================
+                   PILIH JENIS TIKET & PPOB
+                =============================== */
+
+                $jenisTiket = DB::table('jenis_tiket')->inRandomOrder()->first();
+                $jenisPpob  = DB::table('jenis_ppob')->inRandomOrder()->first();
+
+                $nta = rand(500_000, 1_500_000);
+                $hargaJual = $nta + rand(50_000, 300_000);
+
+                if ($jenisTiket->saldo < $hargaJual || $jenisPpob->saldo < $nta) {
+                    return;
+                }
 
                 // ===============================
                 // 1️⃣ TIKET
@@ -22,36 +53,43 @@ class DummyTransaksiSeeder extends Seeder
 
                 DB::table('tiket')->insert([
                     'kode_booking'   => $kodeBooking,
-                    'tgl_issued'     => Carbon::now()->subDays(rand(1, 30)),
+                    'tgl_issued'     => now(),
                     'name'           => fake()->name(),
-                    'nta'            => $nta = rand(500_000, 1_500_000),
-                    'harga_jual'     => $hargaJual = $nta + rand(50_000, 300_000),
-                    'komisi'         => $hargaJual-$nta,
-                    'diskon'         => rand(0, 1) ? 'PROMO' : null,
+                    'nta'            => $nta,
+                    'harga_jual'     => $hargaJual,
+                    'komisi'         => $hargaJual - $nta,
+                    'diskon'         => rand(0, 100000),
                     'rute'           => 'SUB-JKT',
-                    'tgl_flight'     => Carbon::now()->addDays(rand(5, 40)),
-                    'rute2'          => null,
-                    'tgl_flight2'    => null,
-                    'status'         => rand(0, 1) ? 'issued' : 'pending',
-                    'jenis_tiket_id' => rand(1, 2),
-                    'keterangan'     => 'Dummy tiket',
+                    'tgl_flight'     => now()->addDays(rand(5, 40)),
+                    'status'         => 'issued',
+                    'jenis_tiket_id' => $jenisTiket->id,
                     'created_at'     => now(),
                     'updated_at'     => now(),
                 ]);
 
+                // KURANGI SALDO JENIS TIKET
+                DB::table('jenis_tiket')
+                    ->where('id', $jenisTiket->id)
+                    ->decrement('saldo', $hargaJual);
+
                 // ===============================
                 // 2️⃣ PEMBAYARAN ONLINE (PPOB)
                 // ===============================
-                $jenisPpobId = DB::table('jenis_ppob')->inRandomOrder()->value('id');
                 $pembayaranOnlineId = DB::table('pembayaran_online')->insertGetId([
                     'tgl'           => now(),
                     'id_pel'        => 'PEL' . rand(100000, 999999),
-                    'jenis_ppob_id' => $jenisPpobId,
+                    'jenis_ppob_id' => $jenisPpob->id,
                     'nta'           => $nta,
                     'harga_jual'    => $hargaJual,
+                    'komisi'        => $hargaJual - $nta,
                     'created_at'    => now(),
                     'updated_at'    => now(),
                 ]);
+
+                // KURANGI SALDO JENIS PPOB
+                DB::table('jenis_ppob')
+                    ->where('id', $jenisPpob->id)
+                    ->decrement('saldo', $nta);
 
                 // ===============================
                 // 3️⃣ NOTA
@@ -64,7 +102,7 @@ class DummyTransaksiSeeder extends Seeder
                     'tgl_bayar'            => $jenisBayar === 3 ? null : now(),
                     'harga_bayar'          => $hargaJual,
                     'jenis_bayar_id'       => $jenisBayar,
-                    'bank_id'              => $jenisBayar === 1 ? rand(1, 3) : null,
+                    'bank_id'              => $jenisBayar === 1 ? rand(1, 5) : null,
                     'pembayaran_online_id' => $pembayaranOnlineId,
                     'tiket_kode_booking'   => $kodeBooking,
                     'created_at'           => now(),

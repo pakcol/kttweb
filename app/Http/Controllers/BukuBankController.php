@@ -103,17 +103,14 @@ class BukuBankController extends Controller
         /* ================= SALDO BERJALAN ================= */
         $saldo = 0;
 
-        $bukuBank = $bukuBank->map(function ($row) use (&$saldo) {
-            $saldo += ($row->kredit ?? 0) - ($row->debit ?? 0);
-            $row->saldo = $saldo;
-            return $row;
-        });
-
         $bukuBank = $bukuBank
-            ->sortByDesc([
-                ['tanggal', 'desc'],
-                ['order_id', 'desc'],
-            ])
+            ->reverse() // 🔥 mulai dari transaksi TERLAMA
+            ->map(function ($row) use (&$saldo) {
+                $saldo += ($row->kredit ?? 0) - ($row->debit ?? 0);
+                $row->saldo = $saldo;
+                return $row;
+            })
+            ->reverse() // 🔥 balik lagi agar tampil DESC
             ->values();
 
 
