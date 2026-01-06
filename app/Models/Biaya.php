@@ -16,6 +16,7 @@ class Biaya extends Model
         'biaya',
         'kategori',
         'id_jenis_tiket',
+        'jenis_ppob_id',
         'jenis_bayar_id',
         'bank_id',
         'keterangan'
@@ -42,6 +43,11 @@ class Biaya extends Model
     public function jenisTiket()
     {
         return $this->belongsTo(JenisTiket::class, 'id_jenis_tiket');
+    }
+
+    public function jenisPpob(): BelongsTo
+    {
+        return $this->belongsTo(JenisPpob::class, 'jenis_ppob_id');
     }
 
 }

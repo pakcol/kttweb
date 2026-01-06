@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('jenis_ppob_id')->constrained('jenis_ppob');
             $table->integer('nta'); // nta INT
             $table->integer('harga_jual'); // harga_juai INT
+            $table->integer('komisi')->default(0);
             $table->timestamps();
         });
     }

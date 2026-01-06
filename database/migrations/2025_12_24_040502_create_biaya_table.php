@@ -20,10 +20,16 @@ return new class extends Migration
             $table->enum('kategori', ['top_up', 'setoran', 'lainnya'])
                 ->default('lainnya');
                 
-            // Relasi ke jenis tiket (airlines)
+            // RELASI OPSIONAL (SALAH SATU)
             $table->foreignId('id_jenis_tiket')
                   ->nullable()
                   ->constrained('jenis_tiket')
+                  ->cascadeOnUpdate()
+                  ->nullOnDelete();
+
+            $table->foreignId('jenis_ppob_id')
+                  ->nullable()
+                  ->constrained('jenis_ppob')
                   ->cascadeOnUpdate()
                   ->nullOnDelete();
 

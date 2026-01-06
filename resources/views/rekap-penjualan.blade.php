@@ -7,8 +7,7 @@
         <h2 class="page-title">REKAP PENJUALAN</h2>
         <form action="{{ route('rekap-penjualan.rekap') }}" method="GET" class="search-form">
             <label for="tanggal">LAPORAN PENJUALAN TANGGAL :</label>
-            <input type="date" id="tanggal" name="tanggal" value="{{ date('Y-m-d') }}">
-            <button type="submit" class="search-btn">CARI</button>
+            <input type="date" id="tanggal" name="tanggal" value="{{ date('Y-m-d') }}" readonly>
         </form>
         <form action="{{ route('rekap-penjualan.rekapPenjualan') }}" method="POST" id="formRekapPenjualan">
             @csrf

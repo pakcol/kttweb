@@ -25,16 +25,16 @@ class PembayaranOnline extends Model
         'tgl' => 'date',
         'nta' => 'integer',
         'harga_jual' => 'integer',
+        'komisi' => 'integer',
     ];
     
-    /**
-     * Relasi ke Hutang
-     */
-    public function hutangs(): HasMany
+    protected static function booted()
     {
-        return $this->hasMany(Hutang::class, 'pembayaran_online_id');
+        static::saving(function ($model) {
+            $model->komisi = max(0, $model->harga_jual - $model->nta);
+        });
     }
-    
+
     /**
      * Relasi ke Nota
      */
