@@ -1,9 +1,18 @@
+html, body {
+    height: 100%;
+}
+
 body {
     font-family: 'Poppins', sans-serif;
     background: linear-gradient(90deg, #0f4d4d 0%, #b8d3d6 100%);
     margin: 0;
     padding: 0;
     color: #333;
+
+    /* INI KUNCI */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .mutasi-container {

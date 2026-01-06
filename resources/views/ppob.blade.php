@@ -90,10 +90,42 @@
             <div class="button-group">
                 <button type="submit" class="btn btn-green">SAVE</button>
                 <button type="reset" class="btn btn-red">CANCEL</button>
-                <button type="button" class="btn btn-blue">TOP UP</button>
+                <button type="button" class="btn btn-blue" onclick="openTopup()">TOP UP</button>
             </div>
         </form>
     </div>
+    <!-- ===== TOP UP MODAL ===== -->
+<div id="topupModal" class="topup-modal">
+    <div class="topup-modal-content">
+        <h3>Top Up Saldo PPOB</h3>
+
+        <div class="topup-form">
+            <div class="form-group">
+                <label>Jenis Top Up</label>
+                <select class="form-control">
+                    <option value="">-- Pilih Jenis --</option>
+                    <option>Saldo PPOB</option>
+                    <option>Saldo Agen</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Nominal Top Up</label>
+                <input type="number" class="form-control" placeholder="Masukkan nominal top up">
+            </div>
+
+            <div class="form-group">
+                <label>Keterangan</label>
+                <textarea class="form-control" rows="3" placeholder="Contoh: Top up saldo PPOB"></textarea>
+            </div>
+
+            <div class="topup-button-group">
+                <button type="button" class="btn btn-green">TOP UP</button>
+                <button type="button" class="btn btn-red" onclick="closeTopup()">BATAL</button>
+            </div>
+        </div>
+    </div>
+</div>
 
     <div class="table-container">
         <h2>Data PPOB</h2>
@@ -175,12 +207,29 @@
 
             if (data.nota) {
                 jenisSelect.value = data.nota.jenis_bayar_id;
-                toggleJenisPembayaran(); // ✅ SEKARANG BISA
+                toggleJenisPembayaran(); 
                 bankInput.value = data.nota.bank_id ?? '';
             }
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+
+    const topupModal = document.getElementById('topupModal');
+
+    function openTopup() {
+        topupModal.classList.add('show');
+    }
+
+    function closeTopup() {
+        topupModal.classList.remove('show');
+    }
+
+    // Klik area gelap untuk close
+    topupModal.addEventListener('click', function (e) {
+        if (e.target === this) {
+            closeTopup();
+        }
+    });
     </script>
 
 
