@@ -54,7 +54,8 @@
                     <th>Kode Booking</th>
                     <th>Pesawat</th>
                     <th>Tanggal</th>
-                    <th>Rute</th>
+                    <th>Rute 1</th>
+                    <th>Rute 2</th>
                     <th>Nama Penumpang</th>
                     <th>Harga</th>
                 </tr>
@@ -67,6 +68,7 @@
                     <td>{{ $data->jenis_tiket_name ?? '-' }}</td>
                     <td>{{ $data->tgl_flight }}</td>
                     <td>{{ $data->rute }}</td>
+                    <td>{{ $data->rute2 ?? '-' }}</td>
                     <td>{{ $data->name }}</td>
                     <td>Rp {{ number_format($data->harga_jual, 0, ',', '.') }}</td>
                 </tr>

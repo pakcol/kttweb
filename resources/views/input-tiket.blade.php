@@ -139,14 +139,20 @@
                         <input type="number" id="nilai_refund" name="nilai_refund" value="0">
                     </div>
 
-                    <div class="form-group id="refundContainer" style="display:none;">
+                    <div class="form-group" id="refundContainer" style="display:none;">
                         <label for="tgl_realisasi">TGL REALISASI</label>
                         <input type="datetime-local" id="tgl_realisasi" name="tgl_realisasi" value="{{ date('Y-m-d\TH:i') }}" required>
                     </div>
 
                     <div class="button-group">
-                        <button type="submit" id="btnInputData" class="btn-hijau">Input Data</button>
-                        <button type="button" class="btn-oranye" onclick="window.location.href='/rekapan-penjualan'">Tutup Kas</button>
+                        <button type="submit" id="btnInputData" class="btn-hijau">
+                         Input Data
+                        </button>
+
+                     <a href="{{ route('cash-flow.cashFlow', ['from' => 'input-kas']) }}"
+                          class="btn-oranye btn-link">
+                          Tutup Kas
+                    </a>
                         <button type="button" class="btn-hijau" id="btnCari">Cari</button>
                         <button type="button" class="btn-merah" id="btnCetakInvoice">Cetak Invoice</button>
                         <button type="button" class="btn-hijau" id="btnBatal">Batal</button>
@@ -278,21 +284,26 @@
         text-transform: uppercase;
     }
 
-    .button-group {
-        margin-top: 20px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
+    .button-group > * {
+    flex: 1 1 100%;
+    height: 44px;                
+    padding: 10px 14px;
 
-    .btn-hijau, .btn-oranye, .btn-merah {
-        padding: 10px 20px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: bold;
-        transition: 0.3s;
-    }
+    border: none;
+    border-radius: 10px;
+
+    font-weight: 600;
+    font-size: 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+    text-decoration: none;
+    box-sizing: border-box;
+    transition: all 0.25s ease;
+}
 
     .btn-hijau {
         background-color: #27ae60;
@@ -384,7 +395,7 @@
 <div id="modalCari" class="modal-cari">
     <div class="modal-content">
         <p>Masukan <b>KODE BOOKING</b> atau <b>NAMA</b> :</p>
-        <input type="text" id="searchInput" placeholder=" Search">
+        <input type="text" id="searchInput" placeholder="Search">
         <div class="modal-buttons">
             <button id="btnCariOk" class="btn-ok">OK</button>
             <button id="btnCariCancel" class="btn-cancel">CANCEL</button>
@@ -538,19 +549,120 @@
             });
         });
 
+        
+
         /* ===================== INVOICE ===================== */
         //Cetak Invoice
         document.getElementById('btnCetakInvoice').addEventListener('click', () => {
-            const selectedRow = document.querySelector('#tiketTable tr.selected');
+    const checked = document.querySelectorAll('.check-row:checked');
 
-            if (!selectedRow) {
-                alert('Pilih tiket terlebih dahulu');
-                return;
-            }
+    if (checked.length === 0) {
+        alert('Pilih minimal satu tiket');
+        return;
+    }
 
-            const kodeBooking = selectedRow.dataset.id;
-            window.open(`/invoice/${kodeBooking}`, '_blank');
-        });
+    const codes = Array.from(checked).map(cb => cb.value).join(',');
+    window.open(`/invoice-multi?codes=${codes}`, '_blank');
+});
+/* ===================== CARI TIKET ===================== */
+
+// buka modal
+document.getElementById('btnCari').addEventListener('click', () => {
+    document.getElementById('modalCari').style.display = 'flex';
+    document.getElementById('searchInput').focus();
+});
+
+function loadAllTickets() {
+    fetch(`{{ route('input-tiket.search') }}`, {
+        headers: { 'Accept': 'application/json' }
+    })
+    .then(res => res.json())
+    .then(data => renderTable(data))
+    .catch(err => console.error('Load all tickets error:', err));
+}
+
+
+// cancel
+document.getElementById('btnCariCancel').addEventListener('click', () => {
+    document.getElementById('modalCari').style.display = 'none';
+    document.getElementById('searchInput').value = '';
+
+    // kembalikan tabel ke kondisi awal
+    loadAllTickets();
+});
+
+
+// tekan ENTER di input
+document.getElementById('searchInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+        document.getElementById('btnCariOk').click();
+    }
+});
+
+// OK → fetch data
+document.getElementById('btnCariOk').addEventListener('click', () => {
+    const keyword = document.getElementById('searchInput').value.trim();
+
+    if (!keyword) {
+        alert('Masukkan nama atau kode booking');
+        return;
+    }
+
+    fetch(`{{ route('input-tiket.search') }}?q=${encodeURIComponent(keyword)}`, {
+        headers: { 'Accept': 'application/json' }
+    })
+    .then(res => res.json())
+    .then(data => renderTable(data))
+    .catch(err => {
+        console.error(err);
+        alert('Gagal mengambil data');
+    });
+
+    document.getElementById('modalCari').style.display = 'none';
+});
+
+// render ulang tabel
+function renderTable(data) {
+    const tbody = document.querySelector('#tiketTable tbody');
+    tbody.innerHTML = '';
+
+    if (data.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="17" style="text-align:center;">Data tidak ditemukan</td>
+            </tr>`;
+        return;
+    }
+
+    data.forEach((t, i) => {
+        tbody.innerHTML += `
+        <tr data-id="${t.kode_booking}" data-jenis-tiket-id="${t.jenis_tiket_id}">
+            <td><input type="checkbox" class="check-row" value="${t.kode_booking}"></td>
+            <td>${i + 1}</td>
+            <td>${t.tgl_issued?.substring(0,10) ?? '-'}</td>
+            <td>${t.kode_booking}</td>
+            <td>${t.name}</td>
+            <td>${t.rute}</td>
+            <td>${t.tgl_flight?.substring(0,10) ?? '-'}</td>
+            <td>${t.rute2 ?? '-'}</td>
+            <td>${t.tgl_flight2?.substring(0,10) ?? '-'}</td>
+            <td>${Number(t.harga_jual).toLocaleString('id-ID')}</td>
+            <td>${Number(t.nta).toLocaleString('id-ID')}</td>
+            <td>${Number(t.diskon).toLocaleString('id-ID')}</td>
+            <td>${Number(t.komisi).toLocaleString('id-ID')}</td>
+            <td>${t.status}</td>
+            <td>${t.jenis_tiket?.name_jenis ?? '-'}</td>
+            <td>${t.keterangan ?? '-'}</td>
+            <td>-</td>
+        </tr>`;
+    });
+}
+
+/* ===================== TUTUP KAS ===================== */
+document.getElementById('btnTutupKas')?.addEventListener('click', () => {
+    window.location.href = "{{ route('cash-flow.cashFlow') }}";
+});
+
 
         /* ===================== RESET ===================== */
         $('btnBatal').onclick = () => {
@@ -607,6 +719,7 @@
         });
 
     });
+
 </script>
 
 </x-layouts.app>

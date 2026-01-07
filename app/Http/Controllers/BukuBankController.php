@@ -27,7 +27,7 @@ class BukuBankController extends Controller
                 'mutasi_tiket.harga_bayar as kredit',
                 DB::raw('0 as debit'),
                 DB::raw("
-                    CONCAT('Pembayaran Tiket ', jenis_tiket.name_jenis)
+                    CONCAT('Pembayaran Tiket ', jenis_tiket.name_jenis, ' atas nama ', tiket.name)
                     as keterangan
                 ")
             )

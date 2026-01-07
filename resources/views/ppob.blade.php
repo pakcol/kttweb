@@ -19,11 +19,6 @@
             <input type="hidden" name="_method" id="formMethod" value="POST">
             <div class="form-grid">
                 <div class="form-group">
-                    <label for="nama">NAMA PELANGGAN*</label>
-                    <input type="text" id="nama" name="nama" class="form-control" placeholder="Masukkan Nama Pelanggan" required>
-                </div>
-
-                <div class="form-group">
                     <label for="id_pel">ID PELANGGAN*</label>
                     <input type="text" id="id_pel" name="id_pel" class="form-control" placeholder="Masukkan No Pelanggan" required>
                 </div>
@@ -51,7 +46,6 @@
                     <label for="nta">NTA*</label>
                     <input type="number" id="nta" name="nta" class="form-control" placeholder="Masukkan Transaksi" required>
                 </div>
-
                 <div class="form-group">
                     <label for="tgl">TANGGAL*</label>
                     <input type="date" id="tgl" name="tgl" class="form-control" value="{{ date('Y-m-d') }}" required>
@@ -83,6 +77,11 @@
                             @endforeach
                         @endif
                     </select>
+                </div>
+
+                <div class="form-group" id="namaPiutangContainer" style="display: none;">
+                    <label for="nama_piutang">NAMA PIUTANG</label>
+                    <input type="text" id="nama_piutang" name="nama_piutang" class="form-control">
                 </div>
                 
             </div>
@@ -133,13 +132,13 @@
             <thead>
                 <tr>
                     <th>Tanggal</th>
-                    <th>Nama Pelanggan</th>
                     <th>ID Pelanggan</th>
                     <th>Kategori</th>
                     <th>Harga Jual</th>
                     <th>NTA</th>
                     <th>Metode Pembayaran</th>
                     <th>Bank</th>
+                    <th>Nama Piutang</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -147,25 +146,55 @@
                 @foreach ($ppob as $index => $row)
                 <tr>
                     <td>{{ $row->tgl }}</td>
-                    <td>{{ $row->nota->nama ?? '-' }}</td>
                     <td>{{ $row->id_pel }}</td>
                     <td>{{ $row->ppobJenis->jenis_ppob ?? '-' }}</td>
                     <td>{{ number_format($row->harga_jual) }}</td>
                     <td>{{ number_format($row->nta) }}</td>
-                    <td>{{ $row->nota->jenisBayar->jenis ?? '-' }}</td>
-                    <td>{{ $row->nota->bank->name ?? '-' }}</td>
+                    <td>{{ $row->jenisBayar->jenis ?? '-' }}</td>
+                    <td>{{ $row->bank->name ?? '-' }}</td>
+                    <td>{{ $row->nama_piutang ?? '-' }}</td>
                     <td>
-                        <button class="btn btn-edit" onclick='editPpob(@json($row))'>
-                            Edit
-                        </button>
-                        <form action="{{ route('ppob.destroy', $row->id) }}" method="POST" style="display:inline">
-                            @csrf
-                            @method('DELETE')
-                            <button class="btn btn-delete" onclick="return confirm('Hapus data ini?')">
-                                Delete
-                            </button>
-                        </form>
-                    </td>
+    <div style="
+        display:flex;
+        flex-direction:column;
+        gap:6px;
+        align-items:center;
+    ">
+        <button 
+            type="button"
+            class="btn btn-edit"
+            style="
+                background-color:#0d6efd;
+                color:#fff;
+                border:none;
+                width:72px;
+                padding:4px 0;
+                font-size:12px;
+            "
+            onclick='editPpob(@json($row))'>
+            Edit
+        </button>
+
+        <form action="{{ route('ppob.destroy', $row->id) }}" method="POST" style="margin:0;">
+            @csrf
+            @method('DELETE')
+            <button 
+                type="submit"
+                class="btn btn-delete"
+                style="
+                    background-color:#dc3545;
+                    color:#fff;
+                    border:none;
+                    width:72px;
+                    padding:4px 0;
+                    font-size:12px;
+                "
+                onclick="return confirm('Hapus data ini?')">
+                Delete
+            </button>
+        </form>
+    </div>
+</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -179,13 +208,15 @@
 
         function toggleJenisPembayaran() {
             const jenis = jenisSelect.value;
-
             bankContainer.style.display = 'none';
+            namaPiutangContainer.style.display = 'none';
             bankInput.required = false;
 
             if (jenis == 1) {
                 bankContainer.style.display = 'block';
                 bankInput.required = true;
+            } else if (jenis == 3) {
+                namaPiutangContainer.style.display = 'block';
             }
         }
 
@@ -193,26 +224,6 @@
             jenisSelect.addEventListener('change', toggleJenisPembayaran);
             toggleJenisPembayaran();
         });
-
-        function editPpob(data) {
-            document.getElementById('ppobForm').action = `/ppob/${data.id}`;
-            document.getElementById('formMethod').value = 'PUT';
-
-            document.getElementById('nama').value = data.nota?.nama ?? '';
-            document.getElementById('id_pel').value = data.id_pel;
-            document.getElementById('jenis_ppob_id').value = data.jenis_ppob_id;
-            document.getElementById('harga_jual').value = data.harga_jual;
-            document.getElementById('nta').value = data.nta;
-            document.getElementById('tgl').value = data.tgl.substring(0,10);
-
-            if (data.nota) {
-                jenisSelect.value = data.nota.jenis_bayar_id;
-                toggleJenisPembayaran(); 
-                bankInput.value = data.nota.bank_id ?? '';
-            }
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
 
     const topupModal = document.getElementById('topupModal');
 
@@ -230,7 +241,59 @@
             closeTopup();
         }
     });
+
+    function editPpob(data) {
+
+    const form = document.getElementById('ppobForm');
+
+    // ✅ URL SESUAI ROUTE
+    form.action = "{{ url('ppob') }}/" + data.id;
+
+    // ganti method POST → PUT
+    document.getElementById('formMethod').value = 'PUT';
+
+    // isi field
+    document.getElementById('id_pel').value = data.id_pel;
+    document.getElementById('jenis_ppob_id').value = data.jenis_ppob_id;
+    document.getElementById('harga_jual').value = data.harga_jual;
+    document.getElementById('nta').value = data.nta;
+    document.getElementById('tgl').value = data.tgl.substring(0, 10);
+
+    // jenis bayar
+    if (data.jenis_bayar_id) {
+        document.getElementById('jenis_bayar_id').value = data.jenis_bayar_id;
+        toggleJenisPembayaran();
+    }
+
+    // bank
+    if (data.bank_id) {
+        document.getElementById('bank_id').value = data.bank_id;
+    }
+
+    // nama piutang
+    if (data.nama_piutang) {
+        document.getElementById('nama_piutang').value = data.nama_piutang;
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
     </script>
+@if(session('success'))
+<script>
+    const form = document.getElementById('ppobForm');
+
+    // balik ke CREATE mode
+    form.action = "{{ route('ppob.store') }}";
+    document.getElementById('formMethod').value = 'POST';
+
+    // reset form
+    form.reset();
+
+    // reset conditional field
+    document.getElementById('bankContainer').style.display = 'none';
+    document.getElementById('namaPiutangContainer').style.display = 'none';
+</script>
+@endif
 
 
 </section>

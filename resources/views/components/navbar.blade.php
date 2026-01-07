@@ -37,7 +37,7 @@
                         </a>
                         <ul class="dropdown-menu dropdown-click-menu">
                             <li><a class="dropdown-item" href="{{ url('/input-tiket') }}">Input Tiket</a></li>
-                            <li><a class="dropdown-item" href="{{ url('/piutang') }}">Piutang</a></li>
+                            <li><a class="dropdown-item" href="{{ url('/tiket/piutang') }}">Piutang</a></li>
                             <li><a class="dropdown-item" href="{{ url('/biaya') }}">Biaya</a></li>
                             <li><a class="dropdown-item" href="{{ url('/find-ticket') }}">Find Ticket</a></li>
                             <li><a class="dropdown-item" href="{{ url('/mutasi-tiket') }}">Mutasi Tiket</a></li>
@@ -67,7 +67,7 @@
                         </a>
                         <ul class="dropdown-menu dropdown-click-menu">
                             <li><a class="dropdown-item" href="{{ url('/ppob') }}">Transaksi</a></li>
-                            <li><a class="dropdown-item" href="{{ url('/ppobPiutang') }}">Piutang</a></li>
+                            <li><a class="dropdown-item" href="{{ url('/ppob/piutang') }}">Piutang</a></li>
                         </ul>
                     </li>
 

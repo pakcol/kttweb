@@ -10,6 +10,7 @@ use App\Http\Controllers\BiayaController;
 use App\Http\Controllers\PpobController;
 use App\Http\Controllers\BukuBankController; 
 use App\Http\Controllers\InsentifController;
+use App\Http\Controllers\MutasiTiketController;
 
 Route::get('/', function () {
     if (auth()->check()) {
@@ -35,28 +36,20 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/buku-bank', [BukuBankController::class, 'index'])->name('buku-bank.index');
         Route::post('/buku-bank/topup', [BukuBankController::class, 'topUp'])->name('buku-bank.topup');
 
-        // ======== REKAP PENJUALAN CONTROLLER ========
-        Route::get('/rekap-penjualan', [NotaController::class, 'rekap'])
-            ->name('rekap-penjualan.rekap');
-        Route::post('/rekap-penjualan', [NotaController::class, 'rekapPenjualan'])
-            ->name('rekap-penjualan.rekapPenjualan');
     });
-
     // ======== TIKET CONTROLLER  ========
     Route::prefix('tiket')->name('tiket.')->group(function () {
         Route::get('/', [TiketController::class, 'index'])->name('index'); 
         Route::post('/store', [TiketController::class, 'store'])->name('store'); 
+
+        // INDEX PIUTANG
+        Route::get('/piutang', [TiketController::class, 'indexPiutang'])
+            ->name('piutang');
+
+        // ✅ UPDATE / REALISASI PIUTANG
+        Route::put('/piutang/{id}', [TiketController::class, 'updatePiutang'])
+            ->name('piutang.update');
     });
-
-    // ======== NOTA, PIUTANG CONTROLLER ========
-    Route::get('/nota/by-tiket/{kodeBooking}', 
-        [NotaController::class, 'showByKodeBooking']
-    );
-    Route::get('/piutang', [NotaController::class, 'piutangTiket'])
-        ->name('piutang.index');
-    Route::put('/nota/piutang/update', [NotaController::class, 'updatePiutang'])
-        ->name('nota.updatePiutang');
-
 
     // ======== INVOICE CONTROLLER ========
     Route::get('/invoice/{kode_booking}', [InvoiceController::class, 'show'])->name('invoice.show');
@@ -90,11 +83,35 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/biaya', [BiayaController::class, 'store'])->name('biaya.store');
 
     // ======== PPOB CONTROLLER ======== 
-    Route::resource('ppob', PpobController::class)->only([
-        'index', 'store', 'update', 'destroy'
-    ]);
-    Route::get('/ppobPiutang', [PpobController::class, 'ppobPiutang'])
-    ->name('ppob.piutang');
+    // ======== PPOB CONTROLLER ========
+Route::prefix('ppob')->name('ppob.')->group(function () {
+
+    // Halaman utama PPOB
+    Route::get('/', [PpobController::class, 'index'])
+        ->name('index');
+
+    // Simpan data PPOB baru
+    Route::post('/', [PpobController::class, 'store'])
+        ->name('store');
+
+    // ✅ UPDATE / EDIT PPOB
+    Route::put('/{id}', [PpobController::class, 'update'])
+        ->name('update');
+
+    // Halaman piutang PPOB
+    Route::get('/piutang', [PpobController::class, 'ppobPiutang'])
+        ->name('piutang');
+
+    // Bayar / realisasi piutang
+    Route::put('/piutang/{id}', [PpobController::class, 'updatePiutang'])
+        ->name('piutang.update');
+
+    // Hapus data PPOB
+    Route::delete('/{id}', [PpobController::class, 'destroy'])
+        ->name('destroy');
+});
+
+
 
     // ======== FIND TICKET CONTROLLER ======== 
     Route::prefix('find-ticket')->name('find.')->group(function () {
@@ -105,10 +122,20 @@ Route::middleware(['auth'])->group(function () {
     // ======== MUTASI TIKET CONTROLLER ======== 
     Route::get('/mutasi-tiket', [TiketController::class, 'indexMutasi'])->name('mutasi-tiket.index');
     Route::post('/mutasi-tiket', [TiketController::class, 'topupMutasi'])->name('mutasi-tiket.topup');
+    Route::put(
+        '/mutasi-tiket/piutang/{id}',
+        [MutasiTiketController::class, 'updatePiutang']
+    )->name('mutasi-tiket.updatePiutang');
+
 
     // ======== CASH FLOW CONTROLLER ========
-    Route::get('/cash-flow', [NotaController::class, 'cashFlow'])
+    Route::get('/cash-flow', [MutasiTiketController::class, 'cashFlow'])
         ->name('cash-flow.cashFlow');
+
+    // ======== REKAP PENJUALAN ========
+    Route::get('/rekap-penjualan', [MutasiTiketController::class, 'rekapPenjualan'])
+        ->name('rekap-penjualan.index');
+
     // ======== ADD USER ======== 
     Route::middleware('superuser')->group(function () {
         Route::get('/register', [UserController::class, 'create'])->name('register.create'); // Menggunakan method create

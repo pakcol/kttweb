@@ -18,8 +18,9 @@ return new class extends Migration
             $table->foreignId('jenis_ppob_id')->constrained('jenis_ppob');
             $table->integer('nta'); // nta INT
             $table->integer('harga_jual'); // harga_juai INT
-            $table->decimal('insentif_nominal', 15, 2);
+            $table->decimal('insentif', 15, 2)->nullable();
             $table->integer('komisi')->default(0);
+            $table->string('nama_piutang', 100)->nullable();
 
             // Relasi ke jenis bayar (nullable)
             $table->foreignId('jenis_bayar_id')

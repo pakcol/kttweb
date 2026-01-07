@@ -5,12 +5,11 @@
 <section class="piutang-section">
     <div class="card-form">
         <h2 class="form-title">Data Piutang</h2>
-
-        <form method="POST" action="{{ route('nota.updatePiutang') }}">
+        <form method="POST" id="formPiutang">
             @csrf
             @method('PUT')
 
-            <input type="hidden" name="nota_id" id="nota_id">
+            <input type="hidden" name="mutasi_id" id="mutasi_id">
 
             <div class="form-group">
                 <label>Kode Booking</label>
@@ -94,10 +93,17 @@
 <script>
     document.querySelectorAll('.btn-edit').forEach(btn => {
         btn.addEventListener('click', () => {
-            document.getElementById('nota_id').value = btn.dataset.id
-            document.getElementById('kode_booking').value = btn.dataset.kode
-        })
-    })
+            const id = btn.dataset.id;
+
+            document.getElementById('mutasi_id').value = id;
+            document.getElementById('kode_booking').value = btn.dataset.kode;
+
+            // SET ACTION FORM SECARA DINAMIS
+            document.getElementById('formPiutang')
+                .action = `/tiket/piutang/${id}`;
+        });
+    });
+
 
     document.getElementById('jenis_bayar_id').addEventListener('change', function () {
         document.getElementById('bankContainer').style.display =

@@ -1,15 +1,30 @@
-<x-layouts.app title="Rekap Penjuaan - PT. Kupang Tour & Travel">
+@php
+    $fromInputKas = request()->query('from') === 'input-kas';
+@endphp
+
+<x-layouts.app 
+    title="{{ $fromInputKas 
+        ? 'Tutup Kas - PT. Kupang Tour & Travel' 
+    : 'Cash Flow - PT. Kupang Tour & Travel' }}">
 
 <link rel="stylesheet" href="{{ asset('css/cash-flow.css') }}">
 
 <div class="cash-flow-wrapper">
     <div class="cash-flow-card">
-        <h2 class="page-title">CASH FLOW</h2>
-        <form action="{{ route('rekap-penjualan.rekap') }}" method="GET" class="search-form">
-            <label for="tanggal">LAPORAN PENJUALAN TANGGAL :</label>
-            <input type="date" id="tanggal" name="tanggal" value="{{ date('Y-m-d') }}" readonly>
+    <h2 class="page-title">
+        {{ $fromInputKas ? 'TUTUP KAS HARIAN' : 'CASH FLOW' }}
+    </h2>
+
+        <form action="{{ route('cash-flow.cashFlow') }}" method="GET" class="search-form">
+            <label for="tanggal">CASH FLOW TANGGAL :</label>
+            <input type="date"
+                    id="tanggal"
+                    name="tanggal"
+                    value="{{ date('Y-m-d') }}"
+                    {{ $fromInputKas ? 'readonly' : '' }}>
+
         </form>
-        <form action="{{ route('rekap-penjualan.rekapPenjualan') }}" method="POST" id="formRekapPenjualan">
+        <form action="{{ route('cash-flow.cashFlow') }}" method="POST" id="formRekapPenjualan">
             @csrf
             <input type="hidden" name="id" id="recordId">
 
@@ -45,7 +60,8 @@
                     @foreach($banks as $bank)
                         <label>SETORAN {{ strtoupper($bank->name) }}</label>
                         <input type="text"
-                            value="{{ number_format($setoran[$bank->id] ?? 0, 0, ',', '.') }}">
+                                value="{{ number_format($setoran[$bank->id] ?? 0, 0, ',', '.') }}"
+                                {{ $fromInputKas ? '' : 'readonly' }}>
                     @endforeach
                 </div>
                 <div class="card">
@@ -54,7 +70,8 @@
                         <label>{{ strtoupper($tiket->name_jenis) }}</label>
                         <input type="text"
                             value="{{ number_format($tiket->saldo ?? 0, 0, ',', '.') }}"
-                            readonly>
+                            {{ $fromInputKas ? '' : 'readonly' }}>
+
                     @endforeach
                 </div>
                 <div class="card">
@@ -72,7 +89,8 @@
                         <label>{{ strtoupper($sa->nama) }}</label>
                         <input type="text"
                             value="{{ number_format($sa->saldo, 0, ',', '.') }}"
-                            readonly>
+                            {{ $fromInputKas ? '' : 'readonly' }}>
+
                     @endforeach
                     <label>CASH</label>
                     <input type="text"
@@ -85,7 +103,7 @@
                         <label>{{ strtoupper($ppob->jenis_ppob) }}</label>
                         <input type="text"
                             value="{{ number_format($ppob->saldo ?? 0, 0, ',', '.') }}"
-                            readonly>
+                            {{ $fromInputKas ? '' : 'readonly' }}>
                     @empty
                         <p class="no-data">Data PPOB belum tersedia</p>
                     @endforelse
@@ -147,4 +165,3 @@ document.querySelectorAll('.table-laporan tbody tr').forEach(row => {
 </script>
 
 </x-layouts.app>
-
