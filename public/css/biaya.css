@@ -71,15 +71,25 @@ textarea {
 
 input[type="text"],
 input[type="date"],
+input[type="datetime-local"],
+input[type="number"],        /* ⬅️ INI YANG KURANG */
 select {
-    height: 46px;
-    padding: 10px 14px;
+    height: 48px;
+    padding: 12px 14px;
     border: 1px solid #d1d5db;
     border-radius: 12px;
     outline: none;
     background-color: #f9fafb;
     font-size: 14px;
+    line-height: 1.2;
+    box-sizing: border-box;
     transition: all 0.25s ease;
+}
+
+
+input[type="date"] {
+    display: flex;
+    align-items: center;
 }
 
 textarea {
@@ -174,16 +184,3 @@ tbody tr:hover {
     background-color: #f1f5f9;
 }
 
-.biaya-page {
-    width: 100vw;
-    min-height: 100vh;
-
-    position: relative;
-    left: 50%;
-    right: 50%;
-    margin-left: -50vw;
-    margin-right: -50vw;
-
-    background: linear-gradient(90deg, #0f4d4d 0%, #b8d3d6 100%);
-    padding: 120px 0 100px; /* aman dari navbar */
-}

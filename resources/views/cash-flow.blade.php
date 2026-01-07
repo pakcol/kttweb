@@ -3,117 +3,117 @@
 @endphp
 
 <x-layouts.app 
-    title="{{ $fromInputKas 
-        ? 'Tutup Kas - PT. Kupang Tour & Travel' 
-    : 'Cash Flow - PT. Kupang Tour & Travel' }}">
+    :fullWidth="true"
+    title="{{ $fromInputKas ? 'Tutup Kas - PT. Kupang Tour & Travel' : 'Cash Flow - PT. Kupang Tour & Travel' }}">
 
-<link rel="stylesheet" href="{{ asset('css/cash-flow.css') }}">
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/cashflow.css') }}">
+@endpush
 
-<div class="cash-flow-wrapper">
+<div class="cash-flow-wrapper {{ $fromInputKas ? 'mode-tutup-kas' : '' }}">
     <div class="cash-flow-card">
-    <h2 class="page-title">
-        {{ $fromInputKas ? 'TUTUP KAS HARIAN' : 'CASH FLOW' }}
-    </h2>
 
-        <form action="{{ route('cash-flow.cashFlow') }}" method="GET" class="search-form">
-            <label for="tanggal">CASH FLOW TANGGAL :</label>
-            <input type="date"
-                    id="tanggal"
-                    name="tanggal"
-                    value="{{ date('Y-m-d') }}"
-                    {{ $fromInputKas ? 'readonly' : '' }}>
+        <h2 class="page-title">CASH FLOW</h2>
 
+        {{-- FILTER --}}
+        <form method="GET" class="search-form">
+            <label>LAPORAN PENJUALAN TANGGAL</label>
+            <input type="date" name="tanggal" value="{{ request('tanggal', date('Y-m-d')) }}">
+            <button type="submit">CARI</button>
         </form>
-        <form action="{{ route('cash-flow.cashFlow') }}" method="POST" id="formRekapPenjualan">
+
+        {{-- GRID --}}
+        <form method="POST">
             @csrf
-            <input type="hidden" name="id" id="recordId">
 
-            <div class="form-grid">
-                <div class="card">
-                    <h3>PENJUALAN</h3>
-                    <label>PENJUALAN</label>
-                    <input type="text"
-                        value="{{ number_format($TTL_PENJUALAN ?? 0,0,',','.') }}"
-                        readonly>
-                    <label>PIUTANG</label>
-                    <input type="text"
-                        value="{{ number_format($PIUTANG ?? 0,0,',','.') }}"
-                        readonly>
-                    <label>PENGELUARAN</label>
-                    <input type="text"
-                        value="{{ number_format($BIAYA ?? 0,0,',','.') }}"
-                        readonly>
-                    <label>REFUND</label>
-                    <input type="text" name="REFUND" id="REFUND">
-                </div>
-                <div class="card">
-                    <h3>TRANSFER</h3>
-                    @foreach($banks as $bank)
-                        <label>TRANSFER {{ strtoupper($bank->name) }}</label>
-                        <input type="text"
-                            value="{{ number_format($transfer[$bank->id] ?? 0, 0, ',', '.') }}"
-                            readonly>
-                    @endforeach
-                </div>
-                <div class="card">
-                    <h3>SETORAN</h3>
-                    @foreach($banks as $bank)
-                        <label>SETORAN {{ strtoupper($bank->name) }}</label>
-                        <input type="text"
-                                value="{{ number_format($setoran[$bank->id] ?? 0, 0, ',', '.') }}"
-                                {{ $fromInputKas ? '' : 'readonly' }}>
-                    @endforeach
-                </div>
-                <div class="card">
-                    <h3>SALDO TIKET</h3>
-                    @foreach($jenisTiket as $tiket)
-                        <label>{{ strtoupper($tiket->name_jenis) }}</label>
-                        <input type="text"
-                            value="{{ number_format($tiket->saldo ?? 0, 0, ',', '.') }}"
-                            {{ $fromInputKas ? '' : 'readonly' }}>
+            <div class="form-grid cashflow-grid">
 
-                    @endforeach
-                </div>
-                <div class="card">
-                    <h3>TOP UP SALDO TIKET</h3>
-                    @foreach($topupJenisTiket as $topup)
-                        <label>{{ strtoupper($topup->name_jenis) }}</label>
-                        <input type="text"
-                            value="{{ number_format($topup->total_topup, 0, ',', '.') }}"
-                            readonly>
-                    @endforeach
-                </div>
-                <div class="card sub-agent">
-                    <h3>SALDO SUB AGENT</h3>
-                    @foreach($subagents as $sa)
-                        <label>{{ strtoupper($sa->nama) }}</label>
-                        <input type="text"
-                            value="{{ number_format($sa->saldo, 0, ',', '.') }}"
-                            {{ $fromInputKas ? '' : 'readonly' }}>
+    {{-- BARIS 1 --}}
+    <div class="card penjualan">
+        <h3>PENJUALAN</h3>
+        <label>PENJUALAN</label><input>
+        <label>PIUTANG</label><input>
+        <label>PENGELUARAN</label><input>
+        <label>REFUND</label><input>
+    </div>
 
-                    @endforeach
-                    <label>CASH</label>
-                    <input type="text"
-                        value="{{ number_format($cashFlowSubagent ?? 0, 0, ',', '.') }}"
-                        readonly>
-                </div>
-                <div class="card pln">
-                    <h3>SALDO PPOB</h3>
-                    @forelse($ppobs as $ppob)
-                        <label>{{ strtoupper($ppob->jenis_ppob) }}</label>
-                        <input type="text"
-                            value="{{ number_format($ppob->saldo ?? 0, 0, ',', '.') }}"
-                            {{ $fromInputKas ? '' : 'readonly' }}>
-                    @empty
-                        <p class="no-data">Data PPOB belum tersedia</p>
-                    @endforelse
-                </div>
-            </div>
+    <div class="card saldo-airlines">
+        <h3>SALDO AIRLINES</h3>
+        <label>CITILINK</label><input>
+        <label>GARUDA</label><input>
+        <label>QGCORNER</label><input>
+        <label>LION</label><input>
+        <label>SRIWIJAYA</label><input>
+        <label>TRANSNUSA</label><input>
+        <label>PELNI</label><input>
+        <label>AIR ASIA</label><input>
+        <label>DLU</label><input>
+    </div>
+
+    <div class="card topup-airlines">
+        <h3>TOP UP AIRLINES</h3>
+        <label>CITILINK</label><input>
+        <label>GARUDA</label><input>
+        <label>QGCORNER</label><input>
+        <label>LION</label><input>
+        <label>SRIWIJAYA</label><input>
+        <label>TRANSNUSA</label><input>
+        <label>PELNI</label><input>
+        <label>AIR ASIA</label><input>
+        <label>DLU</label><input>
+    </div>
+
+    {{-- BARIS 2 --}}
+    <div class="card transfer">
+        <h3>TRANSFER</h3>
+        <label>TRANSFER BCA</label><input>
+        <label>TRANSFER BRI</label><input>
+        <label>TRANSFER BNI</label><input>
+        <label>TRANSFER BTN</label><input>
+    </div>
+
+    <div class="card pln">
+    <h3>PLN</h3>
+
+    <label>PLN</label>
+    <input type="text">
+
+    <div class="sisa-saldo-box">
+        <label>SISA SALDO</label>
+        <input type="text">
+    </div>
+</div>
+
+    <div class="card sub-agent">
+        <h3>SALDO SUB AGENT</h3>
+        <label>EVI</label><input>
+    </div>
+
+    {{-- BARIS 3 --}}
+    <div class="card setoran">
+        <h3>SETORAN</h3>
+        <label>SETORAN BCA</label><input>
+        <label>SETORAN BRI</label><input>
+        <label>SETORAN BNI</label><input>
+        <label>SETORAN MANDIRI</label><input>
+    </div>
+
+    <div class="card cash">
+        <h3>CASH</h3>
+        <input>
+    </div>
+
+</div>
 
             <div class="button-container">
-                <button type="reset" class="btn red">BATAL</button>
-                <button type="submit" class="btn green">SIMPAN / UPDATE</button>
+                <button class="btn red" type="reset">BATAL</button>
+                <button class="btn green" type="submit">SIMPAN</button>
             </div>
+
+        </form>
+
+    </div>
+</div>
         </form>
 
         @if(isset($penjualan) && count($penjualan) > 0)

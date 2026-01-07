@@ -135,6 +135,8 @@ Route::prefix('ppob')->name('ppob.')->group(function () {
     // ======== REKAP PENJUALAN ========
     Route::get('/rekap-penjualan', [MutasiTiketController::class, 'rekapPenjualan'])
         ->name('rekap-penjualan.index');
+    Route::get('/rekap-penjualan/export', [MutasiTiketController::class, 'exportRekapPenjualan'])
+    ->name('rekap-penjualan.export');
 
     // ======== ADD USER ======== 
     Route::middleware('superuser')->group(function () {

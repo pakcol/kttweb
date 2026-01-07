@@ -23,13 +23,15 @@
     @stack('styles')
 </head>
 
-<body class="bg-light">
+<body>
+
 
     {{-- Navbar --}}
     <x-navbar />
 
     {{-- Main Content --}}
-    <main class="{{ (isset($fullWidth) && $fullWidth === true) ? '' : 'container' }} py-4">
+    <main class="{{ (isset($fullWidth) && $fullWidth === true) ? '' : 'container py-4' }}">
+
         {{ $slot }}
     </main>
 
