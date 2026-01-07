@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\MutasiTiketService;
 use App\Models\Tiket;
 use App\Models\Nota;
 use App\Models\JenisTiket;
@@ -102,9 +103,6 @@ class TiketController extends Controller
         ]);
     }
 
-
-
-
     public function indexFind()
     {
         return view('find', [
@@ -146,7 +144,6 @@ class TiketController extends Controller
 
         return view('find', compact('ticket'));
     }
-
     
     public function topupMutasi(Request $request)
     {
@@ -192,11 +189,10 @@ class TiketController extends Controller
         }
     }
 
-
     /**
      * Menyimpan tiket baru atau update tiket yang ada, plus simpan ke nota
      */
-    public function store(Request $request)
+    public function store(Request $request, MutasiTiketService $mutasiService)
     {
         $request->validate([
             'tgl_issued'     => 'required|date',
@@ -221,44 +217,47 @@ class TiketController extends Controller
         ]);
 
         DB::beginTransaction();
-        $kodeBookingInput = strtoupper($request->kode_booking);
 
-        $tiket = Tiket::updateOrCreate(
-        ['kode_booking' => $kodeBookingInput],
-        [
-            'tgl_issued'     => $request->tgl_issued,
-            'name'           => strtoupper($request->name),
-            'harga_jual'     => $request->harga_jual,
-            'nta'            => $request->nta,
-            'diskon'         => $request->diskon,
-            'komisi'         => $request->komisi,
-            'rute'           => strtoupper($request->rute),
-            'tgl_flight'     => $request->tgl_flight,
-            'rute2'          => strtoupper($request->rute2),
-            'tgl_flight2'    => $request->tgl_flight2,
-            'status'         => $request->status,
-            'jenis_tiket_id' => $request->jenis_tiket_id,
-            'keterangan'     => strtoupper($request->keterangan),
-            'nilai_refund'   => $request->nilai_refund,
-            'tgl_realisasi'  => $request->tgl_realisasi,
+        try {
+            $kodeBookingInput = strtoupper($request->kode_booking);
 
-        ]);
+            // 1️⃣ SIMPAN / UPDATE TIKET
+            $tiket = Tiket::updateOrCreate(
+                ['kode_booking' => $kodeBookingInput],
+                [
+                    'tgl_issued'     => $request->tgl_issued,
+                    'name'           => strtoupper($request->name),
+                    'harga_jual'     => $request->harga_jual,
+                    'nta'            => $request->nta,
+                    'diskon'         => $request->diskon,
+                    'komisi'         => $request->komisi,
+                    'rute'           => strtoupper($request->rute),
+                    'tgl_flight'     => $request->tgl_flight,
+                    'rute2'          => strtoupper($request->rute2),
+                    'tgl_flight2'    => $request->tgl_flight2,
+                    'status'         => $request->status,
+                    'jenis_tiket_id' => $request->jenis_tiket_id,
+                    'keterangan'     => strtoupper($request->keterangan),
+                    'nilai_refund'   => $request->nilai_refund,
+                    'tgl_realisasi'  => $request->tgl_realisasi,
+                ]
+            );
 
-        $nota = Nota::updateOrCreate(
-        ['tiket_kode_booking' => $tiket->kode_booking],
-        [
-            'nama' => $request->nama_piutang
-                    ? $request->nama_piutang . ' - ' . $tiket->name
-                    : $tiket->name,
-            'tgl_issued' => $tiket->tgl_issued,
-            'tgl_bayar' => $tiket->tgl_issued,
-            'jenis_bayar_id' => $request->jenis_bayar_id,
-            'bank_id' => $request->bank_id,
-            'tiket_kode_booking' => $tiket->kode_booking,
-            'harga_bayar' => $tiket->harga_jual,
-        ]);
+            // 2️⃣ CATAT MUTASI TIKET (PENGGANTI NOTA)
+            $mutasiService->create([
+                'tiket_kode_booking' => $tiket->kode_booking,
+                'tgl_issued'     => $tiket->tgl_issued,
+                'tgl_bayar'      => $tiket->tgl_issued,
+                'harga_bayar'    => $tiket->harga_jual,
+                'jenis_bayar_id' => $request->jenis_bayar_id,
+                'bank_id'        => $request->bank_id,
+                'keterangan'     => $request->keterangan
+                    ? strtoupper($request->nama_piutang . ' - ' . $tiket->name)
+                    : strtoupper($tiket->name),
+            ]);
 
-        if ($request->jenis_bayar_id != 3) { // 3 = PIUTANG
+            // 3️⃣ CATAT BIAYA (JIKA BUKAN PIUTANG)
+            if ($request->jenis_bayar_id != 3) { // 3 = PIUTANG
                 Biaya::create([
                     'tgl'            => Carbon::now(),
                     'biaya'          => $tiket->nta,
@@ -269,11 +268,197 @@ class TiketController extends Controller
                 ]);
             }
 
-        DB::commit();
+            DB::commit();
+            return redirect()->route('input-tiket.index')->with('success', 'OK');
 
-        return redirect()->route('input-tiket.index')->with('success', 'OK');
+            } catch (\Throwable $e) {
+                dd($e->getMessage());
+                DB::rollBack();
+            }
     }
 
+    public function rekap(Request $request)
+    {
+        $tanggal = $request->tanggal ?? Carbon::today()->toDateString();
+        $banks = Bank::all();
+        $ppobs = JenisPpob::orderBy('jenis_ppob')->get();
+        $jenisTiket = JenisTiket::orderBy('name_jenis')->get();
+        $subagents = Subagent::orderBy('nama')->get();
+        $transfer = [];
+
+        /* PENJUALAN (NON PIUTANG) */
+        $TTL_PENJUALAN = DB::table('nota')
+            ->whereDate('tgl_bayar', $tanggal)
+            ->where('jenis_bayar_id', '!=', '3')
+            ->sum('harga_bayar');
+
+        /* PIUTANG */
+        $PIUTANG = DB::table('nota')
+            ->whereDate('tgl_issued', $tanggal)
+            ->where('jenis_bayar_id', '3')
+            ->sum('harga_bayar');
+
+        /* PENGELUARAN */
+        $BIAYA = DB::table('biaya')
+            ->whereDate('tgl', $tanggal)
+            ->sum('biaya');
+
+        foreach ($banks as $bank) {
+            // TOTAL MASUK DARI NOTA (TRANSFER)
+            $notaMasuk = Nota::whereDate('tgl_bayar', $tanggal)
+                ->where('bank_id', $bank->id)
+                ->whereHas('jenisBayar', function ($q) {
+                    $q->where('jenis', 'bank');
+                })
+                ->sum('harga_bayar');
+
+            // TOTAL KELUAR DARI BIAYA (LAINNYA)
+            $biayaKeluar = Biaya::whereDate('tgl', $tanggal)
+                ->where('bank_id', $bank->id)
+                ->where('kategori', 'lainnya')
+                ->sum('biaya');
+
+            // NET TRANSFER PER BANK
+            $transfer[$bank->id] = $notaMasuk - $biayaKeluar;
+        }
+
+        /* AMBIL SEMUA JENIS TIKET + TOTAL TOP UP */
+        $topupJenisTiket = JenisTiket::leftJoin('biaya', function ($join) use ($tanggal) {
+                $join->on('jenis_tiket.id', '=', 'biaya.id_jenis_tiket')
+                    ->where('biaya.kategori', 'top_up')
+                    ->whereDate('biaya.tgl', $tanggal);
+            })
+            ->select(
+                'jenis_tiket.id',
+                'jenis_tiket.name_jenis',
+                'jenis_tiket.saldo',
+                DB::raw('COALESCE(SUM(biaya.biaya), 0) as total_topup')
+            )
+            ->groupBy('jenis_tiket.id', 'jenis_tiket.name_jenis', 'jenis_tiket.saldo')
+            ->orderBy('jenis_tiket.name_jenis')
+            ->get();
+
+        $cashFlowSubagent = DB::table('subagent_histories')
+            ->whereDate('tgl_issued', $tanggal)
+            ->sum('transaksi');
+
+
+        return view('rekap-penjualan', compact(
+            'TTL_PENJUALAN',
+            'PIUTANG',
+            'BIAYA',
+            'tanggal',
+            'banks',
+            'transfer',
+            'jenisTiket',
+            'topupJenisTiket',
+            'subagents',
+            'cashFlowSubagent',
+            'ppobs'
+        ));
+    }
+
+    public function cashFlow(Request $request)
+    {
+        $tanggalAwal  = $request->tanggal_awal ?? now()->toDateString();
+        $tanggalAkhir = $request->tanggal_akhir ?? now()->toDateString();
+
+        $banks      = Bank::all();
+        $ppobs      = JenisPpob::orderBy('jenis_ppob')->get();
+        $jenisTiket = JenisTiket::orderBy('name_jenis')->get();
+        $subagents  = Subagent::orderBy('nama')->get();
+
+        /* ================= PENJUALAN ================= */
+        $TTL_PENJUALAN = DB::table('nota')
+            ->whereBetween('tgl_bayar', [$tanggalAwal, $tanggalAkhir])
+            ->where('jenis_bayar_id', '!=', 3)
+            ->sum('harga_bayar');
+
+        /* ================= PIUTANG ================= */
+        $PIUTANG = DB::table('nota')
+            ->whereBetween('tgl_issued', [$tanggalAwal, $tanggalAkhir])
+            ->where('jenis_bayar_id', 3)
+            ->sum('harga_bayar');
+
+        /* ================= BIAYA ================= */
+        $BIAYA = DB::table('biaya')
+            ->whereBetween('tgl', [$tanggalAwal, $tanggalAkhir])
+            ->sum('biaya');
+
+        /* ================= TRANSFER PER BANK ================= */
+        $transfer = [];
+        foreach ($banks as $bank) {
+            $notaMasuk = Nota::whereBetween('tgl_bayar', [$tanggalAwal, $tanggalAkhir])
+                ->where('bank_id', $bank->id)
+                ->whereHas('jenisBayar', fn ($q) => $q->where('jenis', 'bank'))
+                ->sum('harga_bayar');
+
+            $biayaKeluar = Biaya::whereBetween('tgl', [$tanggalAwal, $tanggalAkhir])
+                ->where('bank_id', $bank->id)
+                ->where('kategori', 'lainnya')
+                ->sum('biaya');
+
+            $transfer[$bank->id] = $notaMasuk - $biayaKeluar;
+        }
+
+        /* ================= TOP UP TIKET ================= */
+        $topupJenisTiket = JenisTiket::leftJoin('biaya', function ($join) use ($tanggalAwal, $tanggalAkhir) {
+                $join->on('jenis_tiket.id', '=', 'biaya.id_jenis_tiket')
+                    ->where('biaya.kategori', 'top_up')
+                    ->whereBetween('biaya.tgl', [$tanggalAwal, $tanggalAkhir]);
+            })
+            ->select(
+                'jenis_tiket.id',
+                'jenis_tiket.name_jenis',
+                'jenis_tiket.saldo',
+                DB::raw('COALESCE(SUM(biaya.biaya), 0) as total_topup')
+            )
+            ->groupBy('jenis_tiket.id', 'jenis_tiket.name_jenis', 'jenis_tiket.saldo')
+            ->orderBy('jenis_tiket.name_jenis')
+            ->get();
+
+        /* ================= SUBAGENT CASH FLOW ================= */
+        $cashFlowSubagent = DB::table('subagent_histories')
+            ->whereBetween('tgl_issued', [$tanggalAwal, $tanggalAkhir])
+            ->sum('transaksi');
+
+        return view('cash-flow', compact(
+            'tanggalAwal',
+            'tanggalAkhir',
+            'TTL_PENJUALAN',
+            'PIUTANG',
+            'BIAYA',
+            'banks',
+            'transfer',
+            'jenisTiket',
+            'topupJenisTiket',
+            'subagents',
+            'cashFlowSubagent',
+            'ppobs'
+        ));
+    }
+
+    
+    public function rekapPenjualan(Request $request)
+    {
+        $tanggal = $request->tanggal ?? Carbon::today();
+
+        $TTL_PENJUALAN = Nota::whereDate('tgl_bayar', $tanggal)
+            ->whereHas('jenisBayar', fn($q) => $q->where('jenis', '!=', 'piutang'))
+            ->sum('harga_bayar');
+
+        $PIUTANG = Nota::whereDate('tgl_bayar', $tanggal)
+            ->whereHas('jenisBayar', fn($q) => $q->where('jenis', 'piutang'))
+            ->sum('harga_bayar');
+
+        $BIAYA = Biaya::whereDate('tgl', $tanggal)->sum('jumlah');
+
+        return view('rekap-penjualan', compact(
+            'TTL_PENJUALAN',
+            'PIUTANG',
+            'BIAYA'
+        ));
+    }
 
     /**
      * Fungsi untuk menyimpan data ke tabel nota secara fleksibel

@@ -15,30 +15,42 @@ class BukuBankController extends Controller
         $bankId = $request->bank_id ?? $bankList->first()?->id;
 
         /* ================= NOTA (KREDIT / MASUK) ================= */
-        $nota = DB::table('nota')
-            ->leftJoin('pembayaran_online', 'nota.pembayaran_online_id', '=', 'pembayaran_online.id')
-            ->leftJoin('jenis_ppob', 'pembayaran_online.jenis_ppob_id', '=', 'jenis_ppob.id')
-            ->leftJoin('tiket', 'nota.tiket_kode_booking', '=', 'tiket.kode_booking')
+        $mutasiTiket = DB::table('mutasi_tiket')
+            ->leftJoin('tiket', 'mutasi_tiket.tiket_kode_booking', '=', 'tiket.kode_booking')
             ->leftJoin('jenis_tiket', 'tiket.jenis_tiket_id', '=', 'jenis_tiket.id')
-            ->where('nota.jenis_bayar_id', 1) // BANK
-            ->where('nota.bank_id', $bankId)
-            ->whereNotNull('nota.tgl_bayar')
+            ->where('mutasi_tiket.jenis_bayar_id', 1) // BANK
+            ->where('mutasi_tiket.bank_id', $bankId)
+            ->whereNotNull('mutasi_tiket.tgl_bayar')
             ->select(
-                'nota.id as order_id',
-                'nota.tgl_bayar as tanggal',
-                'nota.harga_bayar as kredit',
+                'mutasi_tiket.id as order_id',
+                'mutasi_tiket.tgl_bayar as tanggal',
+                'mutasi_tiket.harga_bayar as kredit',
                 DB::raw('0 as debit'),
                 DB::raw("
-                    CASE
-                        WHEN nota.pembayaran_online_id IS NOT NULL
-                            THEN CONCAT('Pembayaran PPOB ', jenis_ppob.jenis_ppob)
-                        WHEN nota.tiket_kode_booking IS NOT NULL
-                            THEN CONCAT('Pembayaran Tiket ', jenis_tiket.name_jenis)
-                        ELSE 'Pembayaran'
-                    END as keterangan
+                    CONCAT('Pembayaran Tiket ', jenis_tiket.name_jenis)
+                    as keterangan
                 ")
             )
             ->get();
+
+        $ppobHistories = DB::table('ppob_histories')
+            ->leftJoin('jenis_ppob', 'ppob_histories.jenis_ppob_id', '=', 'jenis_ppob.id')
+            ->where('ppob_histories.jenis_bayar_id', 1) // BANK
+            ->where('ppob_histories.bank_id', $bankId)
+            ->whereNotNull('ppob_histories.harga_jual')
+            ->select(
+                'ppob_histories.id as order_id',
+                'ppob_histories.tgl as tanggal',
+                'ppob_histories.harga_jual as kredit',
+                DB::raw('0 as debit'),
+                DB::raw("
+                    CONCAT('Pembayaran PPOB ', jenis_ppob.jenis_ppob)
+                    as keterangan
+                ")
+            )
+            ->get();
+
+
 
 
         /* ================= BIAYA TOP UP (DEBIT / KELUAR) ================= */
@@ -88,7 +100,8 @@ class BukuBankController extends Controller
 
         /* ================= GABUNG & SORT ================= */
         $bukuBank = collect()
-            ->merge($nota)
+            ->merge($mutasiTiket)
+            ->merge($ppobHistories)
             ->merge($kredit)
             ->merge($debitTopupTiket)
             ->merge($debitLainnya)
