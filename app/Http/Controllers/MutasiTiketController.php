@@ -38,7 +38,7 @@ class MutasiTiketController extends Controller
             ->select(
                 'kode_booking as order_id',
                 'tgl_issued as tanggal',
-                DB::raw('-harga_jual as transaksi'),
+                DB::raw('-nta as transaksi'),
                 DB::raw("'Pembelian Tiket' as keterangan")
             )
             ->get();
