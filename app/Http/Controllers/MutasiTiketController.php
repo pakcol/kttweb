@@ -385,6 +385,22 @@ class MutasiTiketController extends Controller
         // Total Piutang
         $PIUTANG = $piutangMutasi + $piutangPpob;
 
+            /* JENIS BAYAR ID = 2 */
+        // Total dari mutasi_tiket dengan jenis_bayar_id = 2
+        $jenisBayarCashFlowMutasi = DB::table('mutasi_tiket')
+            ->where('jenis_bayar_id', 2)
+            ->where('tgl_bayar', $tanggal)
+            ->sum('harga_bayar');
+
+        // Total dari ppob_histories dengan jenis_bayar_id = 2
+        $jenisBayarCashFlowPpob = DB::table('ppob_histories')
+            ->where('jenis_bayar_id', 2)
+            ->where('tgl', $tanggal)
+            ->sum('harga_jual');
+
+        // Total jenis_bayar_id = 2
+        $CASH_FLOW = $jenisBayarCashFlowMutasi + $jenisBayarCashFlowPpob;
+
         /* PENGELUARAN */
         $BIAYA = DB::table('biaya')
             ->whereDate('tgl', $tanggal)
@@ -431,6 +447,7 @@ class MutasiTiketController extends Controller
             'TTL_PENJUALAN',
             'PIUTANG',
             'BIAYA',
+            'CASH_FLOW',
             'tanggal',
             'banks',
             'transfer',

@@ -117,7 +117,7 @@
 
     <div class="card cash">
         <h3>CASH</h3>
-        <input>
+        <input readonly value="{{ number_format($CASH_FLOW,0,',','.') }}">
     </div>
 
 </div>

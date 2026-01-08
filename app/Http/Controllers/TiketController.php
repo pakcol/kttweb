@@ -223,14 +223,6 @@ class TiketController extends Controller
         try {
             $kodeBookingInput = strtoupper($request->kode_booking);
 
-            // Kurangi saldo pada jenis_tiket
-            $jenisTiket = JenisTiket::findOrFail($request->jenis_tiket_id);
-            $jenisTiket->decrement('saldo', $request->nta);
-
-            // Tambah saldo pada jenis_bayar
-            $jenisBayar = JenisBayar::findOrFail($request->jenis_bayar_id);
-            $jenisBayar->increment('saldo', $request->harga_bayar);
-
             // 1️⃣ SIMPAN / UPDATE TIKET
             $tiket = Tiket::updateOrCreate(
                 ['kode_booking' => $kodeBookingInput],
@@ -273,7 +265,19 @@ class TiketController extends Controller
                 ]);
             }
 
-            
+            // Kurangi saldo pada jenis_tiket
+            $jenisTiket = JenisTiket::findOrFail($tiket->jenis_tiket_id);
+            $jenisTiket->decrement('saldo', $tiket->nta);
+
+            // Tambah saldo pada jenis_bayar
+            $jenisBayar = JenisBayar::findOrFail($request->jenis_bayar_id);
+            $jenisBayar->increment('saldo', $request->harga_jual);
+
+            // Jika jenis_bayar adalah BANK (id = 1), tambahkan saldo bank terkait
+            if ((int) $request->jenis_bayar_id === 1 && $request->bank_id) {
+                $bank = Bank::findOrFail($request->bank_id);
+                $bank->increment('saldo', $request->harga_jual);
+            }
 
 
             DB::commit();
