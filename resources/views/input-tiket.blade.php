@@ -183,6 +183,7 @@
                 <th>Komisi</th>
                 <th>Status</th>
                 <th>Jenis Tiket</th>
+                <th>Pembayaran</th>
                 <th>Keterangan</th>
                 <th style="text-align:center;">Delete</th>
             </tr>
@@ -206,6 +207,7 @@
                 <td>{{ number_format($t->komisi, 0, ',', '.') }}</td>
                 <td>{{ ucfirst($t->status) }}</td>
                 <td>{{ $t->jenisTiket->name_jenis ?? '-' }}</td>
+                <td>{{ $t->pembayaran_label }}</td>
                 <td>{{ $t->keterangan ?? '-' }}</td>
                 <td style="text-align:center;">
                     <form action="{{ route('input-tiket.destroy', $t->kode_booking) }}" method="POST">
@@ -424,7 +426,27 @@
         komisiInput
     }
 
+    document.getElementById('tgl_issued').addEventListener('change', function () {
+        const selectedDateTime = this.value;
 
+        // jika kosong → tampilkan semua
+        if (!selectedDateTime) {
+            document.querySelectorAll('#tiketTable tbody tr').forEach(row => {
+                row.style.display = '';
+            });
+            return;
+        }
+
+        // ambil tanggal saja (YYYY-MM-DD)
+        const selectedDate = selectedDateTime.split('T')[0];
+
+        document.querySelectorAll('#tiketTable tbody tr').forEach(row => {
+            // kolom ke-3 = Tgl Issued
+            const tableDate = row.children[2].innerText.trim();
+
+            row.style.display = (tableDate === selectedDate) ? '' : 'none';
+        });
+    });
 
     statusCustomer.addEventListener('change', function () {
         if (this.value === 'subagent') {
@@ -473,15 +495,18 @@
 
         /* ===================== LOAD NOTA ===================== */
         function loadTiketDetail(kodeBooking) {
-            fetch(`/nota/by-tiket/${kodeBooking}`, {
+            fetch(`tiket/by-tiket/${kodeBooking}`, {
                 headers: { 'Accept': 'application/json' }
             })
             .then(r => r.ok ? r.json() : Promise.reject(r.status))
             .then(d => {
                 $('jenis_bayar_id').value = d.jenis_bayar_id ?? '';
                 $('bank_id').value = d.bank_id ?? '';
+                $('nama_piutang').value = d.nama_piutang ?? '';
+
                 toggleJenisPembayaran();
             })
+
             .catch(err => console.error('Nota error:', err));
         }
 
@@ -521,7 +546,7 @@
             $('diskon').value = td[11].innerText.replace(/\./g, '');
             $('komisi').value = td[12].innerText.replace(/\./g, '');
             $('status').value = td[13].innerText.toLowerCase();
-            $('keterangan').value = td[15].innerText !== '-' ? td[15].innerText : '';
+            $('keterangan').value = td[16].innerText !== '-' ? td[16].innerText : '';
 
             toggleRefund();
             // tanggal

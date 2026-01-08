@@ -12,15 +12,31 @@ class JenisPpobSeeder extends Seeder
         JenisPpob::insert([
             [
                 'jenis_ppob' => 'PLN',
-                'saldo' => 0,
                 'keterangan' => 'Pembayaran dan pembelian token listrik PLN',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'jenis_ppob' => 'MKIOS',
-                'saldo' => 0,
-                'keterangan' => 'Pulsa dan paket data (MKIOS Telkomsel)',
+                'jenis_ppob' => 'BPJS',
+                'keterangan' => 'Pembayaran BPJS',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'jenis_ppob' => 'INDIHOME',
+                'keterangan' => 'Pembayaran WiFi',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'jenis_ppob' => 'PDAM',
+                'keterangan' => 'Pembayaran Air',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'jenis_ppob' => 'TOP_UP',
+                'keterangan' => 'Untuk Top Up PPOB.',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

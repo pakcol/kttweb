@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('nta'); // nta INT
             $table->integer('komisi'); // komisi INT
             $table->integer('harga_jual'); // harga_jual INT
-            $table->string('diskon', 45)->nullable(); // diskon VARCHAR(45)
+            $table->integer('diskon')->default(0);
             $table->string('rute', 45); // rute VARCHAR(45)
             $table->dateTime('tgl_flight'); // tgl_flight DATETIME
             $table->string('rute2', 45)->nullable(); // rute2 VARCHAR(45)

@@ -59,15 +59,34 @@ class Tiket extends Model
     }
     
     /**
-     * Relasi ke Nota
+     * Relasi ke Mutasi Tiket
      */
-    public function nota()
+    public function mutasiTiket()
     {
-        return $this->hasOne(Nota::class, 'tiket_kode_booking', 'kode_booking');
+        return $this->hasOne(MutasiTiket::class, 'tiket_kode_booking', 'kode_booking');
     }
+
 
     public function subagentHistories()
     {
         return $this->hasMany(SubagentHistory::class, 'kode_booking', 'kode_booking');
+    }
+
+    public function getPembayaranLabelAttribute()
+    {
+        // tidak ada mutasi / jenis bayar
+        if (!$this->mutasiTiket || !$this->mutasiTiket->jenisBayar) {
+            return '-';
+        }
+
+        $jenis = strtoupper($this->mutasiTiket->jenisBayar->jenis);
+
+        // khusus BANK → tambahkan nama bank
+        if ($jenis === 'BANK') {
+            return 'BANK ' . ($this->mutasiTiket->bank->name ?? '');
+        }
+
+        // selain BANK → tampilkan jenis saja
+        return $jenis;
     }
 }

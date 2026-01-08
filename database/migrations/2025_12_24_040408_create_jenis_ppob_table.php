@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('jenis_ppob', function (Blueprint $table) {
             $table->id();
             $table->string('jenis_ppob');
-            $table->decimal('saldo', 15, 2)->default(0);
             $table->text('keterangan')->nullable();
             $table->timestamps();
         });

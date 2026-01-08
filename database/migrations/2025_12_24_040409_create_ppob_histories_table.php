@@ -19,7 +19,9 @@ return new class extends Migration
             $table->integer('nta'); // nta INT
             $table->integer('harga_jual'); // harga_juai INT
             $table->decimal('insentif', 15, 2)->nullable();
+            $table->integer('top_up')->default(0);
             $table->integer('komisi')->default(0);
+            $table->integer('saldo')->default(0);
             $table->string('nama_piutang', 100)->nullable();
 
             // Relasi ke jenis bayar (nullable)

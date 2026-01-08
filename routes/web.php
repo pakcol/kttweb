@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\NotaController;
 use App\Http\Controllers\TiketController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\SubagentController;
@@ -41,6 +40,8 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('tiket')->name('tiket.')->group(function () {
         Route::get('/', [TiketController::class, 'index'])->name('index'); 
         Route::post('/store', [TiketController::class, 'store'])->name('store'); 
+        Route::get('by-tiket/{kode}', [TiketController::class, 'byTiket'])
+            ->name('by-tiket');
 
         // INDEX PIUTANG
         Route::get('/piutang', [TiketController::class, 'indexPiutang'])
@@ -120,7 +121,7 @@ Route::prefix('ppob')->name('ppob.')->group(function () {
     });
 
     // ======== MUTASI TIKET CONTROLLER ======== 
-    Route::get('/mutasi-tiket', [TiketController::class, 'indexMutasi'])->name('mutasi-tiket.index');
+    Route::get('/mutasi-tiket', [MutasiTiketController::class, 'index'])->name('mutasi-tiket.index');
     Route::post('/mutasi-tiket', [TiketController::class, 'topupMutasi'])->name('mutasi-tiket.topup');
     Route::put(
         '/mutasi-tiket/piutang/{id}',

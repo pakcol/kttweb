@@ -32,4 +32,10 @@ class Bank extends Model
     {
         return $this->hasMany(JenisBayar::class, 'bank_id');
     }
+
+    public function bank()
+    {
+        return $this->belongsTo(Bank::class, 'bank_id');
+    }
+
 }

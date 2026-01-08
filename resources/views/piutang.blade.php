@@ -12,8 +12,18 @@
             <input type="hidden" name="mutasi_id" id="mutasi_id">
 
             <div class="form-group">
+                <label>Nama Piutang</label>
+                <select id="nama_piutang_select" class="form-control">
+                    <option value="">ALL</option>
+                    @foreach($piutang->pluck('nama_piutang')->unique()->filter() as $nama)
+                        <option value="{{ $nama }}">{{ $nama }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="form-group">
                 <label>Kode Booking</label>
-                <input type="text" id="kode_booking" class="form-control" readonly>
+                <input type="text" id="kode_booking" class="form-control">
             </div>
 
             <div class="form-group">
@@ -60,10 +70,13 @@
             </thead>
             <tbody>
                 @foreach ($piutang as $row)
-                    <tr>
-                        <td>{{ $row->tgl_issued?->format('Y-m-d') }}</td>
+                    <tr 
+                        data-id="{{ $row->id }}"
+                        data-nama-piutang="{{ $row->nama_piutang }}"
+                    >
+                        <td>{{ $row->tiket->tgl_issued?->format('Y-m-d') }}</td>
 
-                        <td>{{ $row->nama ?? '-' }}</td>
+                        <td>{{ $row->nama_piutang }}</td>
                         <td>{{ $row->tiket_kode_booking }}</td>
 
                         <td>{{ $row->tiket->jenisTiket->name_jenis ?? '-' }}</td>
@@ -79,7 +92,7 @@
                                 data-kode="{{ $row->tiket_kode_booking }}"
                                 data-nominal="{{ $row->harga_bayar }}"
                             >
-                                Edit
+                                Bayar
                             </button>
                         </td>
                     </tr>
@@ -91,6 +104,21 @@
 </div>
 
 <script>
+    document.getElementById('nama_piutang_select').addEventListener('change', function () {
+        const selected = this.value;
+        const rows = document.querySelectorAll('.table tbody tr');
+
+        rows.forEach(row => {
+            const nama = row.dataset.namaPiutang;
+
+            if (!selected || selected === '') {
+                // ALL
+                row.style.display = '';
+            } else {
+                row.style.display = nama === selected ? '' : 'none';
+            }
+        });
+    });
     document.querySelectorAll('.btn-edit').forEach(btn => {
         btn.addEventListener('click', () => {
             const id = btn.dataset.id;

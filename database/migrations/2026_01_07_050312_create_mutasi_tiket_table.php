@@ -34,6 +34,7 @@ return new class extends Migration
                   ->nullable()
                   ->constrained('bank')
                   ->nullOnDelete();
+            $table->string('nama_piutang', 100)->nullable();
 
             // Keterangan tambahan
             $table->text('keterangan')->nullable();

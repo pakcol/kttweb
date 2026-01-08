@@ -13,13 +13,27 @@
 <div class="cash-flow-wrapper {{ $fromInputKas ? 'mode-tutup-kas' : '' }}">
     <div class="cash-flow-card">
 
-        <h2 class="page-title">CASH FLOW</h2>
+        <h2 class="page-title">
+            {{ $fromInputKas ? 'TUTUP KAS' : 'CASH FLOW' }}
+        </h2>
+
 
         {{-- FILTER --}}
         <form method="GET" class="search-form">
-            <label>LAPORAN PENJUALAN TANGGAL</label>
-            <input type="date" name="tanggal" value="{{ request('tanggal', date('Y-m-d')) }}">
-            <button type="submit">CARI</button>
+            <label>
+                {{ $fromInputKas ? 'TUTUP KAS TANGGAL' : 'LAPORAN PENJUALAN TANGGAL' }}
+            </label>
+
+            <input 
+                type="date"
+                name="tanggal"
+                value="{{ $fromInputKas ? date('Y-m-d') : request('tanggal', date('Y-m-d')) }}"
+                {{ $fromInputKas ? 'readonly' : '' }}
+            >
+
+            @if(!$fromInputKas)
+                <button type="submit">CARI</button>
+            @endif
         </form>
 
         {{-- GRID --}}
@@ -31,51 +45,48 @@
     {{-- BARIS 1 --}}
     <div class="card penjualan">
         <h3>PENJUALAN</h3>
-        <label>PENJUALAN</label><input>
-        <label>PIUTANG</label><input>
-        <label>PENGELUARAN</label><input>
-        <label>REFUND</label><input>
+        <label>PENJUALAN</label>
+        <input readonly value="{{ number_format($TTL_PENJUALAN,0,',','.') }}">
+        <label>PIUTANG</label>
+        <input readonly value="{{ number_format($PIUTANG,0,',','.') }}">
+        <label>PENGELUARAN</label>
+        <input readonly value="{{ number_format($BIAYA,0,',','.') }}">
+        <label>REFUND</label>
+        <input readonly value="0">
     </div>
 
     <div class="card saldo-airlines">
         <h3>SALDO AIRLINES</h3>
-        <label>CITILINK</label><input>
-        <label>GARUDA</label><input>
-        <label>QGCORNER</label><input>
-        <label>LION</label><input>
-        <label>SRIWIJAYA</label><input>
-        <label>TRANSNUSA</label><input>
-        <label>PELNI</label><input>
-        <label>AIR ASIA</label><input>
-        <label>DLU</label><input>
+
+        @foreach($jenisTiket as $jt)
+            <label>{{ strtoupper($jt->name_jenis) }}</label>
+            <input readonly value="{{ number_format($jt->saldo,0,',','.') }}">
+        @endforeach
     </div>
 
     <div class="card topup-airlines">
         <h3>TOP UP AIRLINES</h3>
-        <label>CITILINK</label><input>
-        <label>GARUDA</label><input>
-        <label>QGCORNER</label><input>
-        <label>LION</label><input>
-        <label>SRIWIJAYA</label><input>
-        <label>TRANSNUSA</label><input>
-        <label>PELNI</label><input>
-        <label>AIR ASIA</label><input>
-        <label>DLU</label><input>
+
+        @foreach($topupJenisTiket as $jt)
+            <label>{{ strtoupper($jt->name_jenis) }}</label>
+            <input readonly value="{{ number_format($jt->total_topup,0,',','.') }}">
+        @endforeach
     </div>
 
     {{-- BARIS 2 --}}
     <div class="card transfer">
         <h3>TRANSFER</h3>
-        <label>TRANSFER BCA</label><input>
-        <label>TRANSFER BRI</label><input>
-        <label>TRANSFER BNI</label><input>
-        <label>TRANSFER BTN</label><input>
+
+        @foreach($banks as $bank)
+            <label>TRANSFER {{ strtoupper($bank->namE) }}</label>
+            <input readonly value="{{ number_format($transfer[$bank->id] ?? 0,0,',','.') }}">
+        @endforeach
     </div>
 
     <div class="card pln">
-    <h3>PLN</h3>
+    <h3>PPOB</h3>
 
-    <label>PLN</label>
+    <label>PPOB</label>
     <input type="text">
 
     <div class="sisa-saldo-box">
@@ -86,8 +97,13 @@
 
     <div class="card sub-agent">
         <h3>SALDO SUB AGENT</h3>
-        <label>EVI</label><input>
+
+        @foreach($subagents as $sa)
+            <label>{{ strtoupper($sa->nama) }}</label>
+            <input readonly value="{{ number_format($sa->saldo,0,',','.') }}">
+        @endforeach
     </div>
+
 
     {{-- BARIS 3 --}}
     <div class="card setoran">

@@ -25,7 +25,7 @@
                         </select>
                         @error('bank') <span class="error">{{ $message }}</span> @enderror
     
-                        <label for="nominal">Nominal Top Up</label>
+                        <label for="nominal">Nominal Setor</label>
                         <input type="number" id="nominal" name="nominal" value="{{ old('nominal') }}" placeholder="Masukkan jumlah nominal top up" required>
                         @error('nominal') <span class="error">{{ $message }}</span> @enderror
                     </div>
@@ -54,15 +54,59 @@
     
             <!-- Tabel Data -->
             <form method="GET" action="{{ route('buku-bank.index') }}" class="filter-form">
-                <label for="bank_id">Pilih Bank</label>
-                <select name="bank_id" id="bank_id" onchange="this.form.submit()">
-                    @foreach ($bankList as $bank)
-                        <option value="{{ $bank->id }}" {{ $bank->id == $bankId ? 'selected' : '' }}>
-                            {{ $bank->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </form>
+    <label for="bank_id">Pilih Bank</label>
+    <select name="bank_id" id="bank_id" onchange="this.form.submit()">
+        @foreach ($bankList as $bank)
+            <option value="{{ $bank->id }}" {{ $bank->id == $bankId ? 'selected' : '' }}>
+                {{ $bank->name }}
+            </option>
+        @endforeach
+    </select>
+</form>
+
+<style>
+.filter-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.filter-form label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f3a3a;
+    white-space: nowrap;
+}
+
+.filter-form select {
+    padding: 8px 14px;
+    min-width: 140px;
+
+    border-radius: 10px;
+    border: 1.5px solid #cfe6f3;
+    background-color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+/* focus / aktif */
+.filter-form select:focus {
+    outline: none;
+    border-color: #2d9cdb;
+    box-shadow: 0 0 0 3px rgba(45, 156, 219, 0.25);
+}
+
+/* hover */
+.filter-form select:hover {
+    border-color: #2d9cdb;
+}
+</style>
 
             <div class="table-section">
                 <table>

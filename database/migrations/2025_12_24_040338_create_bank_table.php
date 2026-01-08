@@ -15,8 +15,6 @@ return new class extends Migration
             $table->id(); // id INT
             $table->string('name', 45); // name VARCHAR(45)
             $table->decimal('saldo', 15, 2); // saldo VARCHAR(45) as decimal
-            $table->decimal('credit', 15, 2)->default(0); // credit INT as decimal
-            $table->decimal('debit', 15, 2)->default(0); // debit INT as decimal
             $table->text('indicacs')->nullable(); // indicacs (as text)
             $table->timestamps();
         });

@@ -147,7 +147,7 @@
                 <tr>
                     <td>{{ $row->tgl }}</td>
                     <td>{{ $row->id_pel }}</td>
-                    <td>{{ $row->ppobJenis->jenis_ppob ?? '-' }}</td>
+                    <td>{{ $row->jenisPpob->jenis_ppob ?? '-' }}</td>
                     <td>{{ number_format($row->harga_jual) }}</td>
                     <td>{{ number_format($row->nta) }}</td>
                     <td>{{ $row->jenisBayar->jenis ?? '-' }}</td>

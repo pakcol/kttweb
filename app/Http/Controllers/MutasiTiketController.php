@@ -16,22 +16,80 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-
-
 class MutasiTiketController extends Controller
 {
     /**
      * Tampilkan daftar mutasi tiket
      */
-    public function index()
+    public function index(Request $request)
     {
-        $mutasi = MutasiTiket::with([
-            'tiket',
-            'jenisBayar',
-            'bank'
-        ])->orderBy('tgl_issued', 'desc')->get();
+        $jenisBayar = JenisBayar::where('id', '!=', 3)->get();
+        $bank = Bank::all();
 
-        return view('mutasi-tiket.index', compact('mutasi'));
+        // Dropdown jenis tiket
+        $jenisTiket = JenisTiket::orderBy('name_jenis')->get();
+        $jenisTiketId = $request->jenis_tiket_id ?? $jenisTiket->first()?->id;
+
+        /* ================= KELUAR (PEMBELIAN TIKET) ================= */
+        $nota = DB::table('tiket')
+            ->where('jenis_tiket_id', $jenisTiketId)
+            ->whereNotNull('tgl_issued')
+            ->select(
+                'kode_booking as order_id',
+                'tgl_issued as tanggal',
+                DB::raw('-harga_jual as transaksi'),
+                DB::raw("'Pembelian Tiket' as keterangan")
+            )
+            ->get();
+
+
+        /* ================= MASUK (TOP UP TIKET) ================= */
+        $biaya = DB::table('biaya')
+            ->where('kategori', 'top_up')
+            ->where('id_jenis_tiket', $jenisTiketId)
+            ->select(
+                'biaya.id as order_id',
+                'tgl as tanggal',
+                'biaya as transaksi',
+                DB::raw("COALESCE(keterangan, 'Top Up Tiket') as keterangan")
+            )
+            ->get();
+
+        /* ================= GABUNG & SORT ASC ================= */
+        $mutasi = collect()
+            ->merge($nota)
+            ->merge($biaya)
+            ->sortBy([
+                ['tanggal', 'asc'],
+                ['order_id', 'asc'],
+            ])
+            ->values();
+
+        /* ================= SALDO BERJALAN (DARI BAWAH KE ATAS) ================= */
+        $saldo = 0;
+
+        $mutasi = $mutasi
+            ->map(function ($row) use (&$saldo) {
+                $saldo += $row->transaksi;
+                $row->saldo = $saldo;
+                return $row;
+            })
+            ->values();
+
+        $tiketRefund = Tiket::with('jenisTiket')
+            ->where('status', 'issued')
+            ->orderBy('tgl_issued', 'desc')
+            ->get();
+
+        return view('mutasi', [
+            'jenisTiket'   => $jenisTiket,
+            'jenisTiketId' => $jenisTiketId,
+            'mutasi'       => $mutasi,
+            'saldoTiket'   => $saldo,
+            'jenisBayar'   => $jenisBayar,
+            'bank'         => $bank,
+            'tiketRefund'  => $tiketRefund,
+        ]);
     }
 
     /**
@@ -181,17 +239,22 @@ class MutasiTiketController extends Controller
         // --- JENIS TIKET ---
         foreach ($jenisTiket as $jt) {
             $penjualan['tiket'][$jt->name_jenis] = [
-                'penjualan' => DB::table('tiket')
-                    ->where('jenis_tiket_id', $jt->id)
-                    ->whereBetween('tgl_issued', [$tanggalAwal, $tanggalAkhir])
-                    ->sum('harga_jual'),
+                'penjualan' => DB::table('mutasi_tiket as m')
+                    ->join('tiket as t', 't.kode_booking', '=', 'm.tiket_kode_booking')
+                    ->where('t.jenis_tiket_id', $jt->id)
+                    ->whereNotNull('m.tgl_bayar')
+                    ->whereBetween(DB::raw('DATE(m.tgl_bayar)'), [$tanggalAwal, $tanggalAkhir])
+                    ->sum('m.harga_bayar'),
 
-                'nta' => DB::table('tiket')
-                    ->where('jenis_tiket_id', $jt->id)
-                    ->whereBetween('tgl_issued', [$tanggalAwal, $tanggalAkhir])
-                    ->sum('nta'),
+                'nta' => DB::table('tiket as t')
+                    ->join('mutasi_tiket as m', 'm.tiket_kode_booking', '=', 't.kode_booking')
+                    ->where('t.jenis_tiket_id', $jt->id)
+                    ->whereNotNull('m.tgl_bayar')
+                    ->whereBetween(DB::raw('DATE(m.tgl_bayar)'), [$tanggalAwal, $tanggalAkhir])
+                    ->sum('t.nta'),
             ];
         }
+
 
         // --- JENIS PPOB ---
         foreach ($ppobs as $ppob) {
@@ -216,25 +279,32 @@ class MutasiTiketController extends Controller
             + collect($penjualan['ppob'])->sum('nta');
 
         /* ================= DETAIL TABEL (TIKET ONLY) ================= */
-        $detailTiket = DB::table('tiket')
+        $detailTiket = DB::table('mutasi_tiket')
+            ->join('tiket', 'tiket.kode_booking', '=', 'mutasi_tiket.tiket_kode_booking')
             ->join('jenis_tiket', 'jenis_tiket.id', '=', 'tiket.jenis_tiket_id')
-            ->leftJoin('mutasi_tiket', 'mutasi_tiket.tiket_kode_booking', '=', 'tiket.kode_booking')
             ->leftJoin('jenis_bayar', 'jenis_bayar.id', '=', 'mutasi_tiket.jenis_bayar_id')
-            ->whereBetween('tiket.tgl_issued', [$tanggalAwal, $tanggalAkhir])
+            ->whereNotNull('mutasi_tiket.tgl_bayar')
+            ->whereBetween(
+                DB::raw('DATE(mutasi_tiket.tgl_bayar)'),
+                [$tanggalAwal, $tanggalAkhir]
+            )
             ->select(
-                DB::raw('DATE(tiket.tgl_issued) as tgl_issu'),
-                DB::raw('TIME(tiket.created_at) as jam'),
+                DB::raw('DATE(mutasi_tiket.tgl_bayar) as tgl_issu'),
+                DB::raw('TIME(mutasi_tiket.tgl_bayar) as jam'),
                 'tiket.kode_booking',
                 'jenis_tiket.name_jenis as jenis_tiket',
                 'tiket.name as nama',
                 'tiket.rute',
                 'tiket.tgl_flight',
-                'tiket.harga_jual as harga',
+                'tiket.rute2',
+                'tiket.tgl_flight2',
+                'mutasi_tiket.harga_bayar as harga',
                 'tiket.nta',
                 'jenis_bayar.jenis as pembayaran'
             )
-            ->orderBy('tiket.tgl_issued')
+            ->orderBy('mutasi_tiket.tgl_bayar')
             ->get();
+
 
 
         /* --- DATA PPOB --- */
@@ -376,65 +446,105 @@ class MutasiTiketController extends Controller
     {
         $tanggalAwal  = $request->tanggal_awal ?? now()->toDateString();
         $tanggalAkhir = $request->tanggal_akhir ?? now()->toDateString();
+        $jenisData    = $request->jenis_data ?? 'tiket';
 
-        $data = DB::table('mutasi_tiket')
-            ->join('tikets', 'tikets.id', '=', 'mutasi_tiket.tiket_id')
-            ->leftJoin('jenis_bayar', 'jenis_bayar.id', '=', 'mutasi_tiket.jenis_bayar_id')
-            ->leftJoin('bank', 'bank.id', '=', 'mutasi_tiket.bank_id')
-            ->whereBetween('mutasi_tiket.tgl_issued', [$tanggalAwal, $tanggalAkhir])
-            ->orderBy('mutasi_tiket.tgl_issued')
-            ->select(
-                'mutasi_tiket.tgl_issued',
-                'mutasi_tiket.tgl_bayar',
-                'tikets.kode_booking',
-                'tikets.airlines',
-                'tikets.nama',
-                'tikets.rute1',
-                'tikets.tgl_flight1',
-                'mutasi_tiket.harga_bayar',
-                'mutasi_tiket.insentif',
-                'jenis_bayar.jenis as jenis_bayar',
-                'bank.name as bank'
-            )
-            ->get();
+        /* ================= DATA TIKET ================= */
+        if ($jenisData === 'tiket') {
 
-        $response = new StreamedResponse(function () use ($data) {
+            $data = DB::table('mutasi_tiket')
+                ->join('tiket', 'tiket.kode_booking', '=', 'mutasi_tiket.tiket_kode_booking')
+                ->join('jenis_tiket', 'jenis_tiket.id', '=', 'tiket.jenis_tiket_id')
+                ->leftJoin('jenis_bayar', 'jenis_bayar.id', '=', 'mutasi_tiket.jenis_bayar_id')
+                ->leftJoin('bank', 'bank.id', '=', 'mutasi_tiket.bank_id')
+
+                // hanya transaksi yang SUDAH DIBAYAR
+                ->whereNotNull('mutasi_tiket.tgl_bayar')
+                ->whereBetween(
+                    DB::raw('DATE(mutasi_tiket.tgl_bayar)'),
+                    [$tanggalAwal, $tanggalAkhir]
+                )
+
+                ->orderBy('mutasi_tiket.tgl_bayar')
+
+                ->select([
+                    // ===== TANGGAL & JAM =====
+                    DB::raw('DATE(mutasi_tiket.tgl_bayar) as tgl_issued'),
+                    DB::raw('TIME(mutasi_tiket.tgl_bayar) as jam'),
+
+                    // ===== IDENTITAS =====
+                    'tiket.kode_booking',
+                    'jenis_tiket.name_jenis as airlines',
+                    'tiket.name as nama',
+
+                    // ===== RUTE =====
+                    'tiket.rute as rute1',
+                    'tiket.tgl_flight as tgl_flight1',
+                    'tiket.rute2',
+                    'tiket.tgl_flight2',
+
+                    // ===== KEUANGAN =====
+                    'mutasi_tiket.harga_bayar as harga',
+                    'tiket.nta',
+                    DB::raw('0 as diskon'),
+                    DB::raw('(mutasi_tiket.harga_bayar - tiket.nta) as komisi'),
+
+                    // ===== PEMBAYARAN =====
+                    'jenis_bayar.jenis as pembayaran',
+                    'mutasi_tiket.nama_piutang',
+
+                    DB::raw('DATE(mutasi_tiket.tgl_bayar) as tgl_realisasi'),
+                    DB::raw('TIME(mutasi_tiket.tgl_bayar) as jam_realisasi'),
+
+                    // ===== LAINNYA =====
+                    'tiket.nilai_refund',
+                    'mutasi_tiket.keterangan',
+                    DB::raw("'-' as usr")
+                ])
+                ->get();
+        }
+        
+
+        /* ================= EXPORT CSV ================= */
+        $response = new \Symfony\Component\HttpFoundation\StreamedResponse(function () use ($data) {
+
             $handle = fopen('php://output', 'w');
 
             fputcsv($handle, [
-                'TGL ISSU',
-                'TGL BAYAR',
-                'KODE BOOKING',
-                'AIRLINES',
-                'NAMA',
-                'RUTE',
-                'TGL FLIGHT',
-                'HARGA',
-                'INSENTIF',
-                'JENIS BAYAR',
-                'BANK'
+                'TGL_ISSUED','JAM','KODE_BOOKING','AIRLINES','NAMA',
+                'RUTE1','TGL_FLIGHT1','RUTE2','TGL_FLIGHT2',
+                'HARGA','NTA','DISKON','KOMISI','PEMBAYARAN',
+                'NAMA_PIUTANG','TGL_REALISASI','JAM_REALISASI',
+                'NILAI_REFUND','KETERANGAN','USR'
             ]);
 
             foreach ($data as $row) {
                 fputcsv($handle, [
                     $row->tgl_issued,
-                    $row->tgl_bayar,
+                    $row->jam,
                     $row->kode_booking,
                     $row->airlines,
                     $row->nama,
                     $row->rute1,
                     $row->tgl_flight1,
-                    $row->harga_bayar,
-                    $row->insentif,
-                    strtoupper($row->jenis_bayar ?? '-'),
-                    $row->bank ?? '-',
+                    $row->rute2,
+                    $row->tgl_flight2,
+                    $row->harga,
+                    $row->nta,
+                    $row->diskon,
+                    $row->komisi,
+                    strtoupper($row->pembayaran ?? '-'),
+                    $row->nama_piutang,
+                    $row->tgl_realisasi,
+                    $row->jam_realisasi,
+                    $row->nilai_refund,
+                    $row->keterangan,
+                    $row->usr
                 ]);
             }
 
             fclose($handle);
         });
 
-        // ✅ SET HEADER DENGAN CARA YANG BENAR
         $response->headers->set('Content-Type', 'text/csv');
         $response->headers->set(
             'Content-Disposition',
@@ -443,4 +553,5 @@ class MutasiTiketController extends Controller
 
         return $response;
     }
+
 }

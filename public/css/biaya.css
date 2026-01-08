@@ -184,3 +184,16 @@ tbody tr:hover {
     background-color: #f1f5f9;
 }
 
+.biaya-page {
+    width: 100vw;
+    min-height: 100vh;
+
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+
+    background: linear-gradient(90deg, #0f4d4d 0%, #b8d3d6 100%);
+    padding: 120px 0 100px; /* aman dari navbar */
+}

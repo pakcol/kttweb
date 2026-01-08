@@ -14,6 +14,7 @@ class JenisBayarSeeder extends Seeder
             'BANK',
             'CASH',
             'PIUTANG',
+            'REFUND',
         ];
 
         foreach ($jenisBayar as $nama) {

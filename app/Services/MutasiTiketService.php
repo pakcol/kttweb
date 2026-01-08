@@ -11,14 +11,15 @@ class MutasiTiketService
         return MutasiTiket::updateOrCreate(
             [
                 'tiket_kode_booking' => $data['tiket_kode_booking'],
-                'tgl_issued'         => $data['tgl_issued'],
             ],
             [
+                'tgl_issued'     => $data['tgl_issued'] ?? now(),
                 'tgl_bayar'      => $data['tgl_bayar'] ?? null,
                 'harga_bayar'    => $data['harga_bayar'],
                 'insentif'       => $data['insentif'] ?? 0,
                 'jenis_bayar_id' => $data['jenis_bayar_id'],
                 'bank_id'        => $data['bank_id'] ?? null,
+                'nama_piutang'   => $data['nama_piutang'] ?? null,
                 'keterangan'     => $data['keterangan'] ?? null,
             ]
         );

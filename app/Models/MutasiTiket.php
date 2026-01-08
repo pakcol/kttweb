@@ -18,6 +18,7 @@ class MutasiTiket extends Model
         'insentif',
         'jenis_bayar_id',
         'bank_id',
+        'nama_piutang',
         'keterangan',
     ];
 

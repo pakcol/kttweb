@@ -2,6 +2,22 @@
 <link rel="stylesheet" href="{{ asset('css/plnPiutang.css') }}">
 
 <section class="pln-piutang-container">
+    {{-- JUDUL PAGE --}}
+    <div class="piutang-title">
+        PPOB - PIUTANG
+    </div>
+
+<style>
+.piutang-title {
+    text-align: center;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #ffffff;
+    margin-bottom: 35px;
+}
+</style>
+
 
     {{-- FORM BAYAR PIUTANG --}}
     <form method="POST" action="" id="piutangForm" class="piutang-form">
@@ -41,10 +57,53 @@
         </div>
 
         <div class="form-right">
-            <button type="submit" class="btn-hijau">
-                BAYAR
-            </button>
-        </div>
+    <button type="submit" class="btn-hijau">
+        BAYAR
+    </button>
+</div>
+
+<style>
+/* ===============================
+   BUTTON BAYAR - INLINE FINAL
+================================ */
+.form-right .btn-hijau {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    background: linear-gradient(135deg, #06c167, #049f57);
+    border: none !important;
+    color: #ffffff !important;
+
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+
+    padding: 12px 34px;
+    border-radius: 14px;
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 20px rgba(6, 193, 103, 0.35),
+        inset 0 1px 0 rgba(255,255,255,0.25);
+
+    transition: all 0.25s ease;
+}
+
+.form-right .btn-hijau:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 14px 28px rgba(6, 193, 103, 0.45);
+}
+
+.form-right .btn-hijau:active {
+    transform: translateY(0);
+    box-shadow: 0 6px 14px rgba(6, 193, 103, 0.35);
+}
+</style>
+
     </form>
 
     {{-- TABEL PIUTANG --}}

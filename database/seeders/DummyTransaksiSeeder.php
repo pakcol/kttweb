@@ -3,112 +3,130 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Carbon\Carbon;
+use App\Models\Tiket;
+use App\Models\MutasiTiket;
+use App\Models\Bank;
+use App\Models\Subagent;
+use App\Models\SubagentHistory;
+use App\Models\JenisTiket;
 
 class DummyTransaksiSeeder extends Seeder
 {
     public function run(): void
     {
-        // SALDO AWAL JENIS TIKET
-        DB::table('jenis_tiket')->get()->each(function ($jt) {
-            DB::table('jenis_tiket')
-                ->where('id', $jt->id)
-                ->update([
-                    'saldo' => rand(50_000_000, 150_000_000),
-                ]);
-        });
+        /* =====================================================
+           1️⃣ SALDO AWAL FIXED (BANK, SUBAGENT, JENIS TIKET)
+        ===================================================== */
 
-        // SALDO AWAL JENIS PPOB
-        DB::table('jenis_ppob')->get()->each(function ($jp) {
-            DB::table('jenis_ppob')
-                ->where('id', $jp->id)
-                ->update([
-                    'saldo' => rand(20000000, 100000000),
-                ]);
-        });
+        // BANK
+        foreach (Bank::all() as $bank) {
+            $bank->update([
+                'saldo' => 10_000_000
+            ]);
+        }
+
+        // SUBAGENT
+        foreach (Subagent::all() as $subagent) {
+            $subagent->update([
+                'saldo' => 10_000_000
+            ]);
+        }
+
+        // JENIS TIKET
+        foreach (JenisTiket::all() as $jenis) {
+            $jenis->update([
+                'saldo'       => 10_000_000,
+                'keterangan'  => $jenis->keterangan ?? 'DUMMY JENIS TIKET'
+            ]);
+        }
+
+        /* =====================================================
+           2️⃣ TIKET + MUTASI TIKET (50 DATA)
+        ===================================================== */
 
         for ($i = 1; $i <= 50; $i++) {
 
-            DB::transaction(function () use ($i) {
-                 /* ===============================
-                   PILIH JENIS TIKET & PPOB
-                =============================== */
+            $harga = rand(800000, 2500000);
+            $nta   = $harga - rand(50000, 200000);
+            $jenisBayar = rand(1, 3); // 1 BANK | 2 CASH | 3 PIUTANG
 
-                $jenisTiket = DB::table('jenis_tiket')->inRandomOrder()->first();
-                $jenisPpob  = DB::table('jenis_ppob')->inRandomOrder()->first();
+            $kodeBooking = 'KB' . str_pad($i, 6, '0', STR_PAD_LEFT);
 
-                $nta = rand(500_000, 1_500_000);
-                $hargaJual = $nta + rand(50_000, 300_000);
+            // === TIKET ===
+            Tiket::create([
+                'kode_booking'   => $kodeBooking,
+                'tgl_issued'     => Carbon::now()->subDays(rand(1, 30)),
+                'name'           => 'PAX ' . $i,
+                'nta'            => $nta,
+                'harga_jual'     => $harga,
+                'diskon'         => 0,
+                'komisi'         => $harga - $nta,
+                'rute'           => 'KUP-JKT',
+                'tgl_flight'     => Carbon::now()->addDays(rand(1, 20)),
+                'rute2'          => null,
+                'tgl_flight2'    => null,
+                'status'         => 'issued',
+                'jenis_tiket_id' => JenisTiket::inRandomOrder()->first()->id,
+                'nilai_refund'   => null,
+                'tgl_realisasi'  => null,
+                'keterangan'     => 'DUMMY TIKET',
+            ]);
 
-                if ($jenisTiket->saldo < $hargaJual || $jenisPpob->saldo < $nta) {
-                    return;
-                }
+            // === MUTASI TIKET ===
+            MutasiTiket::create([
+                'tiket_kode_booking' => $kodeBooking,
+                'tgl_issued'         => Carbon::now()->toDateString(),
+                'tgl_bayar'          => $jenisBayar == 3 ? null : Carbon::now(),
+                'harga_bayar'        => $harga,
+                'insentif'           => rand(0, 50000),
+                'jenis_bayar_id'     => $jenisBayar,
+                'bank_id'            => $jenisBayar == 1 ? Bank::inRandomOrder()->first()->id : null,
+                'nama_piutang'       => $jenisBayar == 3 ? 'PIUTANG ' . $kodeBooking : null,
+                'keterangan'         => 'MUTASI TIKET',
+            ]);
+        }
 
-                // ===============================
-                // 1️⃣ TIKET
-                // ===============================
-                $kodeBooking = strtoupper(Str::random(10));
+        /* =====================================================
+           3️⃣ SUBAGENT HISTORIES
+           subagent_id = 1
+        ===================================================== */
 
-                DB::table('tiket')->insert([
-                    'kode_booking'   => $kodeBooking,
-                    'tgl_issued'     => now(),
-                    'name'           => fake()->name(),
-                    'nta'            => $nta,
-                    'harga_jual'     => $hargaJual,
-                    'komisi'         => $hargaJual - $nta,
-                    'diskon'         => rand(0, 100000),
-                    'rute'           => 'SUB-JKT',
-                    'tgl_flight'     => now()->addDays(rand(5, 40)),
-                    'status'         => 'issued',
-                    'jenis_tiket_id' => $jenisTiket->id,
-                    'created_at'     => now(),
-                    'updated_at'     => now(),
+        $subagent = Subagent::find(1);
+
+        if ($subagent) {
+
+            // TOP UP AWAL
+            for ($i = 0; $i < 3; $i++) {
+
+                $nominal = 1_000_000;
+
+                SubagentHistory::create([
+                    'tgl_issued'   => Carbon::now()->subDays(30),
+                    'subagent_id'  => $subagent->id,
+                    'kode_booking' => null,
+                    'status'       => 'top_up',
+                    'transaksi'    => $nominal,
                 ]);
 
-                // KURANGI SALDO JENIS TIKET
-                DB::table('jenis_tiket')
-                    ->where('id', $jenisTiket->id)
-                    ->decrement('saldo', $hargaJual);
+                $subagent->increment('saldo', $nominal);
+            }
 
-                // ===============================
-                // 2️⃣ PEMBAYARAN ONLINE (PPOB)
-                // ===============================
-                $pembayaranOnlineId = DB::table('pembayaran_online')->insertGetId([
-                    'tgl'           => now(),
-                    'id_pel'        => 'PEL' . rand(100000, 999999),
-                    'jenis_ppob_id' => $jenisPpob->id,
-                    'nta'           => $nta,
-                    'harga_jual'    => $hargaJual,
-                    'komisi'        => $hargaJual - $nta,
-                    'created_at'    => now(),
-                    'updated_at'    => now(),
+            // PESAN TIKET (POTONG SALDO)
+            $tickets = Tiket::take(20)->get();
+
+            foreach ($tickets as $tiket) {
+
+                SubagentHistory::create([
+                    'tgl_issued'   => $tiket->tgl_issued,
+                    'subagent_id'  => $subagent->id,
+                    'kode_booking' => $tiket->kode_booking,
+                    'status'       => 'pesan_tiket',
+                    'transaksi'    => -$tiket->harga_jual,
                 ]);
 
-                // KURANGI SALDO JENIS PPOB
-                DB::table('jenis_ppob')
-                    ->where('id', $jenisPpob->id)
-                    ->decrement('saldo', $nta);
-
-                // ===============================
-                // 3️⃣ NOTA
-                // ===============================
-                $jenisBayar = rand(1, 3); // 3 = PIUTANG
-
-                DB::table('nota')->insert([
-                    'nama'                 => fake()->name(),
-                    'tgl_issued'           => now(),
-                    'tgl_bayar'            => $jenisBayar === 3 ? null : now(),
-                    'harga_bayar'          => $hargaJual,
-                    'jenis_bayar_id'       => $jenisBayar,
-                    'bank_id'              => $jenisBayar === 1 ? rand(1, 5) : null,
-                    'pembayaran_online_id' => $pembayaranOnlineId,
-                    'tiket_kode_booking'   => $kodeBooking,
-                    'created_at'           => now(),
-                    'updated_at'           => now(),
-                ]);
-            });
+                $subagent->decrement('saldo', $tiket->harga_jual);
+            }
         }
     }
 }

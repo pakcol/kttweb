@@ -12,10 +12,32 @@
                 <label>TANGGAL</label>
                 <input type="date" name="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}" required>
             </div>
+
+            <div class="form-group refund-toggle">
+                <label>
+                    <input type="checkbox" id="is_refund" name="is_refund" value="1">
+                    REFUND TIKET
+                </label>
+            </div>
     
             <div class="form-group">
-                <label>TOP UP</label>
-                <input type="number" name="topup" placeholder="Masukkan nominal" value="{{ old('topup') }}" min="0" step="1">
+                <label id="labelTopup">TOP UP</label>
+                <input type="number" name="topup" id="nominal" placeholder="Masukkan nominal">
+            </div>
+
+            <div class="form-group" id="refundBookingContainer" style="display:none;">
+                <label>KODE BOOKING</label>
+                <select name="kode_booking" id="refund_kode_booking">
+                    <option value="">-- Pilih Kode Booking --</option>
+                    @foreach($tiketRefund as $t)
+                        <option 
+                            value="{{ $t->kode_booking }}"
+                            data-jenis="{{ $t->jenisTiket->name_jenis }}"
+                        >
+                            {{ $t->kode_booking }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
     
             <div class="form-group">
@@ -82,17 +104,72 @@
             </div>
         @endif
     
-        <form method="GET">
-            <select name="jenis_tiket_id" onchange="this.form.submit()">
-                <option value="">-- Pilih Jenis Tiket --</option>
-                @foreach ($jenisTiket as $j)
-                    <option value="{{ $j->id }}"
-                        {{ $jenisTiketId == $j->id ? 'selected' : '' }}>
-                        {{ $j->name_jenis }}
-                    </option>
-                @endforeach
-            </select>
-        </form>
+        <div class="filter-mutasi">
+    <form method="GET" class="filter-mutasi-form">
+        <label for="filter_jenis_tiket">FILTER JENIS TIKET</label>
+        <select id="filter_jenis_tiket"
+                name="jenis_tiket_id"
+                onchange="this.form.submit()"
+                class="text-uppercase">
+            <option value="">-- Pilih Jenis Tiket --</option>
+            @foreach ($jenisTiket as $j)
+                <option value="{{ $j->id }}"
+                    {{ $jenisTiketId == $j->id ? 'selected' : '' }}>
+                    {{ $j->name_jenis }}
+                </option>
+            @endforeach
+        </select>
+    </form>
+</div>
+
+<style>
+/* ===============================
+   FILTER MUTASI - COMPACT
+================================ */
+.filter-mutasi {
+    margin: 35px auto 25px; /* lebih dekat & ringan */
+    display: flex;
+    justify-content: center;
+}
+
+.filter-mutasi-form {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px; /* DIPERKECIL */
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.filter-mutasi-form label {
+    font-size: 12px; /* lebih kecil */
+    font-weight: 600;
+    color: #004d73;
+    letter-spacing: 0.4px;
+    white-space: nowrap;
+}
+
+.filter-mutasi-form select {
+    min-width: 160px; /* DIPERKECIL */
+    padding: 6px 10px; /* DIPERKECIL */
+    border-radius: 8px;
+    border: 1.4px solid #c2e0f2;
+    background: #ffffff;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.filter-mutasi-form select:focus {
+    border-color: #5ac8fa;
+    outline: none;
+    box-shadow: 0 0 4px rgba(90, 200, 250, 0.3);
+}
+</style>
+
+
+
 
         @if ($mutasi->isEmpty())
     <div class="text-center mt-3 fw-bold">
@@ -155,11 +232,18 @@
     </div>
     </section>
     
-    <script>
+<script>
     // Hitung karakter keterangan
     document.addEventListener('DOMContentLoaded', function() {
         const keteranganInput = document.querySelector('input[name="keterangan"]');
         const charCount = document.querySelector('.char-count');
+        const isRefund = document.getElementById('is_refund');
+        const labelTopup = document.getElementById('labelTopup');
+        const jenisBayar = document.getElementById('jenis_bayar_id');
+        const bankContainer = document.getElementById('bankContainer');
+        const refundBooking = document.getElementById('refundBookingContainer');
+        const keterangan = document.querySelector('input[name="keterangan"]');
+        const kodeBookingSelect = document.getElementById('refund_kode_booking');
         
         if (keteranganInput && charCount) {
             // Update karakter count saat input
@@ -172,6 +256,46 @@
             const initialCount = keteranganInput.value.length;
             charCount.textContent = `${initialCount}/30 karakter`;
         }
+
+        isRefund.addEventListener('change', function () {
+
+            if (this.checked) {
+                // MODE REFUND
+                labelTopup.innerText = 'REFUND';
+
+                jenisBayar.closest('.form-group').style.display = 'none';
+                jenisBayar.required = false;
+
+                bankContainer.style.display = 'none';
+
+                refundBooking.style.display = 'block';
+
+                keterangan.readOnly = true;
+
+            } else {
+                // MODE TOP UP NORMAL
+                labelTopup.innerText = 'TOP UP';
+
+                jenisBayar.closest('.form-group').style.display = 'block';
+                jenisBayar.required = true;
+
+                refundBooking.style.display = 'none';
+
+                keterangan.readOnly = false;
+                keterangan.value = '';
+            }
+        });
+
+        kodeBookingSelect.addEventListener('change', function () {
+            const selected = this.options[this.selectedIndex];
+            const jenis = selected.dataset.jenis;
+            const kode = this.value;
+
+            if (kode && jenis) {
+                keterangan.value = `Refund Tiket ${jenis} ${kode}`;
+            }
+        });
+
     });
     </script>
     
@@ -231,6 +355,6 @@
             jenisBayar.addEventListener('change', toggleBank);
             toggleBank(); // initial state
         });
-    </script>
+</script>
     
-    </x-layouts.app>
+</x-layouts.app>
