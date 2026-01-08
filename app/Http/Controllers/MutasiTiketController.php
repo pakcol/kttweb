@@ -23,7 +23,8 @@ class MutasiTiketController extends Controller
      */
     public function index(Request $request)
     {
-        $jenisBayar = JenisBayar::where('id', '!=', 3)->get();
+        // Sembunyikan jenis bayar id 3 (piutang) dan 4 (refund) dari input manual
+        $jenisBayar = JenisBayar::whereNotIn('id', [3, 4])->get();
         $bank = Bank::all();
 
         // Dropdown jenis tiket
@@ -44,13 +45,12 @@ class MutasiTiketController extends Controller
 
 
         /* ================= MASUK (TOP UP TIKET) ================= */
-        $biaya = DB::table('biaya')
-            ->where('kategori', 'top_up')
-            ->where('id_jenis_tiket', $jenisTiketId)
+        $topupHistories = DB::table('topup_histories')
+            ->where('jenis_tiket_id', $jenisTiketId)
             ->select(
-                'biaya.id as order_id',
-                'tgl as tanggal',
-                'biaya as transaksi',
+                'topup_histories.id as order_id',
+                'tgl_issued as tanggal',
+                'transaksi',
                 DB::raw("COALESCE(keterangan, 'Top Up Tiket') as keterangan")
             )
             ->get();
@@ -58,7 +58,7 @@ class MutasiTiketController extends Controller
         /* ================= GABUNG & SORT ASC ================= */
         $mutasi = collect()
             ->merge($nota)
-            ->merge($biaya)
+            ->merge($topupHistories)
             ->sortBy([
                 ['tanggal', 'asc'],
                 ['order_id', 'asc'],
@@ -98,7 +98,7 @@ class MutasiTiketController extends Controller
     public function create()
     {
         $tikets     = Tiket::orderBy('kode_booking')->get();
-        $jenisBayar = JenisBayar::all();
+        $jenisBayar = JenisBayar::where('id', '!=', 4)->get();
         $banks      = Bank::all();
 
         return view('mutasi-tiket.create', compact(
@@ -127,7 +127,7 @@ class MutasiTiketController extends Controller
     {
         $mutasi     = MutasiTiket::findOrFail($id);
         $tikets     = Tiket::orderBy('kode_booking')->get();
-        $jenisBayar = JenisBayar::all();
+        $jenisBayar = JenisBayar::where('id', '!=', 4)->get();
         $banks      = Bank::all();
 
         return view('mutasi-tiket.edit', compact(
@@ -184,7 +184,7 @@ class MutasiTiketController extends Controller
 
         return view('piutang', [
             'piutang' => $piutang,
-            'jenisBayarNonPiutang' => JenisBayar::where('id', '!=', 3)->get(), // exclude PIUTANG
+            'jenisBayarNonPiutang' => JenisBayar::whereNotIn('id', [3, 4])->get(), // exclude PIUTANG & REFUND
             'bank' => Bank::orderBy('name')->get(),
         ]);
     }

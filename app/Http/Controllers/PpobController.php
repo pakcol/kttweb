@@ -17,8 +17,8 @@ class PpobController extends Controller
         return view('ppob', [
             'ppob'       => PpobHistory::latest()->get(),
             'jenisPpob'  => JenisPpob::all(),
-            'jenisBayar' => JenisBayar::all(),
-            'jenisBayarNonPiutang' => JenisBayar::where('id', '!=', 3)->get(),
+            'jenisBayar' => JenisBayar::where('id', '!=', 4)->get(),
+            'jenisBayarNonPiutang' => JenisBayar::whereNotIn('id', [3, 4])->get(),
             'bank'       => Bank::all(),
         ]);
     }

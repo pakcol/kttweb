@@ -46,9 +46,11 @@
                     <option value="">-- Pilih Jenis Pembayaran --</option>
                     @if(isset($jenisBayar) && $jenisBayar->count() > 0)
                         @foreach($jenisBayar as $jenis)
-                            <option value="{{ $jenis->id }}">
-                                {{ $jenis->jenis }}
-                            </option>
+                            @if($jenis->id != 4) {{-- id 4 (refund) tidak bisa dipilih manual --}}
+                                <option value="{{ $jenis->id }}">
+                                    {{ $jenis->jenis }}
+                                </option>
+                            @endif
                         @endforeach
                     @else
                         <option value="" disabled>Data jenis pembayaran tidak ditemukan</option>

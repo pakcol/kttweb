@@ -17,7 +17,7 @@ class BiayaController extends Controller
             ->orderBy('tgl', 'desc')
             ->get();
 
-        $jenisBayar = JenisBayar::where('id', '!=', 3)->get();
+        $jenisBayar = JenisBayar::whereNotIn('id', [3, 4])->get();
 
         $bank = Bank::orderBy('name')->get();
 

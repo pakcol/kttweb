@@ -29,7 +29,9 @@
                         <option value="">-- Pilih Kategori PPOB --</option>
                             @if(isset($jenisPpob) && $jenisPpob->count() > 0)
                                 @foreach($jenisPpob as $jenis)
-                                    <option value="{{ $jenis->id }}">{{ $jenis->jenis_ppob }}</option>
+                                    @if($jenis->id != 5) {{-- sembunyikan jenis PPOB dengan id 5 --}}
+                                        <option value="{{ $jenis->id }}">{{ $jenis->jenis_ppob }}</option>
+                                    @endif
                                 @endforeach
                             @else
                                 <option value="" disabled>Data kategori ppob tidak ditemukan</option>

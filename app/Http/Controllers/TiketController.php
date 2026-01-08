@@ -29,8 +29,8 @@ class TiketController extends Controller
                 'mutasiTiket.jenisBayar',
                 'mutasiTiket.bank'
             ])->latest()->get(),
-            'jenisBayar'  => JenisBayar::all(),
-            'jenisBayarNonPiutang' => JenisBayar::where('id', '!=', 3)->get(),
+            'jenisBayar'  => JenisBayar::where('id', '!=', 4)->get(),
+            'jenisBayarNonPiutang' => JenisBayar::whereNotIn('id', [3, 4])->get(),
             'bank'        => Bank::all(),
             'jenisTiket'  => JenisTiket::all(),
         ]);
@@ -48,7 +48,7 @@ class TiketController extends Controller
 
         return view('piutang', [
             'piutang' => $piutang,
-            'jenisBayarNonPiutang' => JenisBayar::where('id', '!=', 3)->get(), // exclude PIUTANG
+            'jenisBayarNonPiutang' => JenisBayar::whereNotIn('id', [3, 4])->get(), // exclude PIUTANG & REFUND
             'bank' => Bank::orderBy('name')->get(),
         ]);
     }
@@ -57,7 +57,7 @@ class TiketController extends Controller
     {
         return view('find', [
             'tiket'      => Tiket::with(['jenisTiket'])->latest()->get(),
-            'jenisBayar'  => JenisBayar::all(),
+            'jenisBayar'  => JenisBayar::where('id', '!=', 4)->get(),
             'jenisTiket'  => JenisTiket::all(),
             'bank'        => Bank::all(),
         ]);
@@ -137,17 +137,15 @@ class TiketController extends Controller
                 $jenisTiket = JenisTiket::findOrFail($tiket->jenis_tiket_id);
                 $jenisTiket->increment('saldo', $nominalRefund);
 
-                // 2️⃣ SIMPAN MUTASI (REFUND = PLUS)
-                MutasiTiket::create([
-                    'tiket_kode_booking' => $tiket->kode_booking,
-                    'tgl_issued'         => $request->tanggal,
-                    'tgl_bayar'          => $request->tanggal,
-                    'harga_bayar'        => $nominalRefund,
-                    'insentif'           => 0,
-                    'jenis_bayar_id'     => 4, // REFUND
-                    'bank_id'            => null,
-                    'nama_piutang'       => null,
-                    'keterangan'         => 'Refund Tiket '
+                // 2️⃣ SIMPAN MUTASI TOPUP HISTORY (REFUND = PLUS)
+                TopupHistory::create([
+                    'tgl_issued'      => $request->tanggal,
+                    'transaksi'       => $nominalRefund,
+                    'jenis_tiket_id'  => $tiket->jenis_tiket_id,
+                    'subagent_id'     => null,
+                    'jenis_bayar_id'  => 4, // REFUND
+                    'bank_id'         => null,
+                    'keterangan'      => 'Refund Tiket '
                         . $tiket->jenisTiket->name_jenis
                         . ' '
                         . $tiket->kode_booking,
@@ -170,19 +168,17 @@ class TiketController extends Controller
                 $jenisTiket = JenisTiket::findOrFail($request->jenis_tiket_id);
                 $jenisTiket->increment('saldo', $request->topup);
 
-                // 2️⃣ SIMPAN MUTASI TOP UP
-                MutasiTiket::create([
-                    'tiket_kode_booking' => null,
-                    'tgl_issued'         => $request->tanggal,
-                    'tgl_bayar'          => $request->tanggal,
-                    'harga_bayar'        => $request->topup,
-                    'insentif'           => 0,
-                    'jenis_bayar_id'     => $request->jenis_bayar_id,
-                    'bank_id'            => $request->jenis_bayar_id == 1
+                // 2️⃣ SIMPAN MUTASI TOPUP HISTORY
+                TopupHistory::create([
+                    'tgl_issued'      => $request->tanggal,
+                    'transaksi'       => $request->topup,
+                    'jenis_tiket_id'  => $request->jenis_tiket_id,
+                    'subagent_id'     => null,
+                    'jenis_bayar_id'  => $request->jenis_bayar_id,
+                    'bank_id'         => $request->jenis_bayar_id == 1
                         ? $request->bank_id
                         : null,
-                    'nama_piutang'       => null,
-                    'keterangan'         => $request->keterangan,
+                    'keterangan'      => $request->keterangan,
                 ]);
             }
 

@@ -15,6 +15,7 @@ class TopupHistory extends Model
         'subagent_id',
         'jenis_bayar_id',
         'bank_id',
+        'keterangan',
     ];
 
     protected $casts = [
