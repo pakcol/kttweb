@@ -183,7 +183,12 @@ class TiketController extends Controller
             }
 
             DB::commit();
-            return back()->with('success', 'Mutasi berhasil disimpan');
+            return redirect()
+                ->route('mutasi-tiket.index', [
+                    'jenis_tiket_id' => $request->jenis_tiket_id
+                ])
+                ->with('success', 'Mutasi berhasil disimpan');
+
 
         } catch (\Throwable $e) {
             DB::rollBack();

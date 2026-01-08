@@ -185,6 +185,7 @@
                 <th>Jenis Tiket</th>
                 <th>Pembayaran</th>
                 <th>Keterangan</th>
+                <th>Nilai Refund</th>
                 <th style="text-align:center;">Delete</th>
             </tr>
         </thead>
@@ -209,6 +210,7 @@
                 <td>{{ $t->jenisTiket->name_jenis ?? '-' }}</td>
                 <td>{{ $t->pembayaran_label }}</td>
                 <td>{{ $t->keterangan ?? '-' }}</td>
+                <td>{{ number_format($t->nilai_refund ?? 0,0,',','.') }}</td>
                 <td style="text-align:center;">
                     <form action="{{ route('input-tiket.destroy', $t->kode_booking) }}" method="POST">
                         @csrf
@@ -678,6 +680,7 @@ function renderTable(data) {
             <td>${t.status}</td>
             <td>${t.jenis_tiket?.name_jenis ?? '-'}</td>
             <td>${t.keterangan ?? '-'}</td>
+            <td>${Number(t.nilai_refund ?? 0).toLocaleString('id-ID')}</td>  
             <td>-</td>
         </tr>`;
     });

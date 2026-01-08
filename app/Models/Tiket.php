@@ -30,7 +30,9 @@ class Tiket extends Model
         'tgl_flight2',
         'status',
         'jenis_tiket_id',
-        'keterangan'
+        'keterangan',
+        'nilai_refund',
+        'tgl_realisasi'
     ];
     
     protected $casts = [

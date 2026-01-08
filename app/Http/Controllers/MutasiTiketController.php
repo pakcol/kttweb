@@ -29,7 +29,8 @@ class MutasiTiketController extends Controller
 
         // Dropdown jenis tiket
         $jenisTiket = JenisTiket::orderBy('name_jenis')->get();
-        $jenisTiketId = $request->jenis_tiket_id ?? $jenisTiket->first()?->id;
+        $jenisTiketId = $request->get('jenis_tiket_id', $jenisTiket->first()?->id);
+
 
         /* ================= KELUAR (PEMBELIAN TIKET) ================= */
         $nota = DB::table('tiket')
@@ -112,13 +113,17 @@ class MutasiTiketController extends Controller
      * Simpan data mutasi tiket
      */
     public function store(Request $request, MutasiTiketService $service)
-    {
-        $service->create($request->all());
+{
+    $service->create($request->all());
 
-        return redirect()
-            ->route('mutasi-tiket.index')
-            ->with('success', 'Mutasi tiket berhasil ditambahkan');
-    }
+    return redirect()
+        ->route('mutasi-tiket.index', [
+            'jenis_tiket_id' => $request->jenis_tiket_id
+        ])
+        ->with('success', 'Mutasi berhasil disimpan');
+}
+
+
 
     /**
      * Form edit mutasi tiket
