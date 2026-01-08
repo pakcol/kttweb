@@ -37,5 +37,10 @@ class MutasiTiket extends Model
         return $this->belongsTo(Bank::class);
     }
 
+    public function jenisTiket()
+    {
+        return $this->hasOne(JenisTiket::class);
+    }
+
 
 }

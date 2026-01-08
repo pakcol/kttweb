@@ -78,7 +78,7 @@
         <h3>TRANSFER</h3>
 
         @foreach($banks as $bank)
-            <label>TRANSFER {{ strtoupper($bank->namE) }}</label>
+            <label>TRANSFER {{ strtoupper($bank->name) }}</label>
             <input readonly value="{{ number_format($transfer[$bank->id] ?? 0,0,',','.') }}">
         @endforeach
     </div>
@@ -106,12 +106,13 @@
 
 
     {{-- BARIS 3 --}}
-    <div class="card setoran">
+    <div class="card transfer">
         <h3>SETORAN</h3>
-        <label>SETORAN BCA</label><input>
-        <label>SETORAN BRI</label><input>
-        <label>SETORAN BNI</label><input>
-        <label>SETORAN MANDIRI</label><input>
+
+        @foreach($banks as $bank)
+            <label>SETORAN {{ strtoupper($bank->name) }}</label>
+            <input value="">
+        @endforeach
     </div>
 
     <div class="card cash">

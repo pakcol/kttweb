@@ -223,6 +223,14 @@ class TiketController extends Controller
         try {
             $kodeBookingInput = strtoupper($request->kode_booking);
 
+            // Kurangi saldo pada jenis_tiket
+            $jenisTiket = JenisTiket::findOrFail($request->jenis_tiket_id);
+            $jenisTiket->decrement('saldo', $request->nta);
+
+            // Tambah saldo pada jenis_bayar
+            $jenisBayar = JenisBayar::findOrFail($request->jenis_bayar_id);
+            $jenisBayar->increment('saldo', $request->harga_bayar);
+
             // 1️⃣ SIMPAN / UPDATE TIKET
             $tiket = Tiket::updateOrCreate(
                 ['kode_booking' => $kodeBookingInput],
@@ -264,6 +272,9 @@ class TiketController extends Controller
                     : null,
                 ]);
             }
+
+            
+
 
             DB::commit();
             return redirect()->route('input-tiket.index')->with('success', 'OK');
@@ -325,35 +336,21 @@ class TiketController extends Controller
      * Cari tiket berdasarkan kode booking atau nama
      */
     public function search(Request $request)
-{
-    $q = strtoupper($request->query('q'));
-
-    $query = Tiket::with('jenisTiket')
-        ->orderBy('tgl_issued', 'desc');
-
-    if ($q && strlen($q) >= 2) {
-        $query->where(function ($sub) use ($q) {
-            $sub->where('kode_booking', 'like', "%{$q}%")
-                ->orWhere('name', 'like', "%{$q}%");
-        });
-    }
-
-    return response()->json($query->get());
-}
-
-
-    /**
-     * Ambil data tiket berdasarkan ID (untuk AJAX)
-     */
-    public function getTiket($kode_booking)
     {
-        return response()->json(
-            Tiket::with(['jenisTiket'])
-                ->where('kode_booking', $kode_booking)
-                ->firstOrFail()
-        );
-    }
+        $q = strtoupper($request->query('q'));
 
+        $query = Tiket::with('jenisTiket')
+            ->orderBy('tgl_issued', 'desc');
+
+        if ($q && strlen($q) >= 2) {
+            $query->where(function ($sub) use ($q) {
+                $sub->where('kode_booking', 'like', "%{$q}%")
+                    ->orWhere('name', 'like', "%{$q}%");
+            });
+        }
+
+        return response()->json($query->get());
+    }
     /**
      * Menampilkan halaman invoice untuk tiket yang dipilih
      */
