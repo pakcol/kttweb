@@ -63,9 +63,14 @@
                     <th>Tanggal</th>
                     <th>Nama</th>
                     <th>Kode Booking</th>
-                    <th>Jenis Tiket</th>
+                    <th>Airlines</th>
                     <th>Nominal</th>
+                    <th>Rute</th>
+                    <th>Tgl Flight</th>
+                    <th>Rute 2</th>
+                    <th>Tgl Flight 2</th>
                     <th>Aksi</th>
+
                 </tr>
             </thead>
             <tbody>
@@ -84,6 +89,14 @@
                         <td>
                             {{ number_format($row->harga_bayar, 0, ',', '.') }}
                         </td>
+
+                         <td>{{ $row->tiket?->rute ?? '-' }}</td>
+
+                         <td>{{ $row->tiket?->tgl_flight?->format('Y-m-d') ?? '-' }}</td>
+
+                         <td>{{ $row->tiket?->rute2 ?? '-' }}</td>
+
+                         <td>{{ $row->tiket?->tgl_flight2?->format('Y-m-d') ?? '-' }}</td>    
 
                         <td>
                             <button 

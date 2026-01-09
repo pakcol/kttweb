@@ -87,8 +87,17 @@
         <table class="table-evi">
             <thead>
             <tr>
-                <th>Tanggal</th>
+                <th>Tgl Issued</th>
                 <th>Subagent</th>
+                <th>Kode Booking</th>
+                <th>Nama</th>
+                <th>Rute</th>
+                <th>Tgl Flight</th>
+                <th>Rute 2</th>
+                <th>Tgl Flight 2</th>
+                <th>Harga Jual</th>
+                <th>NTA</th>
+                <th>Saldo</th>
                 <th>Transaksi</th>
                 <th>Status</th>
             </tr>
@@ -96,8 +105,17 @@
             <tbody id="dataEvi">
                 @forelse($histories as $row)
                 <tr>
-                    <td>{{ \Carbon\Carbon::parse($row->tgl_issued)->format('d-m-Y H:i') }}</td>
+                     <td>{{ $row->tiket?->tgl_issued?->format('Y-m-d') ?? '-' }}</td>
                     <td>{{ $row->subagent->nama ?? '-' }}</td>
+                    <td>{{ $row->tiket?->kode_booking ?? '-' }}</td>
+                    <td>{{ $row->tiket?->name ?? '-' }}</td>
+                    <td>{{ $row->tiket?->rute ?? '-' }}</td>
+                    <td>{{ $row->tiket?->tgl_flight?->format('Y-m-d') ?? '-' }}</td>
+                    <td>{{ $row->tiket?->rute2 ?? '-' }}</td>
+                    <td>{{ $row->tiket?->tgl_flight2?->format('Y-m-d') ?? '-' }}</td>
+                    <td>{{ number_format($row->tiket?->harga_jual ?? 0, 0, ',', '.') }}</td>
+                    <td>{{ number_format($row->tiket?->nta ?? 0, 0, ',', '.') }}</td>
+                    <td>{{ number_format($row->subagent?->saldo ?? 0, 0, ',', '.') }}</td>
                     <td>{{ number_format($row->transaksi,0,',','.') }}</td>
                     <td>{{ $row->status }}</td>
                 </tr>
