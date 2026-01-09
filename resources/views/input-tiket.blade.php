@@ -129,19 +129,19 @@
                         </select>
                     </div>
                     
-                    <div class="form-group" id="namaPiutangContainer" style="display: none;">
-                        <label for="nama_piutang">NAMA PIUTANG</label>
-                        <input type="text" id="nama_piutang" name="nama_piutang" class="text-uppercase">
-                    </div>
-                    
-                    <div class="form-group" id="refundContainer" style="display:none;">
+                    <div class="form-group" id="refundValueContainer" style="display:none;">
                         <label for="nilai_refund">NILAI REFUND</label>
                         <input type="number" id="nilai_refund" name="nilai_refund" value="0">
                     </div>
 
-                    <div class="form-group" id="refundContainer" style="display:none;">
+                    <div class="form-group" id="refundDateContainer" style="display:none;">
                         <label for="tgl_realisasi">TGL REALISASI</label>
-                        <input type="datetime-local" id="tgl_realisasi" name="tgl_realisasi" value="{{ date('Y-m-d\TH:i') }}" required>
+                        <input type="datetime-local" id="tgl_realisasi" name="tgl_realisasi">
+                    </div>
+
+                    <div class="form-group" id="namaPiutangContainer" style="display:none;">
+                        <label for="nama_piutang">NAMA PIUTANG</label>
+                        <input type="text" id="nama_piutang" name="nama_piutang" class="text-uppercase">
                     </div>
 
                     <div class="button-group">
@@ -472,14 +472,15 @@
         };
 
         const toggleRefund = () => {
-            const status = $('status').value;
-            $('refundContainer').style.display = status === 'refunded' ? 'block' : 'none';
-            $('nilai_refund').required = status === 'refunded';
-            if (status !== 'refunded') {
-                $('nilai_refund').value = 0;
-            }
+            const isRefund = $('status').value === 'refunded';
 
+            $('refundValueContainer').style.display = isRefund ? 'block' : 'none';
+            $('refundDateContainer').style.display = isRefund ? 'block' : 'none';
+
+            $('nilai_refund').required = isRefund;
+            $('tgl_realisasi').required = isRefund;
         };
+
 
         $('status').addEventListener('change', toggleRefund);
 
@@ -506,10 +507,20 @@
                 $('bank_id').value = d.bank_id ?? '';
                 $('nama_piutang').value = d.nama_piutang ?? '';
 
+                // REFUND
+                $('nilai_refund').value = d.nilai_refund ?? 0;
+
+                if (d.tgl_realisasi) {
+                    $('tgl_realisasi').value = d.tgl_realisasi.replace(' ', 'T');
+                } else {
+                    $('tgl_realisasi').value = '';
+                }
+
                 toggleJenisPembayaran();
+                toggleRefund();
             })
 
-            .catch(err => console.error('Nota error:', err));
+            .catch(err => console.error('Mutasi error:', err));
         }
 
         function toggleCustomerType() {
