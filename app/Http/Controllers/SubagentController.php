@@ -35,6 +35,7 @@ class SubagentController extends Controller
             'name' => 'required',
             'rute' => 'required',
             'tgl_flight' => 'required',
+            'harga_jual' => 'required|numeric|min:1',
             'nta' => 'required|numeric|min:1',
             'jenis_tiket_id' => 'required',
             'subagent_id' => 'required'
@@ -59,7 +60,7 @@ class SubagentController extends Controller
                 'tgl_flight' => $request->tgl_flight,
                 'tgl_flight2' => $request->tgl_flight2,
                 'nta' => $request->nta,
-                'harga_jual' => $request->nta, // ⬅️ otomatis
+                'harga_jual' => $request->harga_jual, // ⬅️ otomatis
                 'diskon' => $request->diskon ?? 0,
                 'komisi' => $request->komisi ?? 0,
                 'status' => 'issued',
