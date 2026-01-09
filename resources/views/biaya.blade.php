@@ -44,19 +44,6 @@
                     </select>
                 </div>
 
-                <div class="form-group" id="bankContainer" style="display:none;">
-                    <label>Bank</label>
-                    <select name="bank_id" id="bank_id">
-                        <option value="">-- Pilih Bank --</option>
-                        @foreach($bank as $b)
-                            <option value="{{ $b->id }}">
-                                {{ $b->name }} (Saldo: Rp {{ number_format($b->saldo,0,',','.') }})
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-
                 <div class="form-group" id="bankInfo" style="display:none;">
                     <label>Bank</label>
                     <input type="text" id="bankName" readonly>
@@ -85,7 +72,6 @@
                         <th>Tanggal</th>
                         <th>Biaya</th>
                         <th>Jenis Bayar</th>
-                        <th>Bank</th>
                         <th>Keterangan</th>
                     </tr>
                 </thead>
@@ -95,7 +81,6 @@
                         <td>{{ $row->tgl->format('d-m-Y H:i') }}</td>
                         <td>Rp {{ number_format($row->biaya,0,',','.') }}</td>
                         <td>{{ $row->jenisBayar->jenis }}</td>
-                        <td>{{ $row->bank->name ?? '-' }}</td>
                         <td>{{ $row->keterangan }}</td>
                     </tr>
                     @empty
@@ -108,20 +93,4 @@
 
         </div>
     </section>
-    <script>
-        const jenis = document.getElementById('jenis_bayar_id');
-        const bankBox = document.getElementById('bankContainer');
-        const bankSelect = document.getElementById('bank_id');
-
-        jenis.addEventListener('change', function () {
-            if (this.value == '2') {
-                bankBox.style.display = 'none';
-                bankSelect.value = '';
-                bankSelect.required = false;
-            } else {
-                bankBox.style.display = 'block';
-                bankSelect.required = true;
-            }
-        });
-    </script>
 </x-layouts.app>

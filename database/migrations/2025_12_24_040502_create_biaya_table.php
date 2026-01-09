@@ -15,26 +15,7 @@ return new class extends Migration
             $table->id(); // id INT
             $table->dateTime('tgl'); // tgj DATETIME
             $table->integer('biaya'); // bisya INT
-   
-            // KATEGORI BIAYA
-            $table->enum('kategori', ['top_up', 'setoran', 'lainnya'])
-                ->default('lainnya');
-                
-            // RELASI OPSIONAL (SALAH SATU)
-            $table->foreignId('id_jenis_tiket')
-                  ->nullable()
-                  ->constrained('jenis_tiket')
-                  ->cascadeOnUpdate()
-                  ->nullOnDelete();
-
-            $table->foreignId('jenis_ppob_id')
-                  ->nullable()
-                  ->constrained('jenis_ppob')
-                  ->cascadeOnUpdate()
-                  ->nullOnDelete();
-
             $table->foreignId('jenis_bayar_id')->constrained('jenis_bayar'); // jenis_bayar_id INT
-            $table->foreignId('bank_id')->nullable()->constrained('bank'); // bank_id INT
             $table->string('keterangan', 200)->nullable(); // keterangan VARCHAR(200)
             $table->timestamps();
         });
