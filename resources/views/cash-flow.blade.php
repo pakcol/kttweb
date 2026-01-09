@@ -106,12 +106,12 @@
 
 
                 {{-- BARIS 3 --}}
-                <div class="card transfer">
+                <div class="card setoran">
                     <h3>SETORAN</h3>
 
                     @foreach($banks as $bank)
                         <label>SETORAN {{ strtoupper($bank->name) }}</label>
-                        <input value="">
+                        <input type="number" value="">
                     @endforeach
                 </div>
 
@@ -170,63 +170,38 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
 
+        const cashAwal = {{ $CASH_FLOW }};
+        const cashInput = document.querySelector('.card.cash input');
+        const setoranInputs = document.querySelectorAll('.card.setoran input');
+
         function hitungCash() {
             let totalSetoran = 0;
 
             setoranInputs.forEach(input => {
-                const val = parseInt(input.value.replace(/\./g, '')) || 0;
+                const val = parseInt(input.value.replace(/\D/g, '')) || 0;
                 totalSetoran += val;
             });
 
             const cashAkhir = cashAwal - totalSetoran;
-
             cashInput.value = cashAkhir.toLocaleString('id-ID');
         }
 
-        // Trigger saat Enter atau selesai input
         setoranInputs.forEach(input => {
-            input.addEventListener('keyup', function (e) {
+
+            // realtime
+            input.addEventListener('input', hitungCash);
+
+            // ENTER tidak submit form
+            input.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') {
+                    e.preventDefault();
                     hitungCash();
                 }
             });
-
-            input.addEventListener('change', hitungCash);
         });
 
-    });
-
-    function hitungCash() {
-        let cashAwal = {{ $CASH_FLOW }};
-        let totalSetoran = 0;
-
-        document.querySelectorAll('.card.transfer input').forEach(input => {
-            const val = parseInt(input.value.replace(/\D/g, '')) || 0;
-            totalSetoran += val;
-        });
-
-        const cashAkhir = cashAwal - totalSetoran;
-
-        document.querySelector('.card.cash input').value =
-            cashAkhir.toLocaleString('id-ID');
-    }
-
-    document.querySelectorAll('.card.transfer input').forEach(input => {
-        input.addEventListener('input', hitungCash);
-    });
-
-
-    document.querySelectorAll('.table-laporan tbody tr').forEach(row => {
-        row.addEventListener('click', function() {
-            const data = JSON.parse(this.dataset.record);
-            Object.keys(data).forEach(key => {
-                const input = document.querySelector(`[name="${key}"]`);
-                if (input) input.value = data[key];
-            });
-            document.getElementById('recordId').value = data.id ?? '';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
     });
 </script>
+
 
 </x-layouts.app>
