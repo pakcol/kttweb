@@ -120,10 +120,12 @@
                     <td>{{ $row->status }}</td>
                 </tr>
                 @empty
-                <tr>
-                    <td colspan="6">Belum ada data history subagent</td>
-                </tr>
-                @endforelse
+<tr>
+    <td colspan="13" class="empty-row">
+        Belum ada data history subagent
+    </td>
+</tr>
+@endforelse
             </tbody>
 
         </table>

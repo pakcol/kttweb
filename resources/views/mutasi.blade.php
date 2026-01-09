@@ -14,11 +14,13 @@
             </div>
 
             <div class="form-group refund-toggle">
-                <label>
-                    <input type="checkbox" id="is_refund" name="is_refund" value="1">
-                    REFUND TIKET
-                </label>
-            </div>
+    <label class="refund-checkbox">
+        <input type="checkbox" id="is_refund" name="is_refund" value="1">
+        <span class="checkmark"></span>
+        REFUND TIKET
+    </label>
+</div>
+
     
             <div class="form-group">
                 <label id="labelTopup">TOP UP</label>

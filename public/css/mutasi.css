@@ -96,6 +96,60 @@ body {
     margin-top: 6px;
 }
 
+.refund-toggle {
+    margin: 6px 0 10px;
+}
+
+.refund-checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #00334e;
+    cursor: pointer;
+    user-select: none;
+}
+
+.refund-checkbox input {
+    display: none;
+}
+
+.refund-checkbox .checkmark {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    border: 2px solid #5ac8fa;
+    background: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+}
+
+.refund-checkbox .checkmark::after {
+    content: "";
+    width: 6px;
+    height: 10px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) scale(0);
+    transition: transform 0.2s ease;
+}
+
+.refund-checkbox input:checked + .checkmark {
+    background: #5ac8fa;
+    border-color: #5ac8fa;
+}
+
+.refund-checkbox input:checked + .checkmark::after {
+    transform: rotate(45deg) scale(1);
+}
+
+.refund-checkbox:hover .checkmark {
+    box-shadow: 0 0 0 4px rgba(90, 200, 250, 0.18);
+}
+
 .btn-update {
     width: 250px;
     align-self: center;
