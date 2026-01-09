@@ -33,9 +33,12 @@ class Bank extends Model
         return $this->hasMany(JenisBayar::class, 'bank_id');
     }
 
-    public function bank()
+    /**
+     * Relasi ke MutasiBank (buku bank per bank)
+     */
+    public function mutasiBank(): HasMany
     {
-        return $this->belongsTo(Bank::class, 'bank_id');
+        return $this->hasMany(MutasiBank::class, 'bank_id');
     }
 
 }

@@ -74,8 +74,8 @@
                     <select id="bank_id" name="bank_id" class="form-control">
                         <option value="">-- Pilih Bank --</option>
                         @if(isset($bank) && $bank->count() > 0)
-                            @foreach($bank as $bank)
-                                <option value="{{ $bank->id }}">{{ $bank->name }}</option>
+                            @foreach($bank as $bk)
+                                <option value="{{ $bk->id }}">{{ $bk->name }}</option>
                             @endforeach
                         @endif
                     </select>
@@ -100,31 +100,44 @@
     <div class="topup-modal-content">
         <h3>Top Up Saldo PPOB</h3>
 
-        <div class="topup-form">
+        <form class="topup-form" method="POST" action="{{ route('ppob.topup') }}">
+            @csrf
             <div class="form-group">
-                <label>Jenis Top Up</label>
-                <select class="form-control">
-                    <option value="">-- Pilih Jenis --</option>
-                    <option>Saldo PPOB</option>
-                    <option>Saldo Agen</option>
-                </select>
+                <label>Tanggal Top Up</label>
+                <input type="date"
+                       name="tgl"
+                       class="form-control"
+                       value="{{ date('Y-m-d') }}"
+                       required>
             </div>
 
             <div class="form-group">
                 <label>Nominal Top Up</label>
-                <input type="number" class="form-control" placeholder="Masukkan nominal top up">
+                <input type="number"
+                       name="nominal"
+                       class="form-control"
+                       placeholder="Masukkan nominal top up"
+                       required>
             </div>
+            <select id="jenis_bayar_id" name="jenis_bayar_id" style="display: none;">
+                <option value="1"></option>
+            </select>
 
             <div class="form-group">
-                <label>Keterangan</label>
-                <textarea class="form-control" rows="3" placeholder="Contoh: Top up saldo PPOB"></textarea>
+                <label>Bank (sumber dana)</label>
+                <select name="bank_id" class="form-control" required>
+                    <option value="">-- Pilih Bank --</option>
+                    @foreach($bank as $b)
+                        <option value="{{ $b->id }}">{{ $b->name }}</option>
+                    @endforeach
+                </select>
             </div>
 
             <div class="topup-button-group">
-                <button type="button" class="btn btn-green">TOP UP</button>
+                <button type="submit" class="btn btn-green">TOP UP</button>
                 <button type="button" class="btn btn-red" onclick="closeTopup()">BATAL</button>
             </div>
-        </div>
+        </form>
     </div>
 </div>
 

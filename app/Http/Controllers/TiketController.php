@@ -8,6 +8,7 @@ use App\Models\JenisTiket;
 use App\Models\JenisBayar;
 use App\Models\Bank;
 use App\Models\MutasiTiket;
+use App\Models\MutasiBank;
 use App\Models\Subagent;
 use App\Models\TopupHistory;
 use Illuminate\Http\Request;
@@ -165,19 +166,46 @@ class TiketController extends Controller
             else {
 
                 // 1️⃣ TAMBAH SALDO JENIS TIKET
-                $jenisTiket = JenisTiket::findOrFail($request->jenis_tiket_id);
+                $jenisTiket = JenisTiket::lockForUpdate()->findOrFail($request->jenis_tiket_id);
                 $jenisTiket->increment('saldo', $request->topup);
 
-                // 2️⃣ SIMPAN MUTASI TOPUP HISTORY
+                // 2️⃣ KURANGI SALDO JENIS BAYAR (CASH / BANK / DLL)
+                $jenisBayar = JenisBayar::lockForUpdate()->findOrFail($request->jenis_bayar_id);
+                if ($jenisBayar->saldo < $request->topup) {
+                    throw new \Exception('Saldo ' . $jenisBayar->jenis . ' tidak mencukupi untuk top up.');
+                }
+                $jenisBayar->decrement('saldo', $request->topup);
+
+                // 3️⃣ JIKA BANK → KURANGI SALDO BANK
+                $bankId = $request->jenis_bayar_id == 1 ? $request->bank_id : null;
+                if ($bankId) {
+                    $bank = Bank::lockForUpdate()->findOrFail($bankId);
+                    if ($bank->saldo < $request->topup) {
+                        throw new \Exception('Saldo bank ' . $bank->name . ' tidak mencukupi untuk top up.');
+                    }
+                    // catat mutasi BANK: uang keluar untuk top up jenis_tiket
+                    $saldoSesudah = $bank->saldo - $request->topup;
+                    MutasiBank::create([
+                        'bank_id'    => $bank->id,
+                        'tanggal'    => $request->tanggal,
+                        'ref_type'   => 'TOPUP_JENIS_TIKET',
+                        'ref_id'     => $request->jenis_tiket_id,
+                        'debit'      => 0,
+                        'kredit'     => $request->topup,
+                        'saldo'      => $saldoSesudah,
+                        'keterangan' => $request->keterangan ?? 'Top up jenis tiket',
+                    ]);
+                    $bank->decrement('saldo', $request->topup);
+                }
+
+                // 4️⃣ SIMPAN MUTASI TOPUP HISTORY
                 TopupHistory::create([
                     'tgl_issued'      => $request->tanggal,
                     'transaksi'       => $request->topup,
                     'jenis_tiket_id'  => $request->jenis_tiket_id,
                     'subagent_id'     => null,
                     'jenis_bayar_id'  => $request->jenis_bayar_id,
-                    'bank_id'         => $request->jenis_bayar_id == 1
-                        ? $request->bank_id
-                        : null,
+                    'bank_id'         => $bankId,
                     'keterangan'      => $request->keterangan,
                 ]);
             }
@@ -374,11 +402,23 @@ class TiketController extends Controller
     public function byTiket($kode)
     {
         $mutasi = MutasiTiket::where('tiket_kode_booking', $kode)->first();
+        $tiket  = Tiket::where('kode_booking', $kode)->with('subagentHistories')->first();
+
+        // ambil subagent terakhir (jika ada history)
+        $subagentHistory = $tiket
+            ? $tiket->subagentHistories()->latest('tgl_issued')->first()
+            : null;
 
         return response()->json([
             'jenis_bayar_id' => $mutasi->jenis_bayar_id ?? null,
             'bank_id'        => $mutasi->bank_id ?? null,
             'nama_piutang'   => $mutasi->nama_piutang ?? null,
+            'nilai_refund'   => $tiket->nilai_refund ?? 0,
+            // dikirim dalam format yang mudah dipakai oleh input datetime-local di JS
+            'tgl_realisasi'  => $tiket && $tiket->tgl_realisasi
+                ? Carbon::parse($tiket->tgl_realisasi)->format('Y-m-d H:i:s')
+                : null,
+            'subagent_id'    => $subagentHistory->subagent_id ?? null,
         ]);
     }
 

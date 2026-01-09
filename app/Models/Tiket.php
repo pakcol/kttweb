@@ -21,7 +21,6 @@ class Tiket extends Model
         'name',
         'nta',
         'harga_jual',
-        'nta',
         'diskon',
         'komisi',
         'rute',
@@ -42,6 +41,8 @@ class Tiket extends Model
         'nta' => 'integer',
         'harga_jual' => 'integer',
         'diskon' => 'integer',
+        'nilai_refund' => 'integer',
+        'tgl_realisasi' => 'datetime',
     ];
     
     /**

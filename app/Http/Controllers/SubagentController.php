@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\JenisBayar;
 use App\Models\Bank;
-use App\Models\Biaya;
 use App\Models\Tiket;
 use App\Models\Subagent;
 use App\Models\SubagentHistory;
+use App\Models\TopupHistory;
+use App\Models\MutasiBank;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -94,28 +95,55 @@ class SubagentController extends Controller
 
         DB::transaction(function () use ($request) {
 
-            $subagent = Subagent::lockForUpdate()->findOrFail($request->subagent_id);
+            $subagent   = Subagent::lockForUpdate()->findOrFail($request->subagent_id);
+            $jenisBayar = JenisBayar::lockForUpdate()->findOrFail($request->jenis_bayar_id);
 
-            // 1️⃣ UPDATE SALDO SUBAGENT
-            $subagent->increment('saldo', $request->nominal);
+            // 1️⃣ KURANGI SALDO SUMBER DANA (JENIS BAYAR)
+            if ($jenisBayar->saldo < $request->nominal) {
+                throw new \Exception('Saldo ' . $jenisBayar->jenis . ' tidak mencukupi untuk top up subagent.');
+            }
+            $jenisBayar->decrement('saldo', $request->nominal);
 
-            // 2️⃣ JIKA BANK → TAMBAH SALDO BANK
-            if ($request->bank_id) {
-                Bank::where('id', $request->bank_id)
-                    ->increment('saldo', $request->nominal);
+            // 2️⃣ JIKA SUMBER DARI BANK → KURANGI SALDO BANK
+            $bankId = $request->jenis_bayar_id == 1 ? $request->bank_id : null;
+            if ($bankId) {
+                $bank = Bank::lockForUpdate()->findOrFail($bankId);
+                if ($bank->saldo < $request->nominal) {
+                    throw new \Exception('Saldo bank ' . $bank->name . ' tidak mencukupi untuk top up subagent.');
+                }
+
+                $saldoSesudahBank = $bank->saldo - $request->nominal;
+
+                // catat mutasi bank: uang keluar untuk top up subagent
+                MutasiBank::create([
+                    'bank_id'    => $bank->id,
+                    'tanggal'    => now(),
+                    'ref_type'   => 'TOPUP_SUBAGENT',
+                    'ref_id'     => $subagent->id,
+                    'debit'      => 0,
+                    'kredit'     => $request->nominal,
+                    'saldo'      => $saldoSesudahBank,
+                    'keterangan' => 'Top up saldo subagent ' . $subagent->nama,
+                ]);
+
+                $bank->decrement('saldo', $request->nominal);
             }
 
-            // 3️⃣ SIMPAN KE BIAYA (UANG MASUK)
-            Biaya::create([
-                'tgl' => now(),
-                'biaya' => $request->nominal,
-                'kategori' => 'top_up',
+            // 3️⃣ TAMBAH SALDO SUBAGENT
+            $subagent->increment('saldo', $request->nominal);
+
+            // 4️⃣ CATAT KE TOPUP HISTORIES
+            TopupHistory::create([
+                'tgl_issued'     => now(),
+                'transaksi'      => $request->nominal,
+                'jenis_tiket_id' => null,
+                'subagent_id'    => $subagent->id,
                 'jenis_bayar_id' => $request->jenis_bayar_id,
-                'bank_id' => $request->bank_id,
-                'keterangan' => 'Top Up Subagent: ' . $subagent->nama,
+                'bank_id'        => $bankId,
+                'keterangan'     => 'Top Up Subagent: ' . $subagent->nama,
             ]);
 
-            // 2️⃣ simpan history
+            // 5️⃣ simpan history ke subagent_histories
             SubagentHistory::create([
                 'tgl_issued'  => now(),
                 'subagent_id' => $subagent->id,

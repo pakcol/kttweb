@@ -406,8 +406,9 @@ class MutasiTiketController extends Controller
         // Total jenis_bayar_id = 2
         $CASH_FLOW = $jenisBayarCashFlowMutasi + $jenisBayarCashFlowPpob;
 
-        /* PENGELUARAN */
+        /* PENGELUARAN (HANYA KATEGORI 'lainnya') */
         $BIAYA = DB::table('biaya')
+            ->where('kategori', 'lainnya')
             ->whereDate('tgl', $tanggal)
             ->sum('biaya');
 
@@ -427,17 +428,16 @@ class MutasiTiketController extends Controller
             $transfer[$bank->id] = $tiketMasuk - $biayaKeluar;
         }
 
-        /* AMBIL SEMUA JENIS TIKET + TOTAL TOP UP */
-        $topupJenisTiket = JenisTiket::leftJoin('biaya', function ($join) use ($tanggal) {
-                $join->on('jenis_tiket.id', '=', 'biaya.id_jenis_tiket')
-                    ->where('biaya.kategori', 'top_up')
-                    ->whereDate('biaya.tgl', $tanggal);
+        /* AMBIL SEMUA JENIS TIKET + TOTAL TOP UP (DARI TOPUP_HISTORIES) */
+        $topupJenisTiket = JenisTiket::leftJoin('topup_histories', function ($join) use ($tanggal) {
+                $join->on('jenis_tiket.id', '=', 'topup_histories.jenis_tiket_id')
+                    ->whereDate('topup_histories.tgl_issued', $tanggal);
             })
             ->select(
                 'jenis_tiket.id',
                 'jenis_tiket.name_jenis',
                 'jenis_tiket.saldo',
-                DB::raw('COALESCE(SUM(biaya.biaya), 0) as total_topup')
+                DB::raw('COALESCE(SUM(topup_histories.transaksi), 0) as total_topup')
             )
             ->groupBy('jenis_tiket.id', 'jenis_tiket.name_jenis', 'jenis_tiket.saldo')
             ->orderBy('jenis_tiket.name_jenis')

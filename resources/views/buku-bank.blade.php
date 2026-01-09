@@ -114,8 +114,8 @@
                         <tr>
                             <th>Tanggal</th>
                             <th>Keterangan</th>
-                            <th class="text-right">Kredit</th>
                             <th class="text-right">Debit</th>
+                            <th class="text-right">Kredit</th>
                             <th class="text-right">Saldo</th>
                         </tr>
                     </thead>
@@ -124,16 +124,18 @@
                             <tr>
                                 <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d/m/Y') }}</td>
                                 <td>{{ $item->keterangan }}</td>
-                                <td class="text-right text-success">
-                                    @if ($item->kredit > 0)
-                                        Rp {{ number_format($item->kredit, 0, ',', '.') }}
+                            {{-- DEBIT = UANG MASUK (SETOR, UANG CUSTOMER, TOPUP MASUK) --}}
+                            <td class="text-right text-success">
+                                @if ($item->debit > 0)
+                                    Rp {{ number_format($item->debit, 0, ',', '.') }}
                                     @else
                                         -
                                     @endif
                                 </td>
-                                <td class="text-right text-danger">
-                                    @if ($item->debit > 0)
-                                        Rp {{ number_format($item->debit, 0, ',', '.') }}
+                            {{-- KREDIT = UANG KELUAR (TOP UP KE PPOB / JENIS TIKET / SUBAGENT) --}}
+                            <td class="text-right text-danger">
+                                @if ($item->kredit > 0)
+                                    Rp {{ number_format($item->kredit, 0, ',', '.') }}
                                     @else
                                         -
                                     @endif

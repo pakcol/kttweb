@@ -503,6 +503,18 @@
             })
             .then(r => r.ok ? r.json() : Promise.reject(r.status))
             .then(d => {
+                // ====== SUBAGENT / CUSTOMER ======
+                if (d.subagent_id) {
+                    // mode subagent
+                    statusCustomer.value = 'subagent';
+                    toggleCustomerType();
+                    $('subagent_id').value = d.subagent_id;
+                } else {
+                    // mode customer biasa
+                    statusCustomer.value = 'customer';
+                    toggleCustomerType();
+                }
+
                 $('jenis_bayar_id').value = d.jenis_bayar_id ?? '';
                 $('bank_id').value = d.bank_id ?? '';
                 $('nama_piutang').value = d.nama_piutang ?? '';

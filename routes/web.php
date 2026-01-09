@@ -95,6 +95,10 @@ Route::prefix('ppob')->name('ppob.')->group(function () {
     Route::post('/', [PpobController::class, 'store'])
         ->name('store');
 
+    // Top up PPOB (jenis_ppob_id = 5, id_pel = 0)
+    Route::post('/topup', [PpobController::class, 'topup'])
+        ->name('topup');
+
     // ✅ UPDATE / EDIT PPOB
     Route::put('/{id}', [PpobController::class, 'update'])
         ->name('update');

@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Bank;
-use App\Models\Biaya;
+use App\Models\TopupHistory;
+use App\Models\MutasiBank;
+use App\Models\JenisBayar;
 use Illuminate\Support\Facades\DB;
 
 class BukuBankController extends Controller
@@ -14,115 +16,22 @@ class BukuBankController extends Controller
         $bankList = Bank::orderBy('name')->get();
         $bankId = $request->bank_id ?? $bankList->first()?->id;
 
-        /* ================= NOTA (KREDIT / MASUK) ================= */
-        $mutasiTiket = DB::table('mutasi_tiket')
-            ->leftJoin('tiket', 'mutasi_tiket.tiket_kode_booking', '=', 'tiket.kode_booking')
-            ->leftJoin('jenis_tiket', 'tiket.jenis_tiket_id', '=', 'jenis_tiket.id')
-            ->where('mutasi_tiket.jenis_bayar_id', 1) // BANK
-            ->where('mutasi_tiket.bank_id', $bankId)
-            ->whereNotNull('mutasi_tiket.tgl_bayar')
-            ->select(
-                'mutasi_tiket.id as order_id',
-                'mutasi_tiket.tgl_bayar as tanggal',
-                'mutasi_tiket.harga_bayar as kredit',
-                DB::raw('0 as debit'),
-                DB::raw("
-                    CONCAT('Pembayaran Tiket ', jenis_tiket.name_jenis, ' atas nama ', tiket.name)
-                    as keterangan
-                ")
-            )
-            ->get();
-
-        $ppobHistories = DB::table('ppob_histories')
-            ->leftJoin('jenis_ppob', 'ppob_histories.jenis_ppob_id', '=', 'jenis_ppob.id')
-            ->where('ppob_histories.jenis_bayar_id', 1) // BANK
-            ->where('ppob_histories.bank_id', $bankId)
-            ->whereNotNull('ppob_histories.harga_jual')
-            ->select(
-                'ppob_histories.id as order_id',
-                'ppob_histories.tgl as tanggal',
-                'ppob_histories.harga_jual as kredit',
-                DB::raw('0 as debit'),
-                DB::raw("
-                    CONCAT('Pembayaran PPOB ', jenis_ppob.jenis_ppob)
-                    as keterangan
-                ")
-            )
-            ->get();
-
-
-
-
-        /* ================= BIAYA TOP UP (DEBIT / KELUAR) ================= */
-
-        $kredit = DB::table('biaya')
-            ->where('kategori', 'top_up')
-            ->whereNull('id_jenis_tiket')
-            ->where('jenis_bayar_id', 1) // BANK
+        /* ================= BUKU BANK DARI TABEL MUTASI_BANK ================= */
+        $bukuBank = DB::table('mutasi_bank')
             ->where('bank_id', $bankId)
-            ->select(
-                'biaya.id as order_id',
-                'tgl as tanggal',
-                'biaya as kredit',
-                DB::raw('0 as debit'),
-                'keterangan'
-            )
-            ->get();
-
-        $debitTopupTiket = DB::table('biaya')
-            ->where('kategori', 'top_up')
-            ->whereNotNull('id_jenis_tiket')
-            ->where('jenis_bayar_id', 1) // BANK
-            ->where('bank_id', $bankId)
-            ->select(
-                'biaya.id as order_id',
-                'tgl as tanggal',
-                DB::raw('0 as kredit'),
-                'biaya as debit',
-                'keterangan'
-            )
+            ->orderBy('tanggal')
+            ->orderBy('id')
             ->get();
 
 
-        $debitLainnya = DB::table('biaya')
-            ->where('kategori', 'lainnya')
-            ->where('jenis_bayar_id', 1) // BANK
-            ->where('bank_id', $bankId)
-            ->select(
-                'biaya.id as order_id',
-                'tgl as tanggal',
-                DB::raw('0 as kredit'),
-                'biaya as debit',
-                'keterangan'
-            )
-            ->get();
 
-
-        /* ================= GABUNG & SORT ================= */
-        $bukuBank = collect()
-            ->merge($mutasiTiket)
-            ->merge($ppobHistories)
-            ->merge($kredit)
-            ->merge($debitTopupTiket)
-            ->merge($debitLainnya)
-            ->sortBy([
-                ['tanggal', 'asc'],
-                ['order_id', 'asc'],
-            ])
-            ->values();
-
-
-
-        /* ================= SALDO BERJALAN ================= */
+        /* ================= SALDO BERJALAN (BERDASARKAN KOLOM DEBIT/KREDIT) ================= */
         $saldo = 0;
-
-        $bukuBank = $bukuBank
-            ->map(function ($row) use (&$saldo) {
-                $saldo += ($row->kredit ?? 0) - ($row->debit ?? 0);
+        $bukuBank = $bukuBank->map(function ($row) use (&$saldo) {
+                $saldo += ($row->debit ?? 0) - ($row->kredit ?? 0);
                 $row->saldo = $saldo;
                 return $row;
-            })
-            ->values();
+            });
 
 
         return view('buku-bank', [
@@ -147,20 +56,38 @@ class BukuBankController extends Controller
 
             $bank = Bank::lockForUpdate()->findOrFail($request->bank_id);
 
-            // 1️⃣ Update saldo bank
-            $bank->update([
-                'saldo' => $bank->saldo + $request->nominal
+            // 1️⃣ Hitung saldo bank sesudah setor
+            $saldoSesudah = $bank->saldo + $request->nominal;
+
+            // 1️⃣ Simpan history ke TOPUP_HISTORIES
+            TopupHistory::create([
+                'tgl_issued'     => now(),
+                'transaksi'      => $request->nominal,
+                'jenis_tiket_id' => null,
+                'subagent_id'    => null,
+                'jenis_bayar_id' => 1, // BANK
+                'bank_id'        => $bank->id,
+                'keterangan'     => $request->keterangan ?? 'Top up saldo bank '.$bank->name,
             ]);
 
-            // 2️⃣ Simpan history ke tabel BIAYA
-            Biaya::create([
-                'tgl' => now(),
-                'biaya' => $request->nominal,
-                'kategori' => 'top_up',
-                'jenis_bayar_id' => 1,
-                'bank_id' => $bank->id,
+            // 2️⃣ Catat ke MUTASI_BANK (uang MASUK ke bank)
+            MutasiBank::create([
+                'bank_id'    => $bank->id,
+                'tanggal'    => now(),
+                'debit'      => $request->nominal,
+                'kredit'     => 0,
+                'saldo'      => $saldoSesudah,
                 'keterangan' => $request->keterangan ?? 'Top up saldo bank '.$bank->name,
             ]);
+
+            // 3️⃣ Update saldo bank
+            $bank->update([
+                'saldo' => $saldoSesudah,
+            ]);
+
+            // 4️⃣ Ikutkan saldo pada jenis_bayar BANK (id = 1) bertambah
+            $jenisBayarBank = JenisBayar::lockForUpdate()->findOrFail(1);
+            $jenisBayarBank->increment('saldo', $request->nominal);
         });
 
         return redirect()
