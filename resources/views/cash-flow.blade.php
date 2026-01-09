@@ -42,85 +42,85 @@
 
             <div class="form-grid cashflow-grid">
 
-    {{-- BARIS 1 --}}
-    <div class="card penjualan">
-        <h3>PENJUALAN</h3>
-        <label>PENJUALAN</label>
-        <input readonly value="{{ number_format($TTL_PENJUALAN,0,',','.') }}">
-        <label>PIUTANG</label>
-        <input readonly value="{{ number_format($PIUTANG,0,',','.') }}">
-        <label>PENGELUARAN</label>
-        <input readonly value="{{ number_format($BIAYA,0,',','.') }}">
-        <label>REFUND</label>
-        <input readonly value="0">
-    </div>
+                {{-- BARIS 1 --}}
+                <div class="card penjualan">
+                    <h3>PENJUALAN</h3>
+                    <label>PENJUALAN</label>
+                    <input readonly value="{{ number_format($TTL_PENJUALAN,0,',','.') }}">
+                    <label>PIUTANG</label>
+                    <input readonly value="{{ number_format($PIUTANG,0,',','.') }}">
+                    <label>PENGELUARAN</label>
+                    <input readonly value="{{ number_format($BIAYA,0,',','.') }}">
+                    <label>REFUND</label>
+                    <input readonly value="0">
+                </div>
 
-    <div class="card saldo-airlines">
-        <h3>SALDO AIRLINES</h3>
+                <div class="card saldo-airlines">
+                    <h3>SALDO AIRLINES</h3>
 
-        @foreach($jenisTiket as $jt)
-            <label>{{ strtoupper($jt->name_jenis) }}</label>
-            <input readonly value="{{ number_format($jt->saldo,0,',','.') }}">
-        @endforeach
-    </div>
+                    @foreach($jenisTiket as $jt)
+                        <label>{{ strtoupper($jt->name_jenis) }}</label>
+                        <input readonly value="{{ number_format($jt->saldo,0,',','.') }}">
+                    @endforeach
+                </div>
 
-    <div class="card topup-airlines">
-        <h3>TOP UP AIRLINES</h3>
+                <div class="card topup-airlines">
+                    <h3>TOP UP AIRLINES</h3>
 
-        @foreach($topupJenisTiket as $jt)
-            <label>{{ strtoupper($jt->name_jenis) }}</label>
-            <input readonly value="{{ number_format($jt->total_topup,0,',','.') }}">
-        @endforeach
-    </div>
+                    @foreach($topupJenisTiket as $jt)
+                        <label>{{ strtoupper($jt->name_jenis) }}</label>
+                        <input readonly value="{{ number_format($jt->total_topup,0,',','.') }}">
+                    @endforeach
+                </div>
 
-    {{-- BARIS 2 --}}
-    <div class="card transfer">
-        <h3>TRANSFER</h3>
+                {{-- BARIS 2 --}}
+                <div class="card transfer">
+                    <h3>TRANSFER</h3>
 
-        @foreach($banks as $bank)
-            <label>TRANSFER {{ strtoupper($bank->name) }}</label>
-            <input readonly value="{{ number_format($transfer[$bank->id] ?? 0,0,',','.') }}">
-        @endforeach
-    </div>
+                    @foreach($banks as $bank)
+                        <label>TRANSFER {{ strtoupper($bank->name) }}</label>
+                        <input readonly value="{{ number_format($transfer[$bank->id] ?? 0,0,',','.') }}">
+                    @endforeach
+                </div>
 
-    <div class="card pln">
-    <h3>PPOB</h3>
+                <div class="card pln">
+                <h3>PPOB</h3>
 
-    <label>PPOB</label>
-    <input type="text">
+                <label>TOTAL PENJUALAN</label>
+                <input readonly value="{{ number_format($TOTAL_PENJUALAN_PPOB,0,',','.') }}">
 
-    <div class="sisa-saldo-box">
-        <label>SISA SALDO</label>
-        <input type="text">
-    </div>
-</div>
+                <div class="sisa-saldo-box">
+                    <label>SISA SALDO</label>
+                    <input readonly value="{{ number_format($SISA_SALDO_PPOB,0,',','.') }}">
+                </div>
+            </div>
 
-    <div class="card sub-agent">
-        <h3>SALDO SUB AGENT</h3>
+                <div class="card sub-agent">
+                    <h3>SALDO SUB AGENT</h3>
 
-        @foreach($subagents as $sa)
-            <label>{{ strtoupper($sa->nama) }}</label>
-            <input readonly value="{{ number_format($sa->saldo,0,',','.') }}">
-        @endforeach
-    </div>
+                    @foreach($subagents as $sa)
+                        <label>{{ strtoupper($sa->nama) }}</label>
+                        <input readonly value="{{ number_format($sa->saldo,0,',','.') }}">
+                    @endforeach
+                </div>
 
 
-    {{-- BARIS 3 --}}
-    <div class="card transfer">
-        <h3>SETORAN</h3>
+                {{-- BARIS 3 --}}
+                <div class="card transfer">
+                    <h3>SETORAN</h3>
 
-        @foreach($banks as $bank)
-            <label>SETORAN {{ strtoupper($bank->name) }}</label>
-            <input value="">
-        @endforeach
-    </div>
+                    @foreach($banks as $bank)
+                        <label>SETORAN {{ strtoupper($bank->name) }}</label>
+                        <input value="">
+                    @endforeach
+                </div>
 
-    <div class="card cash">
-        <h3>CASH</h3>
-        <input readonly value="{{ number_format($CASH_FLOW,0,',','.') }}">
-    </div>
+                <div class="card cash">
+                    <h3>CASH</h3>
+                    <input readonly value="{{ number_format($CASH_FLOW,0,',','.') }}">
+                </div>
 
-</div>
+            </div>
 
             <div class="button-container">
                 <button class="btn red" type="reset">BATAL</button>
@@ -168,17 +168,65 @@
 </div>
 
 <script>
-document.querySelectorAll('.table-laporan tbody tr').forEach(row => {
-    row.addEventListener('click', function() {
-        const data = JSON.parse(this.dataset.record);
-        Object.keys(data).forEach(key => {
-            const input = document.querySelector(`[name="${key}"]`);
-            if (input) input.value = data[key];
+    document.addEventListener('DOMContentLoaded', function () {
+
+        function hitungCash() {
+            let totalSetoran = 0;
+
+            setoranInputs.forEach(input => {
+                const val = parseInt(input.value.replace(/\./g, '')) || 0;
+                totalSetoran += val;
+            });
+
+            const cashAkhir = cashAwal - totalSetoran;
+
+            cashInput.value = cashAkhir.toLocaleString('id-ID');
+        }
+
+        // Trigger saat Enter atau selesai input
+        setoranInputs.forEach(input => {
+            input.addEventListener('keyup', function (e) {
+                if (e.key === 'Enter') {
+                    hitungCash();
+                }
+            });
+
+            input.addEventListener('change', hitungCash);
         });
-        document.getElementById('recordId').value = data.id ?? '';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+
     });
-});
+
+    function hitungCash() {
+        let cashAwal = {{ $CASH_FLOW }};
+        let totalSetoran = 0;
+
+        document.querySelectorAll('.card.transfer input').forEach(input => {
+            const val = parseInt(input.value.replace(/\D/g, '')) || 0;
+            totalSetoran += val;
+        });
+
+        const cashAkhir = cashAwal - totalSetoran;
+
+        document.querySelector('.card.cash input').value =
+            cashAkhir.toLocaleString('id-ID');
+    }
+
+    document.querySelectorAll('.card.transfer input').forEach(input => {
+        input.addEventListener('input', hitungCash);
+    });
+
+
+    document.querySelectorAll('.table-laporan tbody tr').forEach(row => {
+        row.addEventListener('click', function() {
+            const data = JSON.parse(this.dataset.record);
+            Object.keys(data).forEach(key => {
+                const input = document.querySelector(`[name="${key}"]`);
+                if (input) input.value = data[key];
+            });
+            document.getElementById('recordId').value = data.id ?? '';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    });
 </script>
 
 </x-layouts.app>

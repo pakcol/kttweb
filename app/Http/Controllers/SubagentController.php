@@ -98,21 +98,16 @@ class SubagentController extends Controller
             $subagent   = Subagent::lockForUpdate()->findOrFail($request->subagent_id);
             $jenisBayar = JenisBayar::lockForUpdate()->findOrFail($request->jenis_bayar_id);
 
-            // 1️⃣ KURANGI SALDO SUMBER DANA (JENIS BAYAR)
-            if ($jenisBayar->saldo < $request->nominal) {
-                throw new \Exception('Saldo ' . $jenisBayar->jenis . ' tidak mencukupi untuk top up subagent.');
+            $jenisBayar->increment('saldo', $request->nominal);
+            if( $request->jenis_bayar_id == 1 && $request->bank_id ) {
+                // jika jenis bayar adalah BANK, maka tambahkan saldo bank juga
+                $bank = Bank::lockForUpdate()->findOrFail($request->bank_id);
+                $bank->increment('saldo', $request->nominal);
             }
-            $jenisBayar->decrement('saldo', $request->nominal);
 
             // 2️⃣ JIKA SUMBER DARI BANK → KURANGI SALDO BANK
             $bankId = $request->jenis_bayar_id == 1 ? $request->bank_id : null;
             if ($bankId) {
-                $bank = Bank::lockForUpdate()->findOrFail($bankId);
-                if ($bank->saldo < $request->nominal) {
-                    throw new \Exception('Saldo bank ' . $bank->name . ' tidak mencukupi untuk top up subagent.');
-                }
-
-                $saldoSesudahBank = $bank->saldo - $request->nominal;
 
                 // catat mutasi bank: uang keluar untuk top up subagent
                 MutasiBank::create([
@@ -120,9 +115,9 @@ class SubagentController extends Controller
                     'tanggal'    => now(),
                     'ref_type'   => 'TOPUP_SUBAGENT',
                     'ref_id'     => $subagent->id,
-                    'debit'      => 0,
-                    'kredit'     => $request->nominal,
-                    'saldo'      => $saldoSesudahBank,
+                    'debit'      => $request->nominal,
+                    'kredit'     => 0,
+                    'saldo'      => $bank->saldo + $request->nominal,
                     'keterangan' => 'Top up saldo subagent ' . $subagent->nama,
                 ]);
 

@@ -10,6 +10,7 @@ use App\Models\JenisPpob;
 use App\Models\JenisTiket;
 use App\Models\Bank;
 use App\Models\Biaya;
+use App\Models\PpobHistory;
 use App\Models\Subagent;
 use App\Services\MutasiTiketService;
 use Illuminate\Http\Request;
@@ -408,7 +409,6 @@ class MutasiTiketController extends Controller
 
         /* PENGELUARAN (HANYA KATEGORI 'lainnya') */
         $BIAYA = DB::table('biaya')
-            ->where('kategori', 'lainnya')
             ->whereDate('tgl', $tanggal)
             ->sum('biaya');
 
@@ -421,8 +421,7 @@ class MutasiTiketController extends Controller
                 ->sum('harga_bayar');
 
             $biayaKeluar = Biaya::where('tgl', $tanggal)
-                ->where('bank_id', $bank->id)
-                ->where('kategori', 'lainnya')
+                ->where('jenis_bayar_id', 2)
                 ->sum('biaya');
 
             $transfer[$bank->id] = $tiketMasuk - $biayaKeluar;
@@ -447,6 +446,12 @@ class MutasiTiketController extends Controller
             ->whereDate('tgl_issued', $tanggal)
             ->sum('transaksi');
 
+        $SISA_SALDO_PPOB = PpobHistory::orderBy('id', 'desc')
+            ->value('saldo');
+
+        $TOTAL_PENJUALAN_PPOB = DB::table('ppob_histories')
+            ->whereDate('tgl', $tanggal)
+            ->sum('harga_jual');
 
         return view('cash-flow', compact(
             'TTL_PENJUALAN',
@@ -460,7 +465,9 @@ class MutasiTiketController extends Controller
             'topupJenisTiket',
             'subagents',
             'cashFlowSubagent',
-            'ppobs'
+            'ppobs',
+            'SISA_SALDO_PPOB',
+            'TOTAL_PENJUALAN_PPOB'
         ));
     }
 

@@ -38,10 +38,10 @@ class PpobController extends Controller
             'bank_id'        => 'nullable|required_if:jenis_bayar_id,1|exists:bank,id',
         ]);
 
-        //dd($validated);
-
         try {
             DB::transaction(function () use ($validated) {
+                $jenisBayar = JenisBayar::findOrFail($validated['jenis_bayar_id']);
+
                 PpobHistory::create([
                     'tgl'           => $validated['tgl'],
                     'id_pel'        => $validated['id_pel'],
@@ -52,11 +52,19 @@ class PpobController extends Controller
                     'jenis_bayar_id'=> $validated['jenis_bayar_id'],
                     'bank_id'       => $validated['bank_id'] ?? null,
                 ]);
+
+                // Update saldo jenis_bayar
+                $jenisBayar->increment('saldo', $validated['harga_jual']);
+
+                // Update saldo bank jika jenis_bayar_id = 1
+                if ($validated['jenis_bayar_id'] == 1 && $validated['bank_id']) {
+                    $bank = Bank::findOrFail($validated['bank_id']);
+                    $bank->increment('saldo', $validated['harga_jual']);
+                }
             });
         } catch (\Throwable $e) {
             dd($e->getMessage(), $e->getTraceAsString());
         }
-
 
         return redirect()
             ->route('ppob.index')
