@@ -166,6 +166,7 @@ class PpobController extends Controller
         DB::transaction(function () use ($validated, $id) {
 
             $ppob = PpobHistory::findOrFail($id);
+            $hargaLama = $ppob->harga_jual;
 
             $ppob->update([
                 'tgl'            => $validated['tgl'],
@@ -177,6 +178,14 @@ class PpobController extends Controller
                 'jenis_bayar_id' => $validated['jenis_bayar_id'],
                 'bank_id'        => $validated['bank_id'] ?? null,
             ]);
+
+             // 3️⃣ Hitung selisih
+            $selisih = $validated['harga_jual'] - $hargaLama;
+
+            // 4️⃣ Kurangi saldo (contoh: saldo di tabel yang sama)
+            if ($selisih != 0) {
+                $ppob->decrement('saldo', $selisih);
+            }
         });
 
         return redirect()
