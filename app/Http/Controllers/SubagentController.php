@@ -29,81 +29,50 @@ class SubagentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'kode_booking'  => 'required|string',
-            'subagent_id'   => 'required|exists:subagents,id',
-            'status'        => 'required|in:issued,refunded',
-            'nta'           => 'required|integer|min:0',
-            'nilai_refund'  => 'nullable|integer|min:0',
-            'tgl_realisasi' => 'nullable|date',
+            'kode_booking'   => 'required|string|unique:tiket,kode_booking',
+            'subagent_id'    => 'required|exists:subagents,id',
+            'nta'            => 'required|integer|min:0',
+            'harga_jual'     => 'required|integer|min:0',
+            'jenis_tiket_id' => 'required|exists:jenis_tiket,id',
         ]);
 
         DB::transaction(function () use ($request) {
 
-            $kodeBooking = strtoupper($request->kode_booking);
-
-            $tiket = Tiket::lockForUpdate()->findOrFail($kodeBooking);
             $subagent = Subagent::lockForUpdate()->findOrFail($request->subagent_id);
 
-            $statusLama = $tiket->status;
-
-            // =====================
-            // ISSUED (PERTAMA KALI)
-            // =====================
-            if (!$statusLama && $request->status === 'issued') {
-
-                if ($subagent->saldo < $request->nta) {
-                    throw new \Exception('Saldo subagent tidak cukup');
-                }
-
-                $subagent->decrement('saldo', $request->nta);
-
-                SubagentHistory::create([
-                    'tgl_issued'   => now(),
-                    'subagent_id'  => $subagent->id,
-                    'kode_booking' => $kodeBooking,
-                    'status'       => 'issued',
-                    'transaksi'    => -$request->nta,
-                ]);
+            if ($subagent->saldo < $request->nta) {
+                throw new \Exception('Saldo subagent tidak cukup');
             }
 
-            // =====================
-            // ISSUED → REFUNDED
-            // =====================
-            if ($statusLama === 'issued' && $request->status === 'refunded') {
+            // potong saldo
+            $subagent->decrement('saldo', $request->nta);
 
-                if (!$request->nilai_refund || !$request->tgl_realisasi) {
-                    throw new \Exception('Refund wajib nilai & tanggal');
-                }
+            // create tiket
+            Tiket::create([
+                'kode_booking'   => strtoupper($request->kode_booking),
+                'name'           => $request->name,
+                'rute'           => $request->rute,
+                'tgl_issued'     => now(),
+                'tgl_flight'     => $request->tgl_flight,
+                'harga_jual'     => $request->harga_jual,
+                'nta'            => $request->nta,
+                'diskon'         => $request->diskon ?? 0,
+                'komisi'         => $request->harga_jual - ($request->diskon ?? 0) - $request->nta,
+                'status'         => 'issued',
+                'jenis_tiket_id' => $request->jenis_tiket_id,
+                'subagent_id'    => $subagent->id,
+            ]);
 
-                $subagent->increment('saldo', $request->nilai_refund);
-
-                SubagentHistory::create([
-                    'tgl_issued'   => $request->tgl_realisasi,
-                    'subagent_id'  => $subagent->id,
-                    'kode_booking' => $kodeBooking,
-                    'status'       => 'refunded',
-                    'transaksi'    => $request->nilai_refund,
-                ]);
-            }
-
-            // =====================
-            // LARANG EDIT ULANG REFUND
-            // =====================
-            if ($statusLama === 'refunded') {
-                throw new \Exception('Tiket sudah refund, tidak bisa diubah');
-            }
-
-            // =====================
-            // UPDATE STATUS TIKET
-            // =====================
-            $tiket->update([
-                'status'        => $request->status,
-                'nilai_refund'  => $request->nilai_refund,
-                'tgl_realisasi' => $request->tgl_realisasi,
+            SubagentHistory::create([
+                'tgl_issued'   => now(),
+                'subagent_id'  => $subagent->id,
+                'kode_booking' => strtoupper($request->kode_booking),
+                'status'       => 'issued',
+                'transaksi'    => -$request->nta,
             ]);
         });
 
-        return back()->with('success', 'Data subagent berhasil diproses');
+        return back()->with('success', 'Tiket subagent berhasil dibuat');
     }
 
 

@@ -451,12 +451,16 @@
     });
 
     statusCustomer.addEventListener('change', function () {
+
+        if (formMode === 'update') return; // 🚫 JANGAN SENTUH ACTION
+
         if (this.value === 'subagent') {
             form.action = "{{ route('input-tiket.subagent') }}";
         } else {
             form.action = "{{ route('input-tiket.store') }}";
         }
     });
+
     /* ===================== UTIL ===================== */
     const $ = id => document.getElementById(id);
     $('status').dispatchEvent(new Event('change'));
@@ -561,6 +565,8 @@
         function fillFormFromRow(row) {
             showAllStatus();
             const td = row.children;
+            formMode = 'update'; // 🔒 KUNCI MODE
+            form.action = `/input-tiket/${row.dataset.id}`; // 🔒 KUNCI ACTION
 
             $('kode_booking').value = row.dataset.id;
             $('name').value = td[4].innerText;
@@ -717,12 +723,16 @@ document.getElementById('btnTutupKas')?.addEventListener('click', () => {
 
         /* ===================== RESET ===================== */
         $('btnBatal').onclick = () => {
-            $('inputDataForm').reset();
+            formMode = 'create';
+            form.action = "{{ route('input-tiket.store') }}";
+
+            form.reset();
             $('btnInputData').textContent = 'INPUT DATA';
             showBasicStatus();
             toggleJenisPembayaran();
-            toggleRefund()
+            toggleRefund();
         };
+
 
         showBasicStatus();
         toggleRefund();

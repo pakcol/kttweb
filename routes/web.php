@@ -63,7 +63,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/', [TiketController::class, 'store'])->name('store');      
         Route::get('/search', [TiketController::class, 'search'])->name('search');
         Route::get('/{kode_booking}', [TiketController::class, 'getTiket'])->name('get');
-        Route::put('/{kode_booking}', [TiketController::class, 'update'])->name('update');
+        Route::post('/{kode_booking}', [TiketController::class, 'update'])->name('update');
         Route::delete('/{kode_booking}', [TiketController::class, 'destroy'])->name('destroy');
         Route::post('/subagent', [SubagentController::class, 'store'])->name('subagent');
     });
