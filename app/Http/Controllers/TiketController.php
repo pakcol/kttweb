@@ -67,34 +67,38 @@ class TiketController extends Controller
 
     public function searchTiket(Request $request)
     {
-        $query = Tiket::query()->with('jenisTiket');
+        $query = Tiket::with('jenisTiket');
+    if ($request->filled('kode_booking')) {
+        $query->where('kode_booking', 'LIKE', '%' . $request->kode_booking . '%');
+    }
 
-        if ($request->filled('kode_booking')) {
-            $query->where('kode_booking', 'like', '%' . strtoupper($request->kode_booking) . '%');
-        }
+    if ($request->filled('nama_pax')) {
+        $query->where('name', 'LIKE', '%' . $request->nama_pax . '%');
+    }
 
-        if ($request->filled('nama_pax')) {
-            $query->where('name', 'like', '%' . strtoupper($request->nama_pax) . '%');
-        }
+    if ($request->filled('tgl_flight')) {
+        $query->whereDate('tgl_flight', $request->tgl_flight);
+    }
 
-        if ($request->filled('tgl_flight')) {
-            $query->whereDate('tgl_flight', $request->tgl_flight);
-        }
+    if ($request->filled('tgl_issued')) {
+        $query->whereDate('tgl_issued', $request->tgl_issued);
+    }
 
-        if ($request->filled('tgl_issued')) {
-            $query->whereDate('tgl_issued', $request->tgl_issued);
-        }
+    if ($request->filled('tgl_realisasi')) {
+        $query->whereDate('tgl_realisasi', $request->tgl_realisasi);
+    }
 
-        // 🔹 nama piutang ada di Mutasi Tiket
-        if ($request->filled('nama_piutang')) {
-            $query->whereHas('mutasiTiket', function ($q) use ($request) {
-                $q->where('nama_piutang', 'like', '%' . strtoupper($request->nama_piutang) . '%');
-            });
-        }
+    if ($request->filled('nama_piutang')) {
+        $query->whereHas('mutasiTiket', function ($q) use ($request) {
+            $q->where('nama_piutang', 'LIKE', '%' . $request->nama_piutang . '%');
+        });
+    }
 
-        $ticket = $query->orderBy('tgl_issued', 'desc')->get();
+    $ticket = $query
+        ->orderBy('tgl_issued', 'desc')
+        ->get();
 
-        return view('find', compact('ticket'));
+    return view('find', compact('ticket'));
     }
     
     public function topupMutasi(Request $request)

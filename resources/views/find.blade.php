@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="{{ asset('css/find.css') }}">
 </head>
 <body>
-        <form action="{{ route('find.searchTiket') }}" method="GET" class="form-section">
+        <form id="findForm" action="{{ route('find.searchTiket') }}"method="GET"class="form-section">
             <div class="grid-container">
                 <div class="left">
                     <div class="form-group">
@@ -158,15 +158,17 @@
             document.querySelectorAll('input[type="text"]').forEach(input => input.value = '');
             window.location.href = "{{ route('find.searchTiket') }}";
         }
-        document.addEventListener('DOMContentLoaded', function() {
-            const dateInputs = document.querySelectorAll('input[type="date"]');
-            dateInputs.forEach(input => {
-                input.addEventListener('change', function() {
-                    if (this.value) {
-                        document.querySelector('form').submit();
-                    }
-                });
-            });
+        document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('findForm');
+
+    form.querySelectorAll('input[type="text"]').forEach(input => {
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                form.submit();
+            }
+        });
+    });
             const textInputs = document.querySelectorAll('input[type="text"]');
             textInputs.forEach(input => {
                 input.addEventListener('keypress', function(e) {
