@@ -233,32 +233,33 @@ class TiketController extends Controller
             'tgl_issued'     => 'required|date',
             'kode_booking'   => 'required|string|max:10',
             'name'           => 'required|string|max:100',
-            'harga_jual'     => 'required|integer',
-            'nta'            => 'required|integer',
-            'diskon'         => 'required|integer',
-            'komisi'         => 'required|integer',
+            'harga_jual'     => 'required|integer|min:0',
+            'nta'            => 'required|integer|min:0',
+            'diskon'         => 'required|integer|min:0',
+            'komisi'         => 'required|integer|min:0',
             'rute'           => 'required|string|max:45',
             'tgl_flight'     => 'required|date',
-            'rute2'          => 'nullable|string|max:45',
-            'tgl_flight2'    => 'nullable|date',
             'status'         => 'required|in:issued,canceled,refunded',
             'jenis_tiket_id' => 'required|exists:jenis_tiket,id',
             'jenis_bayar_id' => 'required|exists:jenis_bayar,id',
             'bank_id'        => 'nullable|exists:bank,id',
-            'keterangan'     => 'nullable|string|max:255',
             'nama_piutang'   => 'nullable|string|max:100',
             'nilai_refund'   => 'nullable|integer|min:0',
             'tgl_realisasi'  => 'nullable|date',
         ]);
 
-        DB::beginTransaction();
+        DB::transaction(function () use ($request, $mutasiService) {
 
-        try {
-            $kodeBookingInput = strtoupper($request->kode_booking);
+            $kodeBooking = strtoupper($request->kode_booking);
 
-            // 1️⃣ SIMPAN / UPDATE TIKET
+            $tiket = Tiket::lockForUpdate()->find($kodeBooking);
+            $statusLama = $tiket?->status;
+
+            // =========================
+            // SIMPAN / UPDATE TIKET
+            // =========================
             $tiket = Tiket::updateOrCreate(
-                ['kode_booking' => $kodeBookingInput],
+                ['kode_booking' => $kodeBooking],
                 [
                     'tgl_issued'     => $request->tgl_issued,
                     'name'           => strtoupper($request->name),
@@ -278,49 +279,65 @@ class TiketController extends Controller
                 ]
             );
 
-            // 2️⃣ CATAT MUTASI TIKET (PENGGANTI NOTA)
-            if ($request->status === 'issued') {
+            // =========================
+            // TRANSISI STATUS
+            // =========================
+
+            // 🟢 BARU ISSUED
+            if (!$statusLama && $request->status === 'issued') {
+
+                JenisTiket::find($tiket->jenis_tiket_id)
+                    ->decrement('saldo', $tiket->nta);
+
+                JenisBayar::find($request->jenis_bayar_id)
+                    ->increment('saldo', $tiket->harga_jual);
+
+                if ((int)$request->jenis_bayar_id === 1 && $request->bank_id) {
+                    Bank::find($request->bank_id)
+                        ->increment('saldo', $tiket->harga_jual);
+                }
+
                 $mutasiService->create([
-                'tiket_kode_booking' => $tiket->kode_booking,
-                'tgl_issued'     => $tiket->tgl_issued,
-                'tgl_bayar' => $request->jenis_bayar_id == 3
-                    ? null
-                    : $request->tgl_realisasi ?? $tiket->tgl_issued,
-                'harga_bayar'    => $tiket->harga_jual,
-                'jenis_bayar_id' => $request->jenis_bayar_id,
-                'bank_id'        => $request->bank_id,
-                'nama_piutang' => $request->jenis_bayar_id == 3
-                    ? $request->nama_piutang
-                    : null,
-                'keterangan' => $request->keterangan
-                    ? strtoupper($request->keterangan)
-                    : null,
+                    'tiket_kode_booking' => $tiket->kode_booking,
+                    'tgl_issued'         => $tiket->tgl_issued,
+                    'tgl_bayar'          => $request->jenis_bayar_id == 3
+                        ? null
+                        : ($request->tgl_realisasi ?? $tiket->tgl_issued),
+                    'harga_bayar'        => $tiket->harga_jual,
+                    'jenis_bayar_id'     => $request->jenis_bayar_id,
+                    'bank_id'            => $request->bank_id,
+                    'nama_piutang'       => $request->jenis_bayar_id == 3
+                        ? $request->nama_piutang
+                        : null,
+                    'keterangan'         => $request->keterangan,
                 ]);
             }
 
-            // Kurangi saldo pada jenis_tiket
-            $jenisTiket = JenisTiket::findOrFail($tiket->jenis_tiket_id);
-            $jenisTiket->decrement('saldo', $tiket->nta);
+            // 🔴 ISSUED → REFUNDED
+            if ($statusLama === 'issued' && $request->status === 'refunded') {
 
-            // Tambah saldo pada jenis_bayar
-            $jenisBayar = JenisBayar::findOrFail($request->jenis_bayar_id);
-            $jenisBayar->increment('saldo', $request->harga_jual);
+                if (!$request->nilai_refund || !$request->tgl_realisasi) {
+                    throw new \Exception('Refund wajib nilai & tanggal');
+                }
 
-            // Jika jenis_bayar adalah BANK (id = 1), tambahkan saldo bank terkait
-            if ((int) $request->jenis_bayar_id === 1 && $request->bank_id) {
-                $bank = Bank::findOrFail($request->bank_id);
-                $bank->increment('saldo', $request->harga_jual);
+                JenisBayar::find($request->jenis_bayar_id)
+                    ->decrement('saldo', $request->nilai_refund);
+
+                if ((int)$request->jenis_bayar_id === 1 && $request->bank_id) {
+                    Bank::find($request->bank_id)
+                        ->decrement('saldo', $request->nilai_refund);
+                }
             }
 
-
-            DB::commit();
-            return redirect()->route('input-tiket.index')->with('success', 'OK');
-
-            } catch (\Throwable $e) {
-                dd($e->getMessage());
-                DB::rollBack();
+            // 🚫 REFUND TIDAK BOLEH DISENTUH LAGI
+            if ($statusLama === 'refunded') {
+                throw new \Exception('Tiket refund tidak bisa diubah');
             }
+        });
+
+        return redirect()->route('input-tiket.index')->with('success', 'OK');
     }
+
 
     /**
      * Hapus tiket dan nota terkait

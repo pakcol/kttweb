@@ -18,7 +18,7 @@ return new class extends Migration {
 
             // RELASI TIKET (PK = kode_booking STRING)
             $table->string('kode_booking') ->nullable();
-            $table->enum('status', ['top_up', 'pesan_tiket']);
+            $table->enum('status', ['top_up', 'pesan_tiket', 'refunded'])->default('pesan_tiket');
             
             // NILAI TRANSAKSI (+ topup, - pesan tiket)
             $table->integer('transaksi');
