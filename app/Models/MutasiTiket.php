@@ -24,7 +24,7 @@ class MutasiTiket extends Model
 
     public function tiket()
     {
-        return $this->belongsTo(Tiket::class);
+        return $this->belongsTo(Tiket::class, 'tiket_kode_booking', 'kode_booking');
     }
 
     public function jenisBayar()
@@ -39,7 +39,7 @@ class MutasiTiket extends Model
 
     public function jenisTiket()
     {
-        return $this->hasOne(JenisTiket::class);
+        return $this->hasOne(JenisTiket::class, 'jenis_tiket_id');
     }
 
 

@@ -123,7 +123,15 @@
             </div>
 
             <div class="button-container">
-                <button class="btn red" type="reset">BATAL</button>
+                <button class="btn red" type="reset" onclick="resetSetoran()"><script>
+                    function resetSetoran() {
+                        const setoranInputs = document.querySelectorAll('.card.setoran input');
+
+                        setoranInputs.forEach(input => {
+                            input.value = '';
+                        });
+                    }
+                </script>BATAL</button>
                 <button class="btn green" type="submit">SIMPAN</button>
             </div>
 

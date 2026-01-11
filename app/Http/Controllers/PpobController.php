@@ -125,7 +125,23 @@ class PpobController extends Controller
              * 3️⃣ JIKA bank → TAMBAH SALDO bank FISIK
              */
             if ($bank) {
-                $bank->decrement('saldo', $validated['nominal']);
+                $saldoTerakhir = MutasiBank::where('bank_id', $bank->id)
+                    ->orderByDesc('id')
+                    ->value('saldo') ?? $bank->saldo;
+
+                $saldoSesudah = $saldoTerakhir - $validated['nominal'];
+
+                MutasiBank::create([
+                    'bank_id'    => $bank->id,
+                    'tanggal'    => $validated['tgl'],
+                    'debit'      => 0,
+                    'kredit'     => $validated['nominal'],
+                    'saldo'      => $saldoSesudah,
+                    'keterangan' => 'Top up PPOB',
+                ]);
+
+                $bank->update(['saldo' => $saldoSesudah]);
+
             }
         });
 

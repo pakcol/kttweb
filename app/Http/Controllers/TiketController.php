@@ -39,8 +39,8 @@ class TiketController extends Controller
 
     public function indexPiutang()
     {
-        // Ambil piutang tiket (belum dibayar)
         $piutang = MutasiTiket::with([
+                'tiket',
                 'tiket.jenisTiket'
             ])
             ->whereNull('tgl_bayar')
@@ -84,10 +84,10 @@ class TiketController extends Controller
             $query->whereDate('tgl_issued', $request->tgl_issued);
         }
 
-        // 🔹 nama piutang ada di NOTA
+        // 🔹 nama piutang ada di Mutasi Tiket
         if ($request->filled('nama_piutang')) {
-            $query->whereHas('nota', function ($q) use ($request) {
-                $q->where('nama', 'like', '%' . strtoupper($request->nama_piutang) . '%');
+            $query->whereHas('mutasiTiket', function ($q) use ($request) {
+                $q->where('nama_piutang', 'like', '%' . strtoupper($request->nama_piutang) . '%');
             });
         }
 

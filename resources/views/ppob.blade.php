@@ -151,6 +151,7 @@
                     <th>Kategori</th>
                     <th>Harga Jual</th>
                     <th>NTA</th>
+                    <th>Saldo</th>
                     <th>Metode Pembayaran</th>
                     <th>Bank</th>
                     <th>Nama Piutang</th>
@@ -165,6 +166,7 @@
                     <td>{{ $row->jenisPpob->jenis_ppob ?? '-' }}</td>
                     <td>{{ number_format($row->harga_jual) }}</td>
                     <td>{{ number_format($row->nta) }}</td>
+                    <td>{{ number_format($row->saldo) }}</td>
                     <td>{{ $row->jenisBayar->jenis ?? '-' }}</td>
                     <td>{{ $row->bank->name ?? '-' }}</td>
                     <td>{{ $row->nama_piutang ?? '-' }}</td>

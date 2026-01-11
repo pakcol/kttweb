@@ -27,6 +27,11 @@
             </div>
 
             <div class="form-group">
+                <label>Nominal</label>
+                <input type="number" id="nominal" class="form-control">
+            </div>
+
+            <div class="form-group">
                 <label>Jenis Pembayaran</label>
                 <select name="jenis_bayar_id" id="jenis_bayar_id" class="form-control" required>
                     @foreach($jenisBayarNonPiutang as $j)
@@ -104,6 +109,7 @@
                                 data-id="{{ $row->id }}"
                                 data-kode="{{ $row->tiket_kode_booking }}"
                                 data-nominal="{{ $row->harga_bayar }}"
+                                data-nama-piutang="{{ $row->nama_piutang }}"
                             >
                                 Bayar
                             </button>
@@ -135,13 +141,29 @@
     document.querySelectorAll('.btn-edit').forEach(btn => {
         btn.addEventListener('click', () => {
             const id = btn.dataset.id;
+            const kode = btn.dataset.kode;
+            const nominal = btn.dataset.nominal;
+            const namaPiutang = btn.dataset.namaPiutang;
 
+            // set hidden id
             document.getElementById('mutasi_id').value = id;
-            document.getElementById('kode_booking').value = btn.dataset.kode;
 
-            // SET ACTION FORM SECARA DINAMIS
-            document.getElementById('formPiutang')
-                .action = `/tiket/piutang/${id}`;
+            // set kode booking
+            document.getElementById('kode_booking').value = kode;
+
+            // set nominal
+            document.getElementById('nominal').value = nominal;
+
+            // set dropdown nama piutang
+            const selectNama = document.getElementById('nama_piutang_select');
+            if (selectNama) {
+                selectNama.value = namaPiutang;
+                selectNama.dispatchEvent(new Event('change'));
+            }
+
+            // set action form
+            document.getElementById('formPiutang').action =
+                `/tiket/piutang/${id}`;
         });
     });
 
