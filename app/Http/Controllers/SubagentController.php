@@ -29,11 +29,22 @@ class SubagentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'kode_booking'   => 'required|string|unique:tiket,kode_booking',
-            'subagent_id'    => 'required|exists:subagents,id',
-            'nta'            => 'required|integer|min:0',
+            'tgl_issued'     => 'required|date',
+            'kode_booking'   => 'required|string|max:10|unique:tiket,kode_booking',
+            'name'           => 'required|string|max:100',
             'harga_jual'     => 'required|integer|min:0',
+            'nta'            => 'required|integer|min:0',
+            'diskon'         => 'required|integer|min:0',
+            'komisi'         => 'required|integer|min:0',
+            'rute'           => 'required|string|max:45',
+            'tgl_flight'     => 'required|date',
             'jenis_tiket_id' => 'required|exists:jenis_tiket,id',
+            'jenis_bayar_id' => 'required|exists:jenis_bayar,id',
+            'bank_id'        => 'nullable|exists:bank,id',
+            'nama_piutang'   => 'nullable|string|max:100',
+            'keterangan'     => 'nullable|string|max:200',
+            
+            'subagent_id'    => 'required|exists:subagents,id',
         ]);
 
         DB::transaction(function () use ($request) {
