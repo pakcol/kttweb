@@ -47,7 +47,7 @@ class BukuBankController extends Controller
     public function topUp(Request $request)
     {
         $request->validate([
-            'tanggal' => 'required|datetime',
+            'tanggal' => 'required|date',
             'bank_id' => 'required|exists:bank,id',
             'nominal' => 'required|integer|min:1000',
             'keterangan' => 'nullable|string'
@@ -74,7 +74,7 @@ class BukuBankController extends Controller
             // 2️⃣ Catat ke MUTASI_BANK (uang MASUK ke bank)
             MutasiBank::create([
                 'bank_id'    => $bank->id,
-                'tanggal'    => now(),
+                'tanggal'    => $request->tanggal,
                 'debit'      => $request->nominal,
                 'kredit'     => 0,
                 'saldo'      => $saldoSesudah,

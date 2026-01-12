@@ -24,7 +24,7 @@ class BiayaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'tgl'   => 'required|datetime',
+            'tgl'   => 'required|date',
             'biaya' => 'required|numeric|min:1',
             'keterangan' => 'nullable|string'
         ]);
