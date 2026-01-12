@@ -446,6 +446,37 @@ class TiketController extends Controller
                 'tgl_realisasi' => $request->tgl_realisasi,
             ]);
 
+            if ($tiket->status === 'issued') {
+
+                $mutasi = MutasiTiket::where('tiket_kode_booking', $tiket->kode_booking)
+                    ->where('harga_bayar', '>', 0)
+                    ->lockForUpdate()
+                    ->first();
+
+                if ($mutasi) {
+                    // UPDATE mutasi lama
+                    $mutasi->update([
+                        'tgl_bayar'      => $tiket->tgl_issued,
+                        'harga_bayar'    => $tiket->harga_jual,
+                        'jenis_bayar_id' => $request->jenis_bayar_id,
+                        'bank_id'        => $request->bank_id,
+                        'nama_piutang'   => $request->jenis_bayar_id == 3 ? $request->nama_piutang : null,
+                        'keterangan'     => 'UPDATE DATA TIKET',
+                    ]);
+                } else {
+                    // kalau belum ada (fallback)
+                    $mutasiService->create([
+                        'tiket_kode_booking' => $tiket->kode_booking,
+                        'tgl_bayar'          => $tiket->tgl_issued,
+                        'harga_bayar'        => $tiket->harga_jual,
+                        'jenis_bayar_id'     => $request->jenis_bayar_id,
+                        'bank_id'            => $request->bank_id,
+                        'nama_piutang'       => $request->jenis_bayar_id == 3 ? $request->nama_piutang : null,
+                        'keterangan'         => 'ISSUED TIKET',
+                    ]);
+                }
+            }
+
             // =========================
             // 🔄 ISSUED → REFUNDED
             // =========================
