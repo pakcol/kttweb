@@ -10,11 +10,8 @@
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
-
         </button>
-
-        <!-- Jam Realtime -->
-        <span id="realtime-clock" class="ms-3 fw-medium text-dark"></span>
+        
         {{-- Menu --}}
         <div class="collapse navbar-collapse justify-content-end mt-2 mt-lg-0" id="navbarNav">
             <ul class="navbar-nav align-items-lg-center gap-lg-3">
@@ -94,13 +91,21 @@
                     @endif
 
                     {{-- Dropdown user --}}
-                    <li>
-                        <a class="nav-link fw-medium text-dark" 
-                           href="#" 
-                           aria-expanded="false">
-                            {{ Auth::user()->name }}
-                        </a>
+                    <li class="nav-item">
+                        <div class="d-flex flex-column">
+                            <a class="nav-link fw-medium text-dark p-0 mb-1" 
+                               href="/homeDb" 
+                               aria-expanded="false">
+                                Hi, {{ Auth::user()->name }} !
+                            </a>
+                            <!-- Jam Realtime dengan Hari dan Tanggal -->
+                            <div class="d-flex align-items-center">
+                                <span id="realtime-date" class="fw-medium text-dark small"></span>
+                                <span id="realtime-clock" class="fw-medium text-dark small ms-2"></span>
+                            </div>
+                        </div>
                     </li>
+                    
                     <li class="nav-item dropdown">
                         <a class="dropdown-item text-danger" href="{{ route('logout') }}"
                             onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -194,6 +199,20 @@
         transform: translateY(0) !important;
     }
 
+    /* Style untuk jam dan tanggal */
+    #realtime-date {
+        font-size: 12px;
+        color: #6c757d;
+        white-space: nowrap;
+    }
+    
+    #realtime-clock {
+        font-size: 12px;
+        color: #495057;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
     /* Mobile Responsive */
     @media (max-width: 991.98px) {
         .navbar-collapse {
@@ -218,6 +237,16 @@
         
         .dropdown-item:hover {
             transform: translateX(8px);
+        }
+        
+        /* Penyesuaian untuk jam dan tanggal di mobile */
+        .nav-item .d-flex.flex-column {
+            padding: 8px 12px;
+        }
+        
+        #realtime-date,
+        #realtime-clock {
+            font-size: 11px;
         }
     }
 
@@ -244,23 +273,39 @@
 // Variable to track current open dropdown
 let currentOpenDropdown = null;
 
-function updateClock() {
-    const clock = document.getElementById('realtime-clock');
+// Arrays untuk nama hari dan bulan dalam Bahasa Indonesia
+const hariIndo = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+const bulanIndo = [
+    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+];
+
+function updateDateTime() {
+    const dateElement = document.getElementById('realtime-date');
+    const clockElement = document.getElementById('realtime-clock');
     const now = new Date();
 
-    // Format jam: HH:MM:SS
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = String(now.getSeconds()).padStart(2, '0');
+    // Format Hari, Tanggal Bulan Tahun
+    const hari = hariIndo[now.getDay()];
+    const tanggal = now.getDate();
+    const bulan = bulanIndo[now.getMonth()];
+    const tahun = now.getFullYear();
 
-    clock.textContent = `${hours}:${minutes}:${seconds}`;
+    // Format jam: HH:MM:SS
+    const jam = String(now.getHours()).padStart(2, '0');
+    const menit = String(now.getMinutes()).padStart(2, '0');
+    const detik = String(now.getSeconds()).padStart(2, '0');
+
+    // Update elemen
+    dateElement.textContent = `${hari}, ${tanggal} ${bulan} ${tahun}`;
+    clockElement.textContent = `${jam}:${menit}:${detik}`;
 }
 
 // Update setiap detik
-setInterval(updateClock, 1000);
+setInterval(updateDateTime, 1000);
 
 // Inisialisasi saat halaman load
-updateClock();
+updateDateTime();
 
 function toggleDropdown(dropdownId) {
     const dropdown = document.getElementById(dropdownId);
