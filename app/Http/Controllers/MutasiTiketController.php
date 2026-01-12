@@ -164,8 +164,8 @@ class MutasiTiketController extends Controller
     {
         $request->validate([
             'tiket_id'       => 'required|exists:tikets,id',
-            'tgl_issued'     => 'required|date',
-            'tgl_bayar'      => 'nullable|date',
+            'tgl_issued'     => 'required|datetime',
+            'tgl_bayar'      => 'nullable|datetime',
             'harga_bayar'    => 'required|numeric|min:0',
             'insentif'       => 'nullable|numeric|min:0',
             'jenis_bayar_id' => 'nullable|exists:jenis_bayar,id',

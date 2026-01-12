@@ -47,6 +47,7 @@ class BukuBankController extends Controller
     public function topUp(Request $request)
     {
         $request->validate([
+            'tanggal' => 'required|datetime',
             'bank_id' => 'required|exists:bank,id',
             'nominal' => 'required|integer|min:1000',
             'keterangan' => 'nullable|string'
@@ -61,7 +62,7 @@ class BukuBankController extends Controller
 
             // 1️⃣ Simpan history ke TOPUP_HISTORIES
             TopupHistory::create([
-                'tgl_issued'     => now(),
+                'tgl_issued'     => $request->tanggal,
                 'transaksi'      => $request->nominal,
                 'jenis_tiket_id' => null,
                 'subagent_id'    => null,

@@ -11,7 +11,7 @@
                 <div class="form-section">
                     <div class="form-left">
                         <label for="tanggal">Tanggal</label>
-                        <input type="date" id="tanggal" name="tanggal" value="{{ date('Y-m-d') }}" required>
+                        <input type="datetime-local" id="tanggal" name="tanggal" value="{{ date('Y-m-d\TH:i') }}" required>
                         @error('tanggal') <span class="error">{{ $message }}</span> @enderror
     
                         <label for="bank_id">BANK</label>

@@ -104,10 +104,10 @@
             @csrf
             <div class="form-group">
                 <label>Tanggal Top Up</label>
-                <input type="date"
+                <input type="datetime-local"
                        name="tgl"
                        class="form-control"
-                       value="{{ date('Y-m-d') }}"
+                       value="{{ date('Y-m-d\TH:i') }}"
                        required>
             </div>
 

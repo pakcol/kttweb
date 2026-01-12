@@ -78,7 +78,7 @@ class PpobController extends Controller
     public function topup(Request $request)
     {
         $validated = $request->validate([
-            'tgl'            => 'required|date',
+            'tgl'            => 'required|datetime',
             'nominal'        => 'required|integer|min:1',
             'jenis_bayar_id' => 'required|in:1',
             'bank_id'        => 'nullable|exists:bank,id',

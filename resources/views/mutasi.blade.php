@@ -10,7 +10,7 @@
             @csrf
             <div class="form-group">
                 <label>TANGGAL</label>
-                <input type="date" name="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}" required>
+                <input type="datetime-local" name="tanggal" value="{{ old('tanggal', date('Y-m-d\TH:i')) }}" required>
             </div>
 
             <div class="form-group refund-toggle">
