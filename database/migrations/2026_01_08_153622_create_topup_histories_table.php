@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->id();
 
             // tanggal transaksi
-            $table->date('tgl_issued');
+            $table->datetime('tgl_issued');
 
             // nominal (+topup / +refund)
             $table->integer('transaksi');

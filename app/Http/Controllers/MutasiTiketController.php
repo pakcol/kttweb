@@ -34,16 +34,29 @@ class MutasiTiketController extends Controller
 
 
         /* ================= KELUAR (PEMBELIAN TIKET) ================= */
-        $nota = DB::table('tiket')
+        $tiket = DB::table('tiket')
             ->where('jenis_tiket_id', $jenisTiketId)
             ->whereNotNull('tgl_issued')
             ->select(
                 'kode_booking as order_id',
                 'tgl_issued as tanggal',
-                DB::raw('-nta as transaksi'),
-                DB::raw("'Pembelian Tiket' as keterangan")
+                DB::raw("
+                    CASE
+                        WHEN status IN ('refunded', 'canceled')
+                            THEN nilai_refund
+                        ELSE -nta
+                    END as transaksi
+                "),
+                DB::raw("
+                    CASE
+                        WHEN status = 'refunded' THEN 'Refund Tiket'
+                        WHEN status = 'canceled' THEN 'Cancel Tiket'
+                        ELSE 'Pembelian Tiket'
+                    END as keterangan
+                ")
             )
             ->get();
+
 
 
         /* ================= MASUK (TOP UP TIKET) ================= */
@@ -59,7 +72,7 @@ class MutasiTiketController extends Controller
 
         /* ================= GABUNG & SORT ASC ================= */
         $mutasi = collect()
-            ->merge($nota)
+            ->merge($tiket)
             ->merge($topupHistories)
             ->sortBy([
                 ['tanggal', 'asc'],

@@ -478,12 +478,36 @@
 
         /* ===================== TOGGLE JENIS BAYAR ===================== */
         function toggleJenisPembayaran() {
-            const jenis = $('jenis_bayar_id').value;
-            $('bankContainer').style.display = jenis === '1' ? 'block' : 'none';
-            $('namaPiutangContainer').style.display = jenis === '3' ? 'block' : 'none';
+            const jenisSelect = $('jenis_bayar_id');
+            const bankSelect  = $('bank_id');
 
-            $('bank_id').required = jenis === '1';
-            $('nama_piutang').required = jenis === '3';
+            // kalau jenis bayar di-disable (mode subagent)
+            if (jenisSelect.disabled) {
+                bankSelect.value = '';
+                bankSelect.disabled = true;
+                $('bankContainer').style.display = 'none';
+                return;
+            }
+
+            const jenis = jenisSelect.value;
+
+            // BANK
+            const isBank = jenis === '1';
+            $('bankContainer').style.display = isBank ? 'block' : 'none';
+            bankSelect.disabled = !isBank;
+
+            if (!isBank) {
+                bankSelect.value = '';
+            }
+
+            // PIUTANG
+            const isPiutang = jenis === '3';
+            $('namaPiutangContainer').style.display = isPiutang ? 'block' : 'none';
+            $('nama_piutang').disabled = !isPiutang;
+
+            if (!isPiutang) {
+                $('nama_piutang').value = '';
+            }
         }
 
         $('jenis_bayar_id').addEventListener('change', toggleJenisPembayaran);
@@ -496,7 +520,7 @@
             .then(r => r.ok ? r.json() : Promise.reject(r.status))
             .then(d => {
                 // ====== SUBAGENT / CUSTOMER ======
-                if (d.subagent_id) {
+                if (d.subagent_id !== null && d.subagent_id !== '') {
                     // mode subagent
                     statusCustomer.value = 'subagent';
                     toggleCustomerType();
@@ -529,21 +553,38 @@
 
         function toggleCustomerType() {
             const type = statusCustomer.value;
+            const subagentSelect = document.getElementById('subagent_id');
+            const jenisBayarSelect = $('jenis_bayar_id'); // 🔥 WAJIB
+            const bankSelect       = $('bank_id');         // 🔥 WAJIB
 
             document.querySelectorAll('.subagent-hide').forEach(el => {
                 el.style.display = (type === 'subagent') ? 'none' : 'block';
             });
 
-            document.getElementById('subagentContainer').style.display =
+            $('subagentContainer').style.display =
                     type === 'subagent' ? 'block' : 'none';
 
-            document.getElementById('subagent_id').required = (type === 'subagent');
-
             if (type === 'subagent') {
-                // set otomatis
-                document.getElementById('jenis_bayar_id').value = '';
-                toggleJenisPembayaran();
+                subagentSelect.disabled = false;
+                subagentSelect.required = true;
+
+                // 🔥 KUNCI UTAMA
+                jenisBayarSelect.value = '';
+                jenisBayarSelect.disabled = true;
+
+                // 🔒 KUNCI BANK
+                bankSelect.value = '';
+                bankSelect.disabled = true;
+                $('bankContainer').style.display = 'none';
+            } else {
+                subagentSelect.disabled = true;   // 🔥 INI KUNCINYA
+                subagentSelect.required = false;
+                subagentSelect.value = '';        // opsional tapi disarankan
+
+                // 🔥 BUKA LAGI
+                jenisBayarSelect.disabled = false;
             }
+            toggleJenisPembayaran();
         }
 
         statusCustomer.addEventListener('change', toggleCustomerType);

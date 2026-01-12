@@ -388,12 +388,24 @@ class TiketController extends Controller
         MutasiTiketService $mutasiService
     ) {
         $request->validate([
+            'kode_booking'   => 'required|string|max:10',
+            'tgl_issued'     => 'required|date',
+            'name'           => 'required|string|max:100',
+            'harga_jual'     => 'required|integer|min:0',
+            'nta'            => 'required|integer|min:0',
+            'diskon'         => 'required|integer|min:0',
+            'komisi'         => 'required|integer|min:0',
+            'rute'           => 'required|string|max:45',
+            'tgl_flight'     => 'required|date',
+            'rute2'          => 'nullable|string|max:45',
+            'tgl_flight2'    => 'nullable|date',
             'status'        => 'required|in:issued,canceled,refunded',
             'jenis_bayar_id' => 'nullable|exists:jenis_bayar,id',
             'bank_id'       => 'nullable|exists:bank,id',
             'nilai_refund'  => 'nullable|integer|min:0',
             'tgl_realisasi' => 'nullable|date',
             'keterangan'    => 'nullable|string|max:200',
+
             'subagent_id'   => 'nullable|exists:subagents,id',
         ]);
 
@@ -414,8 +426,22 @@ class TiketController extends Controller
             // UPDATE DATA UMUM
             // =========================
             $tiket->update([
-                'status'        => $request->status,
-                'keterangan'    => strtoupper($request->keterangan),
+                'kode_booking'   => strtoupper($request->kode_booking),
+                'tgl_issued'     => $request->tgl_issued,
+                'name'           => strtoupper($request->name),
+                'harga_jual'     => $request->harga_jual,
+                'nta'            => $request->nta,
+                'diskon'         => $request->diskon,
+                'komisi'         => $request->harga_jual - $request->diskon - $request->nta,
+                'rute'           => strtoupper($request->rute),
+                'tgl_flight'     => $request->tgl_flight,
+                'rute2'          => strtoupper($request->rute2),
+                'tgl_flight2'    => $request->tgl_flight2,
+                'status'         => $request->status,
+                'jenis_tiket_id' => $request->jenis_tiket_id,
+
+                'nama_piutang'   => $request->jenis_bayar_id == 3 ? $request->nama_piutang : null,
+                'keterangan'     => strtoupper($request->keterangan),
                 'nilai_refund'  => $request->nilai_refund,
                 'tgl_realisasi' => $request->tgl_realisasi,
             ]);
@@ -423,7 +449,8 @@ class TiketController extends Controller
             // =========================
             // 🔄 ISSUED → REFUNDED
             // =========================
-            if ($statusLama === 'issued' && $request->status === 'refunded') {
+            if ($statusLama === 'issued' && $tiket->status === 'refunded') {
+
 
                 if (
                     !$request->filled('nilai_refund') ||
@@ -431,11 +458,14 @@ class TiketController extends Controller
                 ) {
                     throw new \Exception('Nilai refund & tanggal realisasi wajib diisi');
                 }
+                JenisTiket::lockForUpdate()
+                    ->findOrFail($request->jenis_tiket_id)
+                    ->increment('saldo', $request->nilai_refund);
 
                 // =========================
                 // 🟣 REFUND SUBAGENT
                 // =========================
-                if ($request->filled('subagent_id')) {
+                if ($request->subagent_id) {
 
                     $subagent = Subagent::lockForUpdate()
                         ->findOrFail($request->subagent_id);
@@ -446,11 +476,11 @@ class TiketController extends Controller
                     
                     // history subagent
                     SubagentHistory::create([
-                        'tgl_issued'   => $request->tgl_realisasi,
+                        'tgl_issued'   => $tiket->tgl_realisasi,
                         'subagent_id'  => $subagent->id,
                         'kode_booking' => $tiket->kode_booking,
                         'status'       => 'refunded',
-                        'transaksi'    => $request->nilai_refund,
+                        'transaksi'    => $tiket->nilai_refund,
                     ]);
 
                 } 
@@ -463,24 +493,42 @@ class TiketController extends Controller
                         $bank = Bank::lockForUpdate()
                             ->findOrFail($request->bank_id);
 
-                        // saldo bank turun
-                        $bank->decrement('saldo', $request->nilai_refund);
+                        $saldoAwal = $bank->saldo;
+                        $saldoAkhir = $saldoAwal - $request->nilai_refund;
+
+                        // update saldo bank
+                        $bank->update([
+                            'saldo' => $saldoAkhir
+                        ]);
+
+                        // =========================
+                        // MUTASI BANK (REFUND)
+                        // =========================
+                        MutasiBank::create([
+                            'bank_id'    => $bank->id,
+                            'tanggal'    => $tiket->tgl_realisasi,
+                            'debit'      => 0,
+                            'kredit'     => $tiket->nilai_refund,
+                            'saldo'      => $saldoAkhir,
+                            'keterangan' => 'Refund tiket ' . $tiket->kode_booking,
+                        ]);
                     }
+                    
 
                     if ($request->jenis_bayar_id) {
                         $jenisBayar = JenisBayar::lockForUpdate()
                             ->findOrFail($request->jenis_bayar_id);
 
-                        $jenisBayar->decrement('saldo', $request->nilai_refund);
+                        $jenisBayar->decrement('saldo', $tiket->nilai_refund);
                     }
 
                     // mutasi refund
                     $mutasiService->create([
                         'tiket_kode_booking' => $tiket->kode_booking,
-                        'tgl_bayar'          => $request->tgl_realisasi,
-                        'harga_bayar'        => -$request->nilai_refund,
-                        'jenis_bayar_id'     => 4,
-                        'bank_id'            => $tiket->bank_id,
+                        'tgl_bayar'          => $tiket->tgl_realisasi,
+                        'harga_bayar'        => -$tiket->nilai_refund,
+                        'jenis_bayar_id'     => $request->jenis_bayar_id,
+                        'bank_id'            => $request->bank_id,
                         'keterangan'         => 'REFUND TIKET',
                     ]);
                 }

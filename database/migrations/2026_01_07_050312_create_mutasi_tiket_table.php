@@ -18,8 +18,8 @@ return new class extends Migration
                 ->cascadeOnDelete();
             $table->string('tiket_kode_booking', 10);
             // Tanggal
-            $table->date('tgl_issued');
-            $table->date('tgl_bayar')->nullable();
+            $table->datetime('tgl_issued');
+            $table->datetime('tgl_bayar')->nullable();
 
             // Nominal
             $table->decimal('harga_bayar', 15, 2)->default(0);

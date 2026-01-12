@@ -64,9 +64,7 @@ class SubagentController extends Controller
                 // catat mutasi bank: uang keluar untuk top up subagent
                 MutasiBank::create([
                     'bank_id'    => $bank->id,
-                    'tanggal'    => now(),
-                    'ref_type'   => 'TOPUP_SUBAGENT',
-                    'ref_id'     => $subagent->id,
+                    'tanggal'    => $request->tgl_issued ?? now(),
                     'debit'      => $request->nominal,
                     'kredit'     => 0,
                     'saldo'      => $bank->saldo + $request->nominal,
