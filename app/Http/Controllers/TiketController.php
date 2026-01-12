@@ -369,9 +369,12 @@ class TiketController extends Controller
     ) {
         $request->validate([
             'status'        => 'required|in:issued,canceled,refunded',
+            'jenis_bayar_id' => 'nullable|exists:jenis_bayar,id',
+            'bank_id'       => 'nullable|exists:bank,id',
             'nilai_refund'  => 'nullable|integer|min:0',
             'tgl_realisasi' => 'nullable|date',
             'keterangan'    => 'nullable|string|max:200',
+            'subagent_id'   => 'nullable|exists:subagents,id',
         ]);
 
         DB::transaction(function () use ($request, $kode_booking, $mutasiService) {
@@ -412,14 +415,15 @@ class TiketController extends Controller
                 // =========================
                 // 🟣 REFUND SUBAGENT
                 // =========================
-                if ($tiket->subagent_id) {
+                if ($request->filled('subagent_id')) {
 
                     $subagent = Subagent::lockForUpdate()
-                        ->findOrFail($tiket->subagent_id);
+                        ->findOrFail($request->subagent_id);
 
                     // saldo subagent naik
                     $subagent->increment('saldo', $request->nilai_refund);
 
+                    
                     // history subagent
                     SubagentHistory::create([
                         'tgl_issued'   => $request->tgl_realisasi,
@@ -435,12 +439,19 @@ class TiketController extends Controller
                 // =========================
                 else {
 
-                    if ($tiket->bank_id) {
+                    if ($request->bank_id) {
                         $bank = Bank::lockForUpdate()
-                            ->findOrFail($tiket->bank_id);
+                            ->findOrFail($request->bank_id);
 
                         // saldo bank turun
                         $bank->decrement('saldo', $request->nilai_refund);
+                    }
+
+                    if ($request->jenis_bayar_id) {
+                        $jenisBayar = JenisBayar::lockForUpdate()
+                            ->findOrFail($request->jenis_bayar_id);
+
+                        $jenisBayar->decrement('saldo', $request->nilai_refund);
                     }
 
                     // mutasi refund

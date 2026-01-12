@@ -85,7 +85,6 @@
                         <ul class="dropdown-menu dropdown-click-menu">
                             <li><a class="dropdown-item" href="{{ url('/register') }}">Register new User</a></li>
                             <li><a class="dropdown-item" href="{{ url('/rekap-penjualan') }}">Rekapan Penjualan</a></li>
-                            <li><a class="dropdown-item" href="{{ url('/insentif') }}">Insentif</a></li>
                             <li><a class="dropdown-item" href="{{ url('/buku-bank') }}">Buku Bank</a></li>
                         </ul>
                     </li>
