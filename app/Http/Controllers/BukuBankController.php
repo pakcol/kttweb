@@ -18,10 +18,10 @@ class BukuBankController extends Controller
 
         /* ================= BUKU BANK DARI TABEL MUTASI_BANK ================= */
         $bukuBank = DB::table('mutasi_bank')
-            ->where('bank_id', $bankId)
-            ->orderBy('tanggal')
-            ->orderBy('id')
-            ->get();
+                ->where('bank_id', $bankId)
+                ->orderBy('tanggal', 'asc')   
+                ->orderBy('id', 'asc')     
+                ->get();
 
 
 
