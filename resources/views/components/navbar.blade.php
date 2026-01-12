@@ -10,8 +10,11 @@
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
+
         </button>
-        
+
+        <!-- Jam Realtime -->
+        <span id="realtime-clock" class="ms-3 fw-medium text-dark"></span>
         {{-- Menu --}}
         <div class="collapse navbar-collapse justify-content-end mt-2 mt-lg-0" id="navbarNav">
             <ul class="navbar-nav align-items-lg-center gap-lg-3">
@@ -91,30 +94,99 @@
                     @endif
 
                     {{-- Dropdown user --}}
-                    <li class="nav-item">
-                        <div class="d-flex flex-column">
-                            <a class="nav-link fw-medium text-dark p-0 mb-1" 
-                               href="/homeDb" 
-                               aria-expanded="false">
-                                Hi, {{ Auth::user()->name }} !
-                            </a>
-                            <!-- Jam Realtime dengan Hari dan Tanggal -->
-                            <div class="d-flex align-items-center">
-                                <span id="realtime-date" class="fw-medium text-dark small"></span>
-                                <span id="realtime-clock" class="fw-medium text-dark small ms-2"></span>
-                            </div>
-                        </div>
-                    </li>
-                    
-                    <li class="nav-item dropdown">
-                        <a class="dropdown-item text-danger" href="{{ route('logout') }}"
-                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                            <i class="fas fa-sign-out-alt me-2"></i>Logout
-                        </a>
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                            @csrf
-                        </form>
-                    </li>
+                    <li class="nav-item user-nav">
+    <a class="nav-link d-flex align-items-center nav-user-pill"
+       href="#">
+
+        <span class="user-name">{{ Auth::user()->name }}</span>
+
+        <span class="avatar-ring">
+            <img src="{{ asset('images/people.png') }}"
+                 alt="User Profile"
+                 class="user-avatar">
+        </span>
+    </a>
+</li>
+<li class="nav-item dropdown">
+    <a class="dropdown-item text-danger" href="{{ route('logout') }}"
+        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+        <i class="fas fa-sign-out-alt me-2"></i>Logout
+    </a>
+    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+        @csrf
+    </form>
+</li>
+
+<style>
+.user-nav {
+    display: flex;
+    align-items: center;
+}
+
+.nav-user-pill {
+    display: flex !important;
+    align-items: center;
+    gap: 10px;
+
+    padding: 6px 14px;
+    border-radius: 999px;
+
+    background: rgba(13,110,253,0.06);
+    border: 1px solid rgba(13,110,253,0.15);
+
+    transition: all 0.3s ease;
+}
+
+.user-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    color: #1f2937;
+    letter-spacing: 0.2px;
+}
+
+.avatar-ring {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+
+    background: linear-gradient(
+        135deg,
+        rgba(13,110,253,0.5),
+        rgba(111,66,193,0.5)
+    );
+}
+
+.user-avatar {
+    width: 26px !important;
+    height: 26px !important;
+    min-width: 26px;
+    min-height: 26px;
+
+    border-radius: 50%;
+    object-fit: cover;
+    background: #fff;
+}
+
+.nav-user-pill:hover {
+    background: rgba(13,110,253,0.12);
+    transform: translateY(-1px);
+}
+
+.nav-user-pill:hover .avatar-ring {
+    box-shadow: 0 0 0 4px rgba(13,110,253,0.15);
+}
+
+.user-nav .nav-link::after {
+    display: none !important;
+}
+
+
+</style>
                 @endguest
             </ul>
         </div>
@@ -122,147 +194,225 @@
 </nav>
 
 <style>
-    .navbar-nav .nav-link {
-        padding: 8px 12px;
-        transition: all 0.3s ease;
+:root {
+    --primary: #0d6efd;
+    --dark: #1f2937;
+    --muted: #6b7280;
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.35);
+    --shadow-soft: 0 8px 25px rgba(0,0,0,0.08);
+    --shadow-strong: 0 22px 50px rgba(0,0,0,0.18);
+    --radius-lg: 18px;
+    --radius-md: 12px;
+}
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1050;
+    overflow: visible !important;
+
+    backdrop-filter: blur(14px);
+    background: linear-gradient(
+        180deg,
+        rgba(255,255,255,0.95),
+        rgba(255,255,255,0.88)
+    ) !important;
+
+    border-bottom: 1px solid var(--glass-border);
+    transition: all 0.35s ease;
+}
+
+.container-fluid,
+.navbar-collapse {
+    overflow: visible !important;
+}
+.navbar-brand img {
+    transition: transform 0.35s ease, filter 0.35s ease;
+}
+
+.navbar-brand:hover img {
+    transform: scale(1.08);
+    filter: drop-shadow(0 4px 8px rgba(13,110,253,0.25));
+}
+
+.navbar-nav .nav-link {
+    position: relative;
+}
+
+.navbar-nav .nav-link::after {
+    content: "";
+    position: absolute;
+    bottom: 4px;
+    left: 14px;
+    right: 14px;
+    height: 2px;
+
+    background: linear-gradient(90deg, var(--primary), #6f42c1);
+    border-radius: 2px;
+
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.3s ease;
+}
+
+/* Hover & Active */
+.navbar-nav .nav-link:hover {
+    color: var(--primary) !important;
+    transform: translateY(-1px);
+}
+
+.navbar-nav .nav-link:hover::after,
+.navbar-nav .nav-link.text-primary::after {
+    transform: scaleX(1);
+}
+
+.navbar-nav .nav-link.text-primary {
+    font-weight: 600;
+}
+
+#realtime-clock {
+    font-size: 0.9rem;
+    color: var(--muted);
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(0,0,0,0.04);
+    transition: all 0.3s ease;
+}
+
+#realtime-clock:hover {
+    background: rgba(13,110,253,0.1);
+    color: var(--primary);
+}
+
+.nav-item.dropdown {
+    position: relative;
+}
+
+.dropdown-click-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    z-index: 9999;
+
+    min-width: 220px;
+    padding: 10px 0;
+    border-radius: var(--radius-lg);
+
+    background: var(--glass-bg);
+    backdrop-filter: blur(18px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-strong);
+
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(12px) scale(0.96);
+    transition: all 0.35s ease;
+}
+.dropdown-manual-show > .dropdown-click-menu {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) scale(1);
+}
+
+
+.dropdown-item {
+    position: relative;
+    padding: 12px 22px;
+    font-size: 0.92rem;
+    color: #374151;
+    transition: all 0.3s ease;
+}
+
+.dropdown-item::after {
+    content: "";
+    position: absolute;
+    bottom: 6px;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary), #6f42c1);
+    border-radius: 2px;
+    transform: translateX(-50%);
+    transition: width 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background: linear-gradient(
+        135deg,
+        rgba(13,110,253,0.12),
+        rgba(111,66,193,0.06)
+    );
+    color: var(--primary) !important;
+}
+
+.dropdown-item:hover::after {
+    width: 55%;
+}
+
+
+.dropdown-toggle::after {
+    transition: transform 0.35s ease;
+}
+
+.dropdown-manual-show .dropdown-toggle::after {
+    transform: rotate(180deg);
+}
+
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        background: var(--glass-bg);
+        backdrop-filter: blur(14px);
+        border-radius: var(--radius-md);
+        padding: 18px;
+        box-shadow: var(--shadow-soft);
+        animation: slideDown 0.4s ease;
     }
 
-    .navbar-nav .nav-link:hover {
-        color: #0d6efd !important;
+    .navbar-nav .nav-item {
+        margin-bottom: 6px;
     }
 
-    /* Dropdown Styles */
     .dropdown-click-menu {
-        border: none;
-        border-radius: 12px;
-        padding: 8px 0;
-        margin-top: 8px;
-        background: white;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-        border: 1px solid rgba(0, 0, 0, 0.1);
-        min-width: 200px;
+        position: static;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        box-shadow: none;
+        margin-top: 6px;
+        background: rgba(248,249,250,0.9);
     }
+}
 
-    .dropdown-item {
-        padding: 10px 20px;
-        transition: all 0.3s ease;
-        color: #495057;
-        text-decoration: none;
-        display: block;
-        border-left: 3px solid transparent;
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
     }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
-    .dropdown-item:hover {
-        background: linear-gradient(135deg, rgba(13, 110, 253, 0.1), rgba(111, 66, 193, 0.05));
-        color: #0d6efd !important;
-        border-left-color: #0d6efd;
-        transform: translateX(5px);
-    }
+.nav-link:focus,
+.dropdown-item:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(13,110,253,0.25);
+}
+.dropdown-click-menu {
+    display: block !important;
+    pointer-events: none;
+}
 
-    .dropdown-item.text-danger:hover {
-        background: linear-gradient(135deg, rgba(220, 53, 69, 0.1), rgba(220, 53, 69, 0.05));
-        color: #dc3545 !important;
-        border-left-color: #dc3545;
-    }
+.dropdown-manual-show > .dropdown-click-menu {
+    display: block !important;
+    pointer-events: auto;
+}
 
-    /* Dropdown arrow animation */
-    .dropdown-toggle::after {
-        transition: transform 0.3s ease;
-        margin-left: 5px;
-    }
-
-    .dropdown.show .dropdown-toggle::after {
-        transform: rotate(180deg);
-    }
-
-    /* Active state for parent links */
-    .nav-link.text-primary {
-        position: relative;
-    }
-
-    .nav-link.text-primary::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 12px;
-        right: 12px;
-        height: 2px;
-        background: #0d6efd;
-        border-radius: 2px;
-    }
-
-    /* Custom dropdown show state */
-    .dropdown-manual-show .dropdown-click-menu {
-        display: block !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-        transform: translateY(0) !important;
-    }
-
-    /* Style untuk jam dan tanggal */
-    #realtime-date {
-        font-size: 12px;
-        color: #6c757d;
-        white-space: nowrap;
-    }
-    
-    #realtime-clock {
-        font-size: 12px;
-        color: #495057;
-        font-weight: 600;
-        white-space: nowrap;
-    }
-
-    /* Mobile Responsive */
-    @media (max-width: 991.98px) {
-        .navbar-collapse {
-            background-color: #fff;
-            padding: 1rem 1.2rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-        
-        .navbar-nav .nav-item {
-            margin-bottom: 0.5rem;
-        }
-        
-        .dropdown-click-menu {
-            position: static;
-            transform: none;
-            box-shadow: none;
-            margin-top: 0;
-            background: rgba(248, 249, 250, 0.8);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
-        
-        .dropdown-item:hover {
-            transform: translateX(8px);
-        }
-        
-        /* Penyesuaian untuk jam dan tanggal di mobile */
-        .nav-item .d-flex.flex-column {
-            padding: 8px 12px;
-        }
-        
-        #realtime-date,
-        #realtime-clock {
-            font-size: 11px;
-        }
-    }
-
-    /* Smooth transitions */
-    .navbar-nav .nav-link,
-    .dropdown-item {
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    /* Focus states for accessibility */
-    .nav-link:focus,
-    .dropdown-item:focus {
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.3);
-    }
 </style>
+
+
 
 <!-- Font Awesome for Icons -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -273,39 +423,23 @@
 // Variable to track current open dropdown
 let currentOpenDropdown = null;
 
-// Arrays untuk nama hari dan bulan dalam Bahasa Indonesia
-const hariIndo = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-const bulanIndo = [
-    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-];
-
-function updateDateTime() {
-    const dateElement = document.getElementById('realtime-date');
-    const clockElement = document.getElementById('realtime-clock');
+function updateClock() {
+    const clock = document.getElementById('realtime-clock');
     const now = new Date();
 
-    // Format Hari, Tanggal Bulan Tahun
-    const hari = hariIndo[now.getDay()];
-    const tanggal = now.getDate();
-    const bulan = bulanIndo[now.getMonth()];
-    const tahun = now.getFullYear();
-
     // Format jam: HH:MM:SS
-    const jam = String(now.getHours()).padStart(2, '0');
-    const menit = String(now.getMinutes()).padStart(2, '0');
-    const detik = String(now.getSeconds()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
 
-    // Update elemen
-    dateElement.textContent = `${hari}, ${tanggal} ${bulan} ${tahun}`;
-    clockElement.textContent = `${jam}:${menit}:${detik}`;
+    clock.textContent = `${hours}:${minutes}:${seconds}`;
 }
 
 // Update setiap detik
-setInterval(updateDateTime, 1000);
+setInterval(updateClock, 1000);
 
 // Inisialisasi saat halaman load
-updateDateTime();
+updateClock();
 
 function toggleDropdown(dropdownId) {
     const dropdown = document.getElementById(dropdownId);
