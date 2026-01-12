@@ -10,8 +10,11 @@
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
+
         </button>
 
+        <!-- Jam Realtime -->
+        <span id="realtime-clock" class="ms-3 fw-medium text-dark"></span>
         {{-- Menu --}}
         <div class="collapse navbar-collapse justify-content-end mt-2 mt-lg-0" id="navbarNav">
             <ul class="navbar-nav align-items-lg-center gap-lg-3">
@@ -240,6 +243,24 @@
 <script>
 // Variable to track current open dropdown
 let currentOpenDropdown = null;
+
+function updateClock() {
+    const clock = document.getElementById('realtime-clock');
+    const now = new Date();
+
+    // Format jam: HH:MM:SS
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+
+    clock.textContent = `${hours}:${minutes}:${seconds}`;
+}
+
+// Update setiap detik
+setInterval(updateClock, 1000);
+
+// Inisialisasi saat halaman load
+updateClock();
 
 function toggleDropdown(dropdownId) {
     const dropdown = document.getElementById(dropdownId);

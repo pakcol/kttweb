@@ -115,7 +115,7 @@
                     <td>{{ $row->tiket?->tgl_flight2?->format('Y-m-d') ?? '-' }}</td>
                     <td>{{ number_format($row->tiket?->harga_jual ?? 0, 0, ',', '.') }}</td>
                     <td>{{ number_format($row->tiket?->nta ?? 0, 0, ',', '.') }}</td>
-                    <td>{{ number_format($row->subagent?->saldo ?? 0, 0, ',', '.') }}</td>
+                    <td>{{ number_format($row->saldo ?? 0, 0, ',', '.') }}</td>
                     <td>{{ number_format($row->transaksi,0,',','.') }}</td>
                     <td>{{ $row->status }}</td>
                 </tr>

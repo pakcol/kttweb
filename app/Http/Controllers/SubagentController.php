@@ -21,8 +21,18 @@ class SubagentController extends Controller
         $bank = Bank::orderBy('name')->get();
 
         $histories = SubagentHistory::with('subagent')
-            ->orderBy('created_at', 'desc')
+            ->orderBy('created_at', 'asc')
             ->get();
+
+        $saldo = 0;
+        $histories->transform(function ($item) use (&$saldo) {
+            $saldo += $item->transaksi;
+            $item->saldo = $saldo;
+            return $item;
+        });
+
+        $histories = $histories->sortByDesc('created_at')->values();
+
         return view('subagent', compact('subagents', 'histories', 'jenisBayar', 'bank'));
     }
 
