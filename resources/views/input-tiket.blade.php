@@ -5,16 +5,15 @@
         <h2>INPUT TIKET</h2>
         <div class="current-time" id="currentDateTime"></div>
 
-        <div class="form-group">
-            <label for="statusCustomer">CUSTOMER TIKET</label>
-            <select id="statusCustomer" name="statusCustomer" required>
-                <option value="customer" class="customer">CUSTOMER</option>
-                <option value="subagent" class="subagent">SUBAGENT</option>
-            </select>
-        </div>
-
         <form action="{{ route('input-tiket.store') }}" id="inputDataForm" method="POST">
             @csrf
+            <div class="form-group">
+                <label for="statusCustomer">CUSTOMER TIKET</label>
+                <select id="statusCustomer" name="statusCustomer" required>
+                    <option value="customer" class="customer">CUSTOMER</option>
+                    <option value="subagent" class="subagent">SUBAGENT</option>
+                </select>
+            </div>
             <div class="form-group" id="subagentContainer" style="display:none;">
                 <label>SUBAGENT</label>
                 <select name="subagent_id" id="subagent_id">
@@ -448,17 +447,6 @@
 
             row.style.display = (tableDate === selectedDate) ? '' : 'none';
         });
-    });
-
-    statusCustomer.addEventListener('change', function () {
-
-        if (formMode === 'update') return; // 🚫 JANGAN SENTUH ACTION
-
-        if (this.value === 'subagent') {
-            form.action = "{{ route('input-tiket.subagent') }}";
-        } else {
-            form.action = "{{ route('input-tiket.store') }}";
-        }
     });
 
     /* ===================== UTIL ===================== */
