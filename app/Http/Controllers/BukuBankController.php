@@ -94,4 +94,60 @@ class BukuBankController extends Controller
             ->back()
             ->with('success', 'Top up bank berhasil & tercatat di biaya');
     }
+
+    public function store(Request $request)
+    {
+        DB::transaction(function () use ($request) {
+
+            $setoranBanks = $request->input('setoran', []);
+            $totalSetoran = 0;
+
+            foreach ($setoranBanks as $bankId => $nominal) {
+
+                $nominal = (int) $nominal;
+                if ($nominal <= 0) continue;
+
+                /** ======================
+                 *  BANK
+                 *  ====================== */
+                $bank = Bank::lockForUpdate()->findOrFail($bankId);
+
+                $saldoAwal = $bank->saldo;
+                $saldoAkhir = $saldoAwal + $nominal;
+
+                // update saldo bank
+                $bank->update([
+                    'saldo' => $saldoAkhir
+                ]);
+
+                /** ======================
+                 *  MUTASI BANK
+                 *  ====================== */
+                MutasiBank::create([
+                    'bank_id'   => $bank->id,
+                    'tanggal'   => now(),
+                    'debit'     => $nominal,
+                    'kredit'    => 0,
+                    'saldo'     => $saldoAkhir,
+                    'keterangan'=> 'Setoran Tutup Kas',
+                ]);
+
+                $totalSetoran += $nominal;
+            }
+
+            /** ======================
+             *  JENIS BAYAR (BANK = ID 1)
+             *  ====================== */
+            if ($totalSetoran > 0) {
+                $jenisBayarBank = JenisBayar::lockForUpdate()->findOrFail(1);
+
+                $jenisBayarBank->update([
+                    'saldo' => $jenisBayarBank->saldo + $totalSetoran
+                ]);
+            }
+
+        });
+
+        return redirect()->back()->with('success', 'Setoran berhasil disimpan');
+    }
 }

@@ -37,7 +37,7 @@
         </form>
 
         {{-- GRID --}}
-        <form method="POST">
+        <form method="POST" action="{{ route('cashflow.store') }}">
             @csrf
 
             <div class="form-grid cashflow-grid">
@@ -111,7 +111,12 @@
 
                     @foreach($banks as $bank)
                         <label>SETORAN {{ strtoupper($bank->name) }}</label>
-                        <input type="number" value="">
+                        <input 
+                            type="number" 
+                            name="setoran[{{ $bank->id }}]"
+                            value=""
+                            min="0"
+                        >
                     @endforeach
                 </div>
 
@@ -139,7 +144,6 @@
 
     </div>
 </div>
-        </form>
 
         @if(isset($penjualan) && count($penjualan) > 0)
         <div class="table-laporan">

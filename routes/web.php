@@ -135,6 +135,9 @@ Route::prefix('ppob')->name('ppob.')->group(function () {
     // ======== CASH FLOW CONTROLLER ========
     Route::get('/cash-flow', [MutasiTiketController::class, 'cashFlow'])
         ->name('cash-flow.cashFlow');
+    // simpan setoran tutup kas
+    Route::post('/cash-flow/tutup-kas', [BukuBankController::class, 'store'])
+        ->name('cashflow.store');
 
     // ======== REKAP PENJUALAN ========
     Route::get('/rekap-penjualan', [MutasiTiketController::class, 'rekapPenjualan'])
@@ -147,11 +150,6 @@ Route::prefix('ppob')->name('ppob.')->group(function () {
         Route::get('/register', [UserController::class, 'create'])->name('register.create'); // Menggunakan method create
         Route::post('/register', [UserController::class, 'store'])->name('register.store');
         Route::delete('/register/{username}', [UserController::class, 'destroy'])->name('register.destroy');
-        Route::get('/insentif', [InsentifController::class, 'index'])
-            ->name('insentif.index');
-
-        Route::post('/insentif', [InsentifController::class, 'store'])
-            ->name('insentif.store');
 
     });
 
