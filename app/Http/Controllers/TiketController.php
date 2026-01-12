@@ -341,9 +341,29 @@ class TiketController extends Controller
                 ->increment('saldo', $tiket->harga_jual);
 
             if ((int)$request->jenis_bayar_id === 1 && $request->bank_id) {
-                Bank::find($request->bank_id)
-                    ->increment('saldo', $tiket->harga_jual);
+                $bank = Bank::lockForUpdate()->findOrFail($request->bank_id);
+
+                $saldoAwal = $bank->saldo;
+                $saldoAkhir = $saldoAwal + $tiket->harga_jual;
+
+                // update saldo bank
+                $bank->update([
+                    'saldo' => $saldoAkhir
+                ]);
+
+                // =====================
+                // CATAT BUKU BANK
+                // =====================
+                MutasiBank::create([
+                    'bank_id'    => $bank->id,
+                    'tanggal'    => $tiket->tgl_issued,
+                    'debit'      => $tiket->harga_jual,
+                    'kredit'     => 0,
+                    'saldo'      => $saldoAkhir,
+                    'keterangan' => 'Penjualan tiket ' . $tiket->kode_booking,
+                ]);
             }
+
 
             // mutasi tiket
             $mutasiService->create([
