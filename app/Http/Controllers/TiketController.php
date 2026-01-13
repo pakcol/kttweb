@@ -299,6 +299,17 @@ class TiketController extends Controller
                     'transaksi'    => -$tiket->harga_jual,
                 ]);
 
+                $mutasiService->create([
+                    'tiket_kode_booking' => $tiket->kode_booking,
+                    'tgl_issued'         => $tiket->tgl_issued,
+                    'tgl_bayar'          => $tiket->tgl_issued,
+                    'harga_bayar'        => $tiket->nta * -1, 
+                    'jenis_bayar_id'     => null,
+                    'bank_id'            => null,
+                    'keterangan'         => 'PEMESANAN TIKET SUBAGENT',
+                ]);
+
+
                 return;
             }
 
@@ -362,7 +373,7 @@ class TiketController extends Controller
                 'tiket_kode_booking' => $tiket->kode_booking,
                 'tgl_issued'         => $tiket->tgl_issued,
                 'tgl_bayar'          => $request->jenis_bayar_id == 3 ? null : $tiket->tgl_issued,
-                'harga_bayar'        => $tiket->harga_jual,
+                'harga_bayar'        => $tiket->nta * -1,
                 'jenis_bayar_id'     => $request->jenis_bayar_id,
                 'bank_id'            => $request->bank_id,
                 'nama_piutang'       => $request->jenis_bayar_id == 3 ? $request->nama_piutang : null,
