@@ -299,15 +299,15 @@ class TiketController extends Controller
                     'transaksi'    => -$tiket->harga_jual,
                 ]);
 
-                $mutasiService->create([
-                    'tiket_kode_booking' => $tiket->kode_booking,
-                    'tgl_issued'         => $tiket->tgl_issued,
-                    'tgl_bayar'          => $tiket->tgl_issued,
-                    'harga_bayar'        => $tiket->nta * -1, 
-                    'jenis_bayar_id'     => null,
-                    'bank_id'            => null,
-                    'keterangan'         => 'PEMESANAN TIKET SUBAGENT',
-                ]);
+                // $mutasiService->create([
+                //     'tiket_kode_booking' => $tiket->kode_booking,
+                //     'tgl_issued'         => $tiket->tgl_issued,
+                //     'tgl_bayar'          => $tiket->tgl_issued,
+                //     'harga_bayar'        => $tiket->nta * -1, 
+                //     'jenis_bayar_id'     => null,
+                //     'bank_id'            => null,
+                //     'keterangan'         => 'PEMESANAN TIKET SUBAGENT',
+                // ]);
 
 
                 return;
@@ -420,7 +420,7 @@ class TiketController extends Controller
 
             $statusLama = $tiket->status;
 
-            // 🚫 SUDAH REFUND → STOP
+            // kalau refund stop program
             if ($statusLama === 'refunded') {
                 throw new \Exception('Tiket refund tidak bisa diubah');
             }
@@ -461,18 +461,18 @@ class TiketController extends Controller
                     $mutasi->update([
                         'tgl_bayar'      => $tiket->tgl_issued,
                         'harga_bayar'    => $tiket->harga_jual,
-                        'jenis_bayar_id' => $request->jenis_bayar_id,
+                        'jenis_bayar_id' => $tiket->jenis_bayar_id,
                         'bank_id'        => $request->bank_id,
                         'nama_piutang'   => $request->jenis_bayar_id == 3 ? $request->nama_piutang : null,
                         'keterangan'     => 'UPDATE DATA TIKET',
                     ]);
                 } else {
-                    // kalau belum ada (fallback)
+                    // kalau belum ada (subagent)
                     $mutasiService->create([
                         'tiket_kode_booking' => $tiket->kode_booking,
                         'tgl_bayar'          => $tiket->tgl_issued,
                         'harga_bayar'        => $tiket->harga_jual,
-                        'jenis_bayar_id'     => $request->jenis_bayar_id,
+                        'jenis_bayar_id'     => 4,
                         'bank_id'            => $request->bank_id,
                         'nama_piutang'       => $request->jenis_bayar_id == 3 ? $request->nama_piutang : null,
                         'keterangan'         => 'ISSUED TIKET',
@@ -485,6 +485,7 @@ class TiketController extends Controller
             // =========================
             if ($statusLama === 'issued' && $tiket->status === 'refunded') {
 
+                
 
                 if (
                     !$request->filled('nilai_refund') ||
