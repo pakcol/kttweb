@@ -568,20 +568,19 @@
                 subagentSelect.disabled = false;
                 subagentSelect.required = true;
 
-                // 🔥 KUNCI UTAMA
+                // KUNCI UTAMA
                 jenisBayarSelect.value = '';
                 jenisBayarSelect.disabled = true;
 
-                // 🔒 KUNCI BANK
+                // KUNCI BANK
                 bankSelect.value = '';
                 bankSelect.disabled = true;
                 $('bankContainer').style.display = 'none';
             } else {
-                subagentSelect.disabled = true;   // 🔥 INI KUNCINYA
+                subagentSelect.disabled = true;   
                 subagentSelect.required = false;
-                subagentSelect.value = '';        // opsional tapi disarankan
+                subagentSelect.value = '';
 
-                // 🔥 BUKA LAGI
                 jenisBayarSelect.disabled = false;
             }
             toggleJenisPembayaran();
@@ -594,8 +593,8 @@
         function fillFormFromRow(row) {
             showAllStatus();
             const td = row.children;
-            formMode = 'update'; // 🔒 KUNCI MODE
-            form.action = `/input-tiket/${row.dataset.id}`; // 🔒 KUNCI ACTION
+            formMode = 'update'; 
+            form.action = `/input-tiket/${row.dataset.id}`; 
 
             $('kode_booking').value = row.dataset.id;
             $('name').value = td[4].innerText;
@@ -799,7 +798,6 @@ document.getElementById('btnTutupKas')?.addEventListener('click', () => {
                     if (nextEl) {
                         nextEl.focus();
 
-                        // khusus textarea → pindah cursor ke akhir
                         if (nextEl.tagName === 'TEXTAREA') {
                             nextEl.selectionStart = nextEl.selectionEnd = nextEl.value.length;
                         }

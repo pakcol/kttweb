@@ -15,7 +15,7 @@
         </div>
     </section>
 
-<!-- WHAT WE DO -->
+    <!-- WHAT WE DO -->
     <section class="what-section" aria-labelledby="what-we-do-title">
         <div class="container">
             <div class="row align-items-center justify-content-center g-5">
@@ -108,10 +108,10 @@
             <div class="social-links">
                 <!-- Gmail -->
                 <a href="https://mail.google.com/mail/?view=cm&fs=1
-&to=kupang_tt@yahoo.com
-&su=Permintaan%20Informasi%20Kupang%20Tour%20%26%20Travel
-&body=Halo%20Kupang%20Tour%20%26%20Travel%2C%0A%0ASaya%20ingin%20menanyakan%20informasi%20terkait%20layanan%20perjalanan.%0A%0ATerima%20kasih."
-   class="social-item"
+                    &to=kupang_tt@yahoo.com
+                    &su=Permintaan%20Informasi%20Kupang%20Tour%20%26%20Travel
+                    &body=Halo%20Kupang%20Tour%20%26%20Travel%2C%0A%0ASaya%20ingin%20menanyakan%20informasi%20terkait%20layanan%20perjalanan.%0A%0ATerima%20kasih."
+                    class="social-item"
                    class="social-item"
                    aria-label="Email Kupang Tour & Travel">
                     <img src="{{ asset('images/gmail.png') }}" alt="Gmail">
@@ -157,10 +157,8 @@
 
             <div class="pelni-slideshow" id="pelniSlideshow" aria-live="polite">
                 <div class="pelni-inner" id="pelniInner">
-                    <!-- Place PELNI images in /public/images/ named pelni1.jpg, pelni2.jpg, etc. -->
                     <img class="pelni-slide" src="{{ asset('images/pelni1.jpg') }}" alt="Jadwal PELNI 1" />
                     <img class="pelni-slide" src="{{ asset('images/pelni2.jpg') }}" alt="Jadwal PELNI 2" />
-                    <!-- If you have only one image, keep one. If more, add more img tags. -->
                 </div>
 
                 <div class="pelni-controls">
@@ -212,9 +210,7 @@
     @push('scripts')
     <script>
     (function () {
-        /* ===============================
-           PROMO STRIP (FIXED VERSION)
-        =============================== */
+        /* PROMO STRIP (FIXED VERSION) */
         const promoImages = [
             "{{ asset('images/Promo1.jpg') }}",
             "{{ asset('images/Promo2.jpg') }}",
@@ -536,22 +532,22 @@
                 };
 
                 const message =
-`Halo Kupang Tour & Travel,
+                    `Halo Kupang Tour & Travel,
 
-Saya ingin menanyakan ketersediaan tiket dengan detail berikut:
+                    Saya ingin menanyakan ketersediaan tiket dengan detail berikut:
 
-Nama Penumpang  : ${nama}
-Maskapai        : ${airline}
-Rute 1          : ${rute1}
-Tanggal Flight  : ${formatDate(tgl1)}
-Rute 2          : ${rute2 || '-'}
-Tanggal Flight  : ${tgl2 ? formatDate(tgl2) : '-'}
+                    Nama Penumpang  : ${nama}
+                    Maskapai        : ${airline}
+                    Rute 1          : ${rute1}
+                    Tanggal Flight  : ${formatDate(tgl1)}
+                    Rute 2          : ${rute2 || '-'}
+                    Tanggal Flight  : ${tgl2 ? formatDate(tgl2) : '-'}
 
-Mohon dibantu untuk pengecekan ketersediaan dan informasi selanjutnya.
-Terima kasih.`;
+                    Mohon dibantu untuk pengecekan ketersediaan dan informasi selanjutnya.
+                    Terima kasih.`;
 
-const waUrl = `https://wa.me/6281237481987?text=${encodeURIComponent(message)}`;
-window.open(waUrl, '_blank');
+                    const waUrl = `https://wa.me/6281237481987?text=${encodeURIComponent(message)}`;
+                    window.open(waUrl, '_blank');
             });
         }
 

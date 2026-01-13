@@ -234,9 +234,7 @@ class TiketController extends Controller
      */
     public function store(Request $request, MutasiTiketService $mutasiService)
     {
-        // =====================
         // VALIDASI UMUM
-        // =====================
         $request->validate([
             'statusCustomer' => 'required|in:customer,subagent',
 
@@ -257,9 +255,7 @@ class TiketController extends Controller
 
         DB::transaction(function () use ($request, $mutasiService) {
 
-            // =====================
-            // 🟣 SUBAGENT
-            // =====================
+            // SUBAGENT
             if ($request->statusCustomer === 'subagent') {
 
                 $request->validate([
@@ -306,9 +302,7 @@ class TiketController extends Controller
                 return;
             }
 
-            // =====================
-            // 🟢 CUSTOMER BIASA
-            // =====================
+            // CUSTOMER BIASA
             $request->validate([
                 'jenis_bayar_id' => 'required|exists:jenis_bayar,id',
                 'bank_id'        => 'nullable|exists:bank,id',
@@ -351,9 +345,7 @@ class TiketController extends Controller
                     'saldo' => $saldoAkhir
                 ]);
 
-                // =====================
                 // CATAT BUKU BANK
-                // =====================
                 MutasiBank::create([
                     'bank_id'    => $bank->id,
                     'tanggal'    => $tiket->tgl_issued,

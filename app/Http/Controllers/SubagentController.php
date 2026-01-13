@@ -57,7 +57,7 @@ class SubagentController extends Controller
                 $bank->increment('saldo', $request->nominal);
             }
 
-            // 2️⃣ JIKA SUMBER DARI BANK → KURANGI SALDO BANK
+            // JIKA SUMBER DARI BANK,KURANGI SALDO BANK
             $bankId = $request->jenis_bayar_id == 1 ? $request->bank_id : null;
             if ($bankId) {
 
@@ -74,10 +74,10 @@ class SubagentController extends Controller
                 $bank->decrement('saldo', $request->nominal);
             }
 
-            // 3️⃣ TAMBAH SALDO SUBAGENT
+            // TAMBAH SALDO SUBAGENT
             $subagent->increment('saldo', $request->nominal);
 
-            // 4️⃣ CATAT KE TOPUP HISTORIES
+            // CATAT KE TOPUP HISTORIES
             TopupHistory::create([
                 'tgl_issued'     => now(),
                 'transaksi'      => $request->nominal,
@@ -88,7 +88,7 @@ class SubagentController extends Controller
                 'keterangan'     => 'Top Up Subagent: ' . $subagent->nama,
             ]);
 
-            // 5️⃣ simpan history ke subagent_histories
+            // Simpan history ke subagent_histories
             SubagentHistory::create([
                 'tgl_issued'  => now(),
                 'subagent_id' => $subagent->id,

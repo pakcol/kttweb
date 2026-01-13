@@ -48,7 +48,7 @@
                     <option value="">-- Pilih Jenis Pembayaran --</option>
                     @if(isset($jenisBayar) && $jenisBayar->count() > 0)
                         @foreach($jenisBayar as $jenis)
-                            @if($jenis->id != 4) {{-- id 4 (refund) tidak bisa dipilih manual --}}
+                            @if($jenis->id != 4) <!-- KECUALI REFUND -->
                                 <option value="{{ $jenis->id }}">
                                     {{ $jenis->jenis }}
                                 </option>
@@ -131,7 +131,7 @@
    FILTER MUTASI - COMPACT
 ================================ */
 .filter-mutasi {
-    margin: 35px auto 25px; /* lebih dekat & ringan */
+    margin: 35px auto 25px; 
     display: flex;
     justify-content: center;
 }
@@ -140,14 +140,14 @@
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    padding: 8px 14px; /* DIPERKECIL */
+    padding: 8px 14px;
     background: #ffffff;
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
 .filter-mutasi-form label {
-    font-size: 12px; /* lebih kecil */
+    font-size: 12px; 
     font-weight: 600;
     color: #004d73;
     letter-spacing: 0.4px;
@@ -155,8 +155,8 @@
 }
 
 .filter-mutasi-form select {
-    min-width: 160px; /* DIPERKECIL */
-    padding: 6px 10px; /* DIPERKECIL */
+    min-width: 160px; 
+    padding: 6px 10px;
     border-radius: 8px;
     border: 1.4px solid #c2e0f2;
     background: #ffffff;
@@ -357,7 +357,7 @@
             }
 
             jenisBayar.addEventListener('change', toggleBank);
-            toggleBank(); // initial state
+            toggleBank();
         });
 </script>
     
