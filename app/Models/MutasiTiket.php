@@ -18,9 +18,14 @@ class MutasiTiket extends Model
         'insentif',
         'jenis_bayar_id',
         'bank_id',
-        'nama_piutang',
+        'piutang_id',
         'keterangan',
     ];
+
+    public function piutang()
+    {
+        return $this->belongsTo(Piutang::class);
+    }
 
     public function tiket()
     {

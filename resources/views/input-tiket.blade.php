@@ -140,7 +140,15 @@
 
                     <div class="form-group" id="namaPiutangContainer" style="display:none;">
                         <label for="nama_piutang">NAMA PIUTANG</label>
-                        <input type="text" id="nama_piutang" name="nama_piutang" class="text-uppercase">
+                        <input type="text"
+                            id="nama_piutang"
+                            name="nama_piutang"
+                            class="text-uppercase"
+                            placeholder="Cari / buat nama piutang"
+                            autocomplete="off">
+
+                        <ul id="piutangList" class="dropdown-menu"></ul>
+
                     </div>
 
                     <div class="button-group">
@@ -415,6 +423,8 @@
     const hargaJualInput = document.getElementById('harga_jual');
     const diskonInput = document.getElementById('diskon');
     const komisiInput = document.getElementById('komisi');
+    const piutangInput = document.getElementById('nama_piutang');
+    const piutangList  = document.getElementById('piutangList');
 
     function updateKomisi() {
         const nta = parseInt(ntaInput.value) || 0;
@@ -426,6 +436,30 @@
 
         komisiInput
     }
+
+    piutangInput.addEventListener('input', function () {
+        const q = this.value.trim();
+        if (q.length < 2) {
+            piutangList.innerHTML = '';
+            return;
+        }
+
+        fetch(`/piutang/search?q=${q}`)
+            .then(res => res.json())
+            .then(data => {
+                piutangList.innerHTML = '';
+                data.forEach(p => {
+                    const li = document.createElement('li');
+                    li.className = 'dropdown-item';
+                    li.textContent = p.nama;
+                    li.onclick = () => {
+                        piutangInput.value = p.nama;
+                        piutangList.innerHTML = '';
+                    };
+                    piutangList.appendChild(li);
+                });
+            });
+    });
 
     document.getElementById('tgl_issued').addEventListener('change', function () {
         const selectedDateTime = this.value;

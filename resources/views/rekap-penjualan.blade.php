@@ -237,7 +237,6 @@ if (rows.length) {
         });
     });
 }
- </div>
 </script>
 
 </x-layouts.app>

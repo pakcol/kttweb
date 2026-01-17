@@ -13,12 +13,13 @@
 
             <div class="form-group">
                 <label>Nama Piutang</label>
-                <select id="nama_piutang_select" class="form-control">
+                <select id="piutang_id_select" class="form-control">
                     <option value="">ALL</option>
-                    @foreach($piutang->pluck('nama_piutang')->unique()->filter() as $nama)
-                        <option value="{{ $nama }}">{{ $nama }}</option>
+                    @foreach($piutang->pluck('piutang')->unique('id') as $p)
+                        <option value="{{ $p->id }}">{{ $p->nama }}</option>
                     @endforeach
                 </select>
+
             </div>
 
             <div class="form-group">
@@ -81,9 +82,10 @@
             <tbody>
                 @foreach ($piutang as $row)
                     <tr 
-                        data-id="{{ $row->id }}"
-                        data-nama-piutang="{{ $row->nama_piutang }}"
+                        data-mutasi-id="{{ $row->id }}"
+                        data-piutang-id="{{ $row->piutang_id }}"
                     >
+
                         <td>{{ $row->tiket->tgl_issued?->format('Y-m-d') }}</td>
 
                         <td>{{ $row->nama_piutang }}</td>
@@ -123,196 +125,220 @@
 </div>
 
 <script>
-    document.getElementById('nama_piutang_select').addEventListener('change', function () {
-        const selected = this.value;
-        const rows = document.querySelectorAll('.table tbody tr');
+    const piutangSelect = document.getElementById('piutang_id_select');
+    const rows = document.querySelectorAll('.table tbody tr');
+
+    piutangSelect.addEventListener('change', function () {
+        const selectedId = this.value;
 
         rows.forEach(row => {
-            const nama = row.dataset.namaPiutang;
-
-            if (!selected || selected === '') {
-                // ALL
-                row.style.display = '';
-            } else {
-                row.style.display = nama === selected ? '' : 'none';
-            }
+            const rowPiutangId = row.dataset.piutangId;
+            row.style.display =
+                !selectedId || rowPiutangId === selectedId ? '' : 'none';
         });
     });
+
     document.querySelectorAll('.btn-edit').forEach(btn => {
         btn.addEventListener('click', () => {
-            const id = btn.dataset.id;
-            const kode = btn.dataset.kode;
-            const nominal = btn.dataset.nominal;
-            const namaPiutang = btn.dataset.namaPiutang;
 
-            // set hidden id
-            document.getElementById('mutasi_id').value = id;
+            document.getElementById('mutasi_id').value = btn.dataset.id;
+            document.getElementById('kode_booking').value = btn.dataset.kode;
+            document.getElementById('nominal').value = btn.dataset.nominal;
 
-            // set kode booking
-            document.getElementById('kode_booking').value = kode;
-
-            // set nominal
-            document.getElementById('nominal').value = nominal;
-
-            // set dropdown nama piutang
-            const selectNama = document.getElementById('nama_piutang_select');
-            if (selectNama) {
-                selectNama.value = namaPiutang;
-                selectNama.dispatchEvent(new Event('change'));
-            }
-
-            // set action form
             document.getElementById('formPiutang').action =
-                `/tiket/piutang/${id}`;
+                `/tiket/piutang/${btn.dataset.id}`;
         });
     });
+    // document.getElementById('nama_piutang_select').addEventListener('change', function () {
+    //     const selected = this.value;
+    //     const rows = document.querySelectorAll('.table tbody tr');
+
+    //     rows.forEach(row => {
+    //         const nama = row.dataset.namaPiutang;
+
+    //         if (!selected || selected === '') {
+    //             // ALL
+    //             row.style.display = '';
+    //         } else {
+    //             row.style.display = nama === selected ? '' : 'none';
+    //         }
+    //     });
+    // });
+    // document.querySelectorAll('.btn-edit').forEach(btn => {
+    //     btn.addEventListener('click', () => {
+    //         const id = btn.dataset.id;
+    //         const kode = btn.dataset.kode;
+    //         const nominal = btn.dataset.nominal;
+    //         const namaPiutang = btn.dataset.namaPiutang;
+
+    //         // set hidden id
+    //         document.getElementById('mutasi_id').value = id;
+
+    //         // set kode booking
+    //         document.getElementById('kode_booking').value = kode;
+
+    //         // set nominal
+    //         document.getElementById('nominal').value = nominal;
+
+    //         // set dropdown nama piutang
+    //         const selectNama = document.getElementById('nama_piutang_select');
+    //         if (selectNama) {
+    //             selectNama.value = namaPiutang;
+    //             selectNama.dispatchEvent(new Event('change'));
+    //         }
+
+    //         // set action form
+    //         document.getElementById('formPiutang').action =
+    //             `/tiket/piutang/${id}`;
+    //     });
+    // });
 
 
-    document.getElementById('jenis_bayar_id').addEventListener('change', function () {
-        document.getElementById('bankContainer').style.display =
-            this.value === '1' ? 'block' : 'none' // asumsi 1 = BANK
-    })
+    // document.getElementById('jenis_bayar_id').addEventListener('change', function () {
+    //     document.getElementById('bankContainer').style.display =
+    //         this.value === '1' ? 'block' : 'none' // asumsi 1 = BANK
+    // })
 
 
-    let allPiutangData = @json($piutang);
+    // let allPiutangData = @json($piutang);
 
-    // Fungsi untuk menghitung total piutang berdasarkan nama piutang
-    function calculateTotalPiutang(namaPiutang) {
-        if (!namaPiutang) {
-            document.getElementById('piutang_belum_dibayar').value = '';
-            document.getElementById('total_piutang').value = '';
-            return;
-        }
+    // // Fungsi untuk menghitung total piutang berdasarkan nama piutang
+    // function calculateTotalPiutang(namaPiutang) {
+    //     if (!namaPiutang) {
+    //         document.getElementById('piutang_belum_dibayar').value = '';
+    //         document.getElementById('total_piutang').value = '';
+    //         return;
+    //     }
 
-        let totalPiutang = 0;
-        let totalBelumDibayar = 0;
+    //     let totalPiutang = 0;
+    //     let totalBelumDibayar = 0;
 
-        allPiutangData.forEach(item => {
-            if (item.namaPiutang === namaPiutang) {
-                totalPiutang += parseInt(item.harga) || 0;
-                // Jika belum ada tglRealisasi, berarti belum dibayar
-                if (!item.tglRealisasi) {
-                    totalBelumDibayar += parseInt(item.harga) || 0;
-                }
-            }
-        });
+    //     allPiutangData.forEach(item => {
+    //         if (item.namaPiutang === namaPiutang) {
+    //             totalPiutang += parseInt(item.harga) || 0;
+    //             // Jika belum ada tglRealisasi, berarti belum dibayar
+    //             if (!item.tglRealisasi) {
+    //                 totalBelumDibayar += parseInt(item.harga) || 0;
+    //             }
+    //         }
+    //     });
 
-        document.getElementById('total_piutang').value = totalPiutang;
-        document.getElementById('piutang_belum_dibayar').value = new Intl.NumberFormat('id-ID').format(totalBelumDibayar);
-    }
+    //     document.getElementById('total_piutang').value = totalPiutang;
+    //     document.getElementById('piutang_belum_dibayar').value = new Intl.NumberFormat('id-ID').format(totalBelumDibayar);
+    // }
 
-    // Event listener untuk perubahan nama piutang
-    document.getElementById('nama_piutang').addEventListener('change', function() {
-        const namaPiutang = this.value;
+    // // Event listener untuk perubahan nama piutang
+    // document.getElementById('nama_piutang').addEventListener('change', function() {
+    //     const namaPiutang = this.value;
         
-        if (!namaPiutang) {
-            // Reset form jika tidak ada yang dipilih
-            resetForm();
-            return;
-        }
+    //     if (!namaPiutang) {
+    //         // Reset form jika tidak ada yang dipilih
+    //         resetForm();
+    //         return;
+    //     }
 
-        // Filter data berdasarkan nama piutang
-        const filteredData = allPiutangData.filter(item => item.namaPiutang === namaPiutang);
+    //     // Filter data berdasarkan nama piutang
+    //     const filteredData = allPiutangData.filter(item => item.namaPiutang === namaPiutang);
         
-        if (filteredData.length > 0) {
-            // Ambil data pertama untuk mengisi form (atau bisa diubah sesuai kebutuhan)
-            const firstData = filteredData[0];
+    //     if (filteredData.length > 0) {
+    //         // Ambil data pertama untuk mengisi form (atau bisa diubah sesuai kebutuhan)
+    //         const firstData = filteredData[0];
             
-            // Isi form dengan data pertama
-            document.getElementById('kode_booking').value = firstData.kodeBooking || '';
-            document.getElementById('nama').value = firstData.nama || '';
-            document.getElementById('harga').value = firstData.harga || 0;
-            document.getElementById('diskon').value = firstData.diskon || 0;
-            document.getElementById('komisi').value = firstData.komisi || 0;
+    //         // Isi form dengan data pertama
+    //         document.getElementById('kode_booking').value = firstData.kodeBooking || '';
+    //         document.getElementById('nama').value = firstData.nama || '';
+    //         document.getElementById('harga').value = firstData.harga || 0;
+    //         document.getElementById('diskon').value = firstData.diskon || 0;
+    //         document.getElementById('komisi').value = firstData.komisi || 0;
             
-            // Hitung total diskon (jika ada multiple data, bisa dijumlahkan)
-            let totalDiskon = 0;
-            filteredData.forEach(item => {
-                totalDiskon += parseInt(item.diskon) || 0;
-            });
-            document.getElementById('total_diskon').value = totalDiskon;
+    //         // Hitung total diskon (jika ada multiple data, bisa dijumlahkan)
+    //         let totalDiskon = 0;
+    //         filteredData.forEach(item => {
+    //             totalDiskon += parseInt(item.diskon) || 0;
+    //         });
+    //         document.getElementById('total_diskon').value = totalDiskon;
             
-            // Hitung total piutang
-            calculateTotalPiutang(namaPiutang);
+    //         // Hitung total piutang
+    //         calculateTotalPiutang(namaPiutang);
             
-            // Filter dan update tabel
-            filterTable(namaPiutang);
-        } else {
-            resetForm();
-        }
-    });
+    //         // Filter dan update tabel
+    //         filterTable(namaPiutang);
+    //     } else {
+    //         resetForm();
+    //     }
+    // });
 
-    // Fungsi untuk filter tabel berdasarkan nama piutang
-    function filterTable(namaPiutang) {
-        const rows = document.querySelectorAll('.table-piutang tbody tr');
-        rows.forEach(row => {
-            const rowData = allPiutangData.find(item => item.id == row.dataset.id);
-            if (rowData && rowData.namaPiutang === namaPiutang) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    }
+    // // Fungsi untuk filter tabel berdasarkan nama piutang
+    // function filterTable(namaPiutang) {
+    //     const rows = document.querySelectorAll('.table-piutang tbody tr');
+    //     rows.forEach(row => {
+    //         const rowData = allPiutangData.find(item => item.id == row.dataset.id);
+    //         if (rowData && rowData.namaPiutang === namaPiutang) {
+    //             row.style.display = '';
+    //         } else {
+    //             row.style.display = 'none';
+    //         }
+    //     });
+    // }
 
-    // Fungsi untuk reset form
-    function resetForm() {
-        document.getElementById('kode_booking').value = '';
-        document.getElementById('nama').value = '';
-        document.getElementById('harga').value = '';
-        document.getElementById('diskon').value = '';
-        document.getElementById('komisi').value = '';
-        document.getElementById('total_diskon').value = '';
-        document.getElementById('total_piutang').value = '';
-        document.getElementById('piutang_belum_dibayar').value = '';
+    // // Fungsi untuk reset form
+    // function resetForm() {
+    //     document.getElementById('kode_booking').value = '';
+    //     document.getElementById('nama').value = '';
+    //     document.getElementById('harga').value = '';
+    //     document.getElementById('diskon').value = '';
+    //     document.getElementById('komisi').value = '';
+    //     document.getElementById('total_diskon').value = '';
+    //     document.getElementById('total_piutang').value = '';
+    //     document.getElementById('piutang_belum_dibayar').value = '';
         
-        // Tampilkan semua row
-        document.querySelectorAll('.table-piutang tbody tr').forEach(row => {
-            row.style.display = '';
-        });
-    }
+    //     // Tampilkan semua row
+    //     document.querySelectorAll('.table-piutang tbody tr').forEach(row => {
+    //         row.style.display = '';
+    //     });
+    // }
 
-    // Fungsi untuk select row dari tabel
-    function selectRow(row) {
-        // Hapus selected class dari semua row
-        document.querySelectorAll('.table-piutang tbody tr').forEach(r => {
-            r.classList.remove('selected');
-        });
+    // // Fungsi untuk select row dari tabel
+    // function selectRow(row) {
+    //     // Hapus selected class dari semua row
+    //     document.querySelectorAll('.table-piutang tbody tr').forEach(r => {
+    //         r.classList.remove('selected');
+    //     });
         
-        // Tambahkan selected class
-        row.classList.add('selected');
+    //     // Tambahkan selected class
+    //     row.classList.add('selected');
         
-        const rowId = row.dataset.id;
-        const rowData = allPiutangData.find(item => item.id == rowId);
+    //     const rowId = row.dataset.id;
+    //     const rowData = allPiutangData.find(item => item.id == rowId);
         
-        if (rowData) {
-            // Set nama piutang di select
-            document.getElementById('nama_piutang').value = rowData.namaPiutang || '';
+    //     if (rowData) {
+    //         // Set nama piutang di select
+    //         document.getElementById('nama_piutang').value = rowData.namaPiutang || '';
             
-            // Isi form dengan data dari row yang dipilih
-            document.getElementById('kode_booking').value = rowData.kodeBooking || '';
-            document.getElementById('nama').value = rowData.nama || '';
-            document.getElementById('harga').value = rowData.harga || 0;
-            document.getElementById('diskon').value = rowData.diskon || 0;
-            document.getElementById('komisi').value = rowData.komisi || 0;
+    //         // Isi form dengan data dari row yang dipilih
+    //         document.getElementById('kode_booking').value = rowData.kodeBooking || '';
+    //         document.getElementById('nama').value = rowData.nama || '';
+    //         document.getElementById('harga').value = rowData.harga || 0;
+    //         document.getElementById('diskon').value = rowData.diskon || 0;
+    //         document.getElementById('komisi').value = rowData.komisi || 0;
             
-            // Hitung total diskon untuk semua data dengan nama piutang yang sama
-            const filteredData = allPiutangData.filter(item => item.namaPiutang === rowData.namaPiutang);
-            let totalDiskon = 0;
-            filteredData.forEach(item => {
-                totalDiskon += parseInt(item.diskon) || 0;
-            });
-            document.getElementById('total_diskon').value = totalDiskon;
+    //         // Hitung total diskon untuk semua data dengan nama piutang yang sama
+    //         const filteredData = allPiutangData.filter(item => item.namaPiutang === rowData.namaPiutang);
+    //         let totalDiskon = 0;
+    //         filteredData.forEach(item => {
+    //             totalDiskon += parseInt(item.diskon) || 0;
+    //         });
+    //         document.getElementById('total_diskon').value = totalDiskon;
             
-            // Hitung total piutang
-            calculateTotalPiutang(rowData.namaPiutang);
+    //         // Hitung total piutang
+    //         calculateTotalPiutang(rowData.namaPiutang);
             
-            // Filter tabel
-            if (rowData.namaPiutang) {
-                filterTable(rowData.namaPiutang);
-            }
-        }
-    }
+    //         // Filter tabel
+    //         if (rowData.namaPiutang) {
+    //             filterTable(rowData.namaPiutang);
+    //         }
+    //     }
+    // }
 </script>
 
 <style>

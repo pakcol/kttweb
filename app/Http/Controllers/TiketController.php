@@ -10,6 +10,7 @@ use App\Models\Bank;
 use App\Models\MutasiTiket;
 use App\Models\MutasiBank;
 use App\Models\Subagent;
+use App\Models\Piutang;
 use App\Models\TopupHistory;
 use App\Models\SubagentHistory;
 use Illuminate\Http\Request;
@@ -337,6 +338,28 @@ class TiketController extends Controller
                 'keterangan'     => strtoupper($request->keterangan),
             ]);
 
+            if ((int)$request->jenis_bayar_id === 3) {
+
+                $piutang = Piutang::firstOrCreate(
+                    ['nama' => strtoupper($request->nama_piutang)],
+                    ['jumlah' => 0]
+                );
+
+                // tambah total piutang
+                $piutang->increment('jumlah', $tiket->harga_jual);
+
+                // simpan mutasi
+                $mutasiService->create([
+                    'tiket_kode_booking' => $tiket->kode_booking,
+                    'tgl_issued'         => $tiket->tgl_issued,
+                    'tgl_bayar'          => null,
+                    'harga_bayar'        => $tiket->harga_jual,
+                    'jenis_bayar_id'     => 3,
+                    'piutang_id'         => $piutang->id,
+                    'keterangan'         => 'PIUTANG',
+                ]);
+            }
+
             // stok tiket
             JenisTiket::find($tiket->jenis_tiket_id)
                 ->decrement('saldo', $tiket->nta);
@@ -573,6 +596,12 @@ class TiketController extends Controller
         return back()->with('success', 'Tiket berhasil diperbarui');
     }
 
+    public function searchPiutang(Request $request)
+    {
+        return Piutang::where('nama', 'LIKE', "%{$request->q}%")
+            ->limit(10)
+            ->get();
+    }
 
 
     /**

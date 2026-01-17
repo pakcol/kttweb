@@ -109,6 +109,8 @@ Route::prefix('ppob')->name('ppob.')->group(function () {
     // Bayar / realisasi piutang
     Route::put('/piutang/{id}', [PpobController::class, 'updatePiutang'])
         ->name('piutang.update');
+    Route::get('/piutang/search', [TiketController::class, 'searchPiutang']);
+
 
     // Hapus data PPOB
     Route::delete('/{id}', [PpobController::class, 'destroy'])
