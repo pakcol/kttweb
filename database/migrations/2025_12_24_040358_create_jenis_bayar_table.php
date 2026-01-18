@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id(); // id INT
             $table->string('jenis', 15); // jenis VARCHAR(15)
             $table->integer('saldo')->default(0); // saldo INT
-            $table->text('indicacs')->nullable(); // indicacs
             $table->timestamps();
         });
     }

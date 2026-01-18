@@ -27,6 +27,7 @@ class TiketController extends Controller
     {
         return view('input-tiket', [
             'subagents'   => Subagent::all(),
+            'piutangList'     => Piutang::all(),
             'ticket' => Tiket::with([
                 'jenisTiket',
                 'mutasiTiket.jenisBayar',

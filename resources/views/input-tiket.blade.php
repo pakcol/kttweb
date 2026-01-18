@@ -139,17 +139,25 @@
                     </div>
 
                     <div class="form-group" id="namaPiutangContainer" style="display:none;">
-                        <label for="nama_piutang">NAMA PIUTANG</label>
+                        <label for="nama_piutang_select">NAMA PIUTANG</label>
+
+                        <select id="nama_piutang_select" class="text-uppercase">
+                            <option value="">-- Pilih Nama Piutang --</option>
+                            {{-- opsi dari backend --}}
+                            @foreach($piutangList as $p)
+                                <option value="{{ $p->nama }}">{{ $p->nama }}</option>
+                            @endforeach
+                            <option value="LAINNYA">LAINNYA</option>
+                        </select>
+
                         <input type="text"
-                            id="nama_piutang"
+                            id="nama_piutang_input"
                             name="nama_piutang"
                             class="text-uppercase"
-                            placeholder="Cari / buat nama piutang"
-                            autocomplete="off">
-
-                        <ul id="piutangList" class="dropdown-menu"></ul>
-
+                            placeholder="Masukkan nama piutang"
+                            style="display:none; margin-top:8px;">
                     </div>
+
 
                     <div class="button-group">
                         <button type="submit" id="btnInputData" class="btn-hijau">
@@ -423,8 +431,8 @@
     const hargaJualInput = document.getElementById('harga_jual');
     const diskonInput = document.getElementById('diskon');
     const komisiInput = document.getElementById('komisi');
-    const piutangInput = document.getElementById('nama_piutang');
-    const piutangList  = document.getElementById('piutangList');
+    const piutangSelect = document.getElementById('nama_piutang_select');
+    const piutangInput  = document.getElementById('nama_piutang_input');
 
     function updateKomisi() {
         const nta = parseInt(ntaInput.value) || 0;
@@ -437,28 +445,17 @@
         komisiInput
     }
 
-    piutangInput.addEventListener('input', function () {
-        const q = this.value.trim();
-        if (q.length < 2) {
-            piutangList.innerHTML = '';
-            return;
+    piutangSelect.addEventListener('change', () => {
+        if (piutangSelect.value === 'LAINNYA') {
+            piutangInput.style.display = 'block';
+            piutangInput.required = true;
+            piutangInput.value = '';
+            piutangInput.focus();
+        } else {
+            piutangInput.style.display = 'none';
+            piutangInput.required = false;
+            piutangInput.value = piutangSelect.value;
         }
-
-        fetch(`/piutang/search?q=${q}`)
-            .then(res => res.json())
-            .then(data => {
-                piutangList.innerHTML = '';
-                data.forEach(p => {
-                    const li = document.createElement('li');
-                    li.className = 'dropdown-item';
-                    li.textContent = p.nama;
-                    li.onclick = () => {
-                        piutangInput.value = p.nama;
-                        piutangList.innerHTML = '';
-                    };
-                    piutangList.appendChild(li);
-                });
-            });
     });
 
     document.getElementById('tgl_issued').addEventListener('change', function () {
@@ -537,11 +534,14 @@
             // PIUTANG
             const isPiutang = jenis === '3';
             $('namaPiutangContainer').style.display = isPiutang ? 'block' : 'none';
-            $('nama_piutang').disabled = !isPiutang;
 
             if (!isPiutang) {
-                $('nama_piutang').value = '';
+                piutangSelect.value = '';
+                piutangInput.value = '';
+                piutangInput.style.display = 'none';
+                piutangInput.required = false;
             }
+
         }
 
         $('jenis_bayar_id').addEventListener('change', toggleJenisPembayaran);

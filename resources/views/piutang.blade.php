@@ -15,11 +15,20 @@
                 <label>Nama Piutang</label>
                 <select id="piutang_id_select" class="form-control">
                     <option value="">ALL</option>
-                    @foreach($piutang->pluck('piutang')->unique('id') as $p)
-                        <option value="{{ $p->id }}">{{ $p->nama }}</option>
+
+                    @foreach(
+                        $piutang
+                            ->pluck('piutang')
+                            ->filter()
+                            ->unique('id')
+                            ->values()
+                        as $p
+                    )
+                        <option value="{{ $p->id }}">
+                            {{ $p->nama }}
+                        </option>
                     @endforeach
                 </select>
-
             </div>
 
             <div class="form-group">
@@ -88,9 +97,8 @@
 
                         <td>{{ $row->tiket->tgl_issued?->format('Y-m-d') }}</td>
 
-                        <td>{{ $row->nama_piutang }}</td>
+                        <td>{{ $row->piutang->nama ?? '-' }}</td>
                         <td>{{ $row->tiket_kode_booking }}</td>
-
                         <td>{{ $row->tiket->jenisTiket->name_jenis ?? '-' }}</td>
 
                         <td>
@@ -111,8 +119,8 @@
                                 data-id="{{ $row->id }}"
                                 data-kode="{{ $row->tiket_kode_booking }}"
                                 data-nominal="{{ $row->harga_bayar }}"
-                                data-nama-piutang="{{ $row->nama_piutang }}"
                             >
+
                                 Bayar
                             </button>
                         </td>

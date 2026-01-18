@@ -195,9 +195,11 @@ class MutasiTiketController extends Controller
     {
         // Ambil piutang tiket (belum dibayar)
         $piutang = MutasiTiket::with([
-                'tiket.jenisTiket'
+                'tiket.jenisTiket',
+                'piutangs',
             ])
             ->whereNull('tgl_bayar')
+            ->where('jenis_bayar_id', 3) // ⬅️ INI PENTING
             ->orderBy('tgl_issued', 'asc')
             ->get();
 
@@ -216,18 +218,27 @@ class MutasiTiketController extends Controller
             'tgl_bayar'      => 'required|date',
         ]);
 
-        $mutasi = MutasiTiket::findOrFail($id);
+        DB::transaction(function () use ($validated, $id) {
 
-        $mutasi->update([
-            'jenis_bayar_id' => $validated['jenis_bayar_id'],
-            'bank_id'        => $validated['bank_id'] ?? null,
-            'tgl_bayar'      => $validated['tgl_bayar'],
-        ]);
+            $mutasi = MutasiTiket::lockForUpdate()->findOrFail($id);
 
-        return redirect()
-            ->back()
-            ->with('success', 'Piutang tiket berhasil direalisasikan');
+            // kurangi saldo piutang
+            if ($mutasi->piutang_id) {
+                DB::table('piutangs')
+                    ->where('id', $mutasi->piutang_id)
+                    ->decrement('jumlah', $mutasi->harga_bayar);
+            }
+
+            $mutasi->update([
+                'jenis_bayar_id' => $validated['jenis_bayar_id'],
+                'bank_id'        => $validated['bank_id'] ?? null,
+                'tgl_bayar'      => $validated['tgl_bayar'],
+            ]);
+        });
+
+        return back()->with('success', 'Piutang tiket berhasil direalisasikan');
     }
+
 
 
     /**
@@ -390,7 +401,7 @@ class MutasiTiketController extends Controller
         // Piutang dari mutasi_tiket
         $piutangMutasi = DB::table('mutasi_tiket')
             ->join('jenis_bayar', 'jenis_bayar.id', '=', 'mutasi_tiket.jenis_bayar_id')
-            ->where('jenis_bayar.jenis', 'piutang')
+            ->whereNotNull('mutasi_tiket.piutang_id')
             ->where('mutasi_tiket.tgl_issued', $tanggal)
             ->sum('mutasi_tiket.harga_bayar');
 
@@ -498,6 +509,7 @@ class MutasiTiketController extends Controller
                 ->join('jenis_tiket', 'jenis_tiket.id', '=', 'tiket.jenis_tiket_id')
                 ->leftJoin('jenis_bayar', 'jenis_bayar.id', '=', 'mutasi_tiket.jenis_bayar_id')
                 ->leftJoin('bank', 'bank.id', '=', 'mutasi_tiket.bank_id')
+                ->leftJoin('piutangs', 'piutangs.id', '=', 'mutasi_tiket.piutang_id')
 
                 // hanya transaksi yang SUDAH DIBAYAR
                 ->whereNotNull('mutasi_tiket.tgl_bayar')
@@ -532,7 +544,7 @@ class MutasiTiketController extends Controller
 
                     // ===== PEMBAYARAN =====
                     'jenis_bayar.jenis as pembayaran',
-                    'mutasi_tiket.nama_piutang',
+                    'piutangs.nama as nama_piutang',
 
                     DB::raw('DATE(mutasi_tiket.tgl_bayar) as tgl_realisasi'),
                     DB::raw('TIME(mutasi_tiket.tgl_bayar) as jam_realisasi'),
