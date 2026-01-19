@@ -492,12 +492,12 @@
         const sendToWa = document.getElementById('sendToWa');
 
         document.querySelectorAll('.book-now-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        if (bookModal) {
-            bookModal.style.display = 'flex';
-        }
-    });
-});
+            btn.addEventListener('click', () => {
+                if (bookModal) {
+                    bookModal.style.display = 'flex';
+                }
+            });
+        });
 
         if (bookClose) {
             bookClose.addEventListener('click', () => {
