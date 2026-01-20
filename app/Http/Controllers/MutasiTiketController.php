@@ -451,7 +451,6 @@ class MutasiTiketController extends Controller
             $transfer[$bank->id] = $tiketMasuk - $biayaKeluar;
         }
 
-        /* AMBIL SEMUA JENIS TIKET + TOTAL TOP UP (DARI TOPUP_HISTORIES) */
         $topupJenisTiket = JenisTiket::leftJoin('topup_histories', function ($join) use ($tanggal) {
                 $join->on('jenis_tiket.id', '=', 'topup_histories.jenis_tiket_id')
                     ->whereDate('topup_histories.tgl_issued', $tanggal);

@@ -48,8 +48,7 @@ class BiayaController extends Controller
 
             // POTONG SALDO CASH
             $jenisBayar->update([
-                'saldo' => $jenisBayar->saldo - $request->biaya,
-                'debit' => $jenisBayar->debit + $request->biaya,
+                'saldo' => $jenisBayar->saldo - $request->biaya
             ]);
         });
 

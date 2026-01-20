@@ -7,22 +7,22 @@
             @csrf
             <div class="form-header">
                 <div class="form-group">
-    <label for="subagent_id">SUB AGENT</label>
-    <select name="subagent_id" id="subagent_id" class="form-control" required>
-        <option value="">Pilih Subagent</option>
+                    <label for="subagent_id">SUB AGENT</label>
+                    <select name="subagent_id" id="subagent_id" class="form-control" required>
+                        <option value="">Pilih Subagent</option>
 
-        @forelse($subagents as $subagent)
-            <option 
-                value="{{ $subagent->id }}"
-                data-saldo="{{ $subagent->saldo }}"
-            >
-                {{ $subagent->nama }}
-            </option>
-        @empty
-            <option value="" disabled>Data subagent belum tersedia</option>
-        @endforelse
-    </select>
-</div>
+                        @forelse($subagents as $subagent)
+                            <option 
+                                value="{{ $subagent->id }}"
+                                data-saldo="{{ $subagent->saldo }}"
+                            >
+                                {{ $subagent->nama }}
+                            </option>
+                        @empty
+                            <option value="" disabled>Data subagent belum tersedia</option>
+                        @endforelse
+                    </select>
+                </div>
 
                 <div class="form-group">
                     <label for="nominal">TOP UP</label>
@@ -32,27 +32,27 @@
                                 
                 {{-- JENIS BAYAR --}}
                 <div class="form-group">
-    <label for="jenis_bayar_id">JENIS PEMBAYARAN</label>
-    <select name="jenis_bayar_id" id="jenis_bayar_id" class="form-control" required>
-        <option value="">Pilih Jenis Pembayaran</option>
-        @foreach($jenisBayar as $jb)
-            <option value="{{ $jb->id }}">
-                {{ $jb->jenis }}
-            </option>
-        @endforeach
-    </select>
-</div>
+                    <label for="jenis_bayar_id">JENIS PEMBAYARAN</label>
+                    <select name="jenis_bayar_id" id="jenis_bayar_id" class="form-control" required>
+                        <option value="">Pilih Jenis Pembayaran</option>
+                        @foreach($jenisBayar as $jb)
+                            <option value="{{ $jb->id }}">
+                                {{ $jb->jenis }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
-                {{-- BANK --}}
-<div class="form-group" id="bankContainer" style="display:none;">
-    <label for="bank_id">Bank</label>
-    <select name="bank_id" id="bank_id" class="form-control">
-        <option value="">-- Pilih Bank --</option>
-        @foreach($bank as $b)
-            <option value="{{ $b->id }}">{{ $b->name }}</option>
-        @endforeach
-    </select>
-</div>
+                                {{-- BANK --}}
+                <div class="form-group" id="bankContainer" style="display:none;">
+                    <label for="bank_id">Bank</label>
+                    <select name="bank_id" id="bank_id" class="form-control">
+                        <option value="">-- Pilih Bank --</option>
+                        @foreach($bank as $b)
+                            <option value="{{ $b->id }}">{{ $b->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
                 <div class="form-group saldo-group">
                     <label for="saldo">SISA SALDO</label>
@@ -120,12 +120,12 @@
                     <td>{{ $row->status }}</td>
                 </tr>
                 @empty
-<tr>
-    <td colspan="13" class="empty-row">
-        Belum ada data history subagent
-    </td>
-</tr>
-@endforelse
+                <tr>
+                    <td colspan="13" class="empty-row">
+                        Belum ada data history subagent
+                    </td>
+                </tr>
+                @endforelse
             </tbody>
 
         </table>

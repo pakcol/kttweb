@@ -61,12 +61,11 @@
                     <button type="reset" class="btn-hapus">Reset</button>
                 </div>
             </form>
-        </div>
+        </div>p
 
         <div class="user-table-container">
             <h3>Daftar User</h3>
             @php
-                // Ambil data user dari database
                 $users = App\Models\User::all();
             @endphp
             <table class="user-table">
@@ -87,7 +86,9 @@
                             <td>{{ $user->username }}</td>
                             <td>{{ $user->roles }}</td>
                             <td>
-                                <form action="{{ route('register.destroy', $user->username) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?');">
+                                <form action="{{ route('register.destroy', $user->username) }}" 
+                                        method="POST" 
+                                        ponsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn-delete">Hapus</button>

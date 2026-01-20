@@ -96,50 +96,50 @@
         </form>
     </div>
     <!-- ===== TOP UP MODAL ===== -->
-<div id="topupModal" class="topup-modal">
-    <div class="topup-modal-content">
-        <h3>Top Up Saldo PPOB</h3>
+    <div id="topupModal" class="topup-modal">
+        <div class="topup-modal-content">
+            <h3>Top Up Saldo PPOB</h3>
 
-        <form class="topup-form" method="POST" action="{{ route('ppob.topup') }}">
-            @csrf
-            <div class="form-group">
-                <label>Tanggal Top Up</label>
-                <input type="datetime-local"
-                       name="tgl"
-                       class="form-control"
-                       value="{{ date('Y-m-d\TH:i') }}"
-                       required>
-            </div>
+            <form class="topup-form" method="POST" action="{{ route('ppob.topup') }}">
+                @csrf
+                <div class="form-group">
+                    <label>Tanggal Top Up</label>
+                    <input type="datetime-local"
+                        name="tgl"
+                        class="form-control"
+                        value="{{ date('Y-m-d\TH:i') }}"
+                        required>
+                </div>
 
-            <div class="form-group">
-                <label>Nominal Top Up</label>
-                <input type="number"
-                       name="nominal"
-                       class="form-control"
-                       placeholder="Masukkan nominal top up"
-                       required>
-            </div>
-            <select id="jenis_bayar_id" name="jenis_bayar_id" style="display: none;">
-                <option value="1"></option>
-            </select>
-
-            <div class="form-group">
-                <label>Bank (sumber dana)</label>
-                <select name="bank_id" class="form-control" required>
-                    <option value="">-- Pilih Bank --</option>
-                    @foreach($bank as $b)
-                        <option value="{{ $b->id }}">{{ $b->name }}</option>
-                    @endforeach
+                <div class="form-group">
+                    <label>Nominal Top Up</label>
+                    <input type="number"
+                        name="nominal"
+                        class="form-control"
+                        placeholder="Masukkan nominal top up"
+                        required>
+                </div>
+                <select id="jenis_bayar_id" name="jenis_bayar_id" style="display: none;">
+                    <option value="1"></option>
                 </select>
-            </div>
 
-            <div class="topup-button-group">
-                <button type="submit" class="btn btn-green">TOP UP</button>
-                <button type="button" class="btn btn-red" onclick="closeTopup()">BATAL</button>
-            </div>
-        </form>
+                <div class="form-group">
+                    <label>Bank (sumber dana)</label>
+                    <select name="bank_id" class="form-control" required>
+                        <option value="">-- Pilih Bank --</option>
+                        @foreach($bank as $b)
+                            <option value="{{ $b->id }}">{{ $b->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="topup-button-group">
+                    <button type="submit" class="btn btn-green">TOP UP</button>
+                    <button type="button" class="btn btn-red" onclick="closeTopup()">BATAL</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
     <div class="table-container">
         <h2>Data PPOB</h2>
@@ -171,47 +171,47 @@
                     <td>{{ $row->bank->name ?? '-' }}</td>
                     <td>{{ $row->nama_piutang ?? '-' }}</td>
                     <td>
-    <div style="
-        display:flex;
-        flex-direction:column;
-        gap:6px;
-        align-items:center;
-    ">
-        <button 
-            type="button"
-            class="btn btn-edit"
-            style="
-                background-color:#0d6efd;
-                color:#fff;
-                border:none;
-                width:72px;
-                padding:4px 0;
-                font-size:12px;
-            "
-            onclick='editPpob(@json($row))'>
-            Edit
-        </button>
+                    <div style="
+                        display:flex;
+                        flex-direction:column;
+                        gap:6px;
+                        align-items:center;
+                    ">
+                        <button 
+                            type="button"
+                            class="btn btn-edit"
+                            style="
+                                background-color:#0d6efd;
+                                color:#fff;
+                                border:none;
+                                width:72px;
+                                padding:4px 0;
+                                font-size:12px;
+                            "
+                            onclick='editPpob(@json($row))'>
+                            Edit
+                        </button>
 
-        <form action="{{ route('ppob.destroy', $row->id) }}" method="POST" style="margin:0;">
-            @csrf
-            @method('DELETE')
-            <button 
-                type="submit"
-                class="btn btn-delete"
-                style="
-                    background-color:#dc3545;
-                    color:#fff;
-                    border:none;
-                    width:72px;
-                    padding:4px 0;
-                    font-size:12px;
-                "
-                onclick="return confirm('Hapus data ini?')">
-                Delete
-            </button>
-        </form>
-    </div>
-</td>
+                        <form action="{{ route('ppob.destroy', $row->id) }}" method="POST" style="margin:0;">
+                            @csrf
+                            @method('DELETE')
+                            <button 
+                                type="submit"
+                                class="btn btn-delete"
+                                style="
+                                    background-color:#dc3545;
+                                    color:#fff;
+                                    border:none;
+                                    width:72px;
+                                    padding:4px 0;
+                                    font-size:12px;
+                                "
+                                onclick="return confirm('Hapus data ini?')">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                </td>
                 </tr>
                 @endforeach
             </tbody>

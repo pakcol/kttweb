@@ -20,7 +20,6 @@ class PpobController extends Controller
             'ppob'       => PpobHistory::latest()->get(),
             'jenisPpob'  => JenisPpob::all(),
             'jenisBayar' => JenisBayar::where('id', '!=', 4)->get(),
-            'jenisBayarNonPiutang' => JenisBayar::whereNotIn('id', [3, 4])->get(),
             'bank'       => Bank::all(),
         ]);
     }
@@ -85,18 +84,12 @@ class PpobController extends Controller
         ]);
 
         DB::transaction(function () use ($validated) {
-            // 🔒 LOCK jenis bayar
-            $jenisBayar = JenisBayar::lockForUpdate()->find(1); // Pastikan jenis_bayar_id=1 ada
-
-            // 🔒 LOCK bank jika ada
+            $jenisBayar = JenisBayar::lockForUpdate()->find(1);
             $bank = null;
-            if ($validated['jenis_bayar_id'] == 1) { // Jika jenis_bayar_id=1
-                $bank = Bank::lockForUpdate()->find($validated['bank_id']); // Pastikan bank_id ada
+            if ($validated['jenis_bayar_id'] == 1) { 
+                $bank = Bank::lockForUpdate()->find($validated['bank_id']); 
             }
 
-            /**
-             * 1️⃣ SIMPAN HISTORI PPOB
-             */
             $saldoSebelumnya = PpobHistory::where('jenis_ppob_id', 5)
                 ->where('jenis_bayar_id', 1)
                 ->when($bank, function ($query) use ($bank) {
@@ -115,15 +108,7 @@ class PpobController extends Controller
                 'jenis_bayar_id' => 1, // Set jenis_bayar_id=1
                 'bank_id'        => $bank?->id ?? null,
             ]);
-
-            /**
-             * 2️⃣ TAMBAH SALDO JENIS BAYAR (UANG MASUK)
-             */
             $jenisBayar->decrement('saldo', $validated['nominal']);
-
-            /**
-             * 3️⃣ JIKA bank → TAMBAH SALDO bank FISIK
-             */
             if ($bank) {
                 $saldoTerakhir = MutasiBank::where('bank_id', $bank->id)
                     ->orderByDesc('id')
@@ -158,7 +143,7 @@ class PpobController extends Controller
             'jenis_ppob_id'  => 'required|exists:jenis_ppob,id',
             'nta'            => 'required|integer',
             'harga_jual'     => 'required|integer',
-            'nama_piutang'   => 'nullable|string|max:100', // ✅ TAMBAHKAN
+            'nama_piutang'   => 'nullable|string|max:100',
             'jenis_bayar_id' => 'required|exists:jenis_bayar,id',
             'bank_id'        => 'nullable|required_if:jenis_bayar_id,1|exists:bank,id',
         ]);
@@ -179,10 +164,7 @@ class PpobController extends Controller
                 'bank_id'        => $validated['bank_id'] ?? null,
             ]);
 
-             // 3️⃣ Hitung selisih
             $selisih = $validated['harga_jual'] - $hargaLama;
-
-            // 4️⃣ Kurangi saldo (contoh: saldo di tabel yang sama)
             if ($selisih != 0) {
                 $ppob->decrement('saldo', $selisih);
             }
@@ -245,7 +227,7 @@ class PpobController extends Controller
             ->values();
 
         return view('ppobPiutang', [
-            'piutang' => $ppobPiutang,          // ✅ DATA UTAMA
+            'piutang' => $ppobPiutang,
             'namaPiutangList' => $namaPiutang,
             'bank' => Bank::all(),
             'jenisBayarNonPiutang' => JenisBayar::where('id', '!=', 3)->get(),

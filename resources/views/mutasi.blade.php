@@ -14,12 +14,12 @@
             </div>
 
             <div class="form-group refund-toggle">
-    <label class="refund-checkbox">
-        <input type="checkbox" id="is_refund" name="is_refund" value="1">
-        <span class="checkmark"></span>
-        REFUND TIKET
-    </label>
-</div>
+                <label class="refund-checkbox">
+                    <input type="checkbox" id="is_refund" name="is_refund" value="1">
+                    <span class="checkmark"></span>
+                    REFUND TIKET
+                </label>
+            </div>
 
     
             <div class="form-group">
@@ -46,7 +46,7 @@
                 <label for="jenis_bayar_id">JENIS PEMBAYARAN*</label>
                 <select id="jenis_bayar_id" name="jenis_bayar_id" class="text-uppercase" required>
                     <option value="">-- Pilih Jenis Pembayaran --</option>
-                    @if(isset($jenisBayar) && $jenisBayar->count() > 0)
+                    @if(isset($jenisBayar) && $jenisBayap               r->count() > 0)
                         @foreach($jenisBayar as $jenis)
                             @if($jenis->id != 4) <!-- KECUALI REFUND -->
                                 <option value="{{ $jenis->id }}">
@@ -109,21 +109,21 @@
         @endif
     
         <div class="filter-mutasi">
-    <form method="GET" class="filter-mutasi-form">
-        <label for="filter_jenis_tiket">FILTER JENIS TIKET</label>
-        <select id="filter_jenis_tiket"
-                name="jenis_tiket_id"
-                onchange="this.form.submit()"
-                class="text-uppercase">
-            <option value="">-- Pilih Jenis Tiket --</option>
-            @foreach ($jenisTiket as $j)
-                <option value="{{ $j->id }}"
-                    {{ $jenisTiketId == $j->id ? 'selected' : '' }}>
-                    {{ $j->name_jenis }}
-                </option>
-            @endforeach
-        </select>
-    </form>
+        <form method="GET" class="filter-mutasi-form">
+            <label for="filter_jenis_tiket">FILTER JENIS TIKET</label>
+            <select id="filter_jenis_tiket"
+                    name="jenis_tiket_id"
+                    onchange="this.form.submit()"
+                    class="text-uppercase">
+                <option value="">-- Pilih Jenis Tiket --</option>
+                @foreach ($jenisTiket as $j)
+                    <option value="{{ $j->id }}"
+                        {{ $jenisTiketId == $j->id ? 'selected' : '' }}>
+                        {{ $j->name_jenis }}
+                    </option>
+                @endforeach
+            </select>
+        </form>
 </div>
 
 <style>

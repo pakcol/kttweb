@@ -151,14 +151,6 @@
     const bankContainer = document.getElementById('bankContainer');
     const bankInput = document.getElementById('bank_id');
 
-    function toggleJenisPembayaran() {
-        const jenis = jenisSelect.value;
-        bankContainer.style.display = (jenis == 1) ? 'block' : 'none';
-        bankInput.required = (jenis == 1);
-    }
-
-    jenisSelect.addEventListener('change', toggleJenisPembayaran);
-
     function selectRow(row) {
         document.querySelectorAll('#piutangTable tr')
             .forEach(r => r.classList.remove('selected'));
@@ -173,6 +165,16 @@
         // set action form dinamis
         form.action = `/ppob/piutang/${row.dataset.id}`;
     }
+
+    function toggleJenisPembayaran() {
+        const jenis = jenisSelect.value;
+        bankContainer.style.display = (jenis == 1) ? 'block' : 'none';
+        bankInput.required = (jenis == 1);
+    }
+
+    jenisSelect.addEventListener('change', toggleJenisPembayaran);
+
+
 </script>
 
 </x-layouts.app>

@@ -56,7 +56,7 @@
                 </div>
 
                 <div class="card saldo-airlines">
-                    <h3>SALDO AIRLINES</h3>
+                    <h3>SALDO JENIS TIKET</h3>
 
                     @foreach($jenisTiket as $jt)
                         <label>{{ strtoupper($jt->name_jenis) }}</label>
@@ -65,7 +65,7 @@
                 </div>
 
                 <div class="card topup-airlines">
-                    <h3>TOP UP AIRLINES</h3>
+                    <h3>TOP UP JENIS TIKET</h3>
 
                     @foreach($topupJenisTiket as $jt)
                         <label>{{ strtoupper($jt->name_jenis) }}</label>

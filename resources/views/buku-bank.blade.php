@@ -6,7 +6,7 @@
             <h2 class="title">Buku Bank</h2>
     
             <!-- Form Input Data -->
-            <form action="{{ route('buku-bank.topup') }}" method="POST">
+            <form action="{{ route('buku-bank.setor') }}" method="POST">
                 @csrf
                 <div class="form-section">
                     <div class="form-left">
@@ -26,7 +26,8 @@
                         @error('bank') <span class="error">{{ $message }}</span> @enderror
     
                         <label for="nominal">Nominal Setor</label>
-                        <input type="number" id="nominal" name="nominal" value="{{ old('nominal') }}" placeholder="Masukkan jumlah nominal top up" required>
+                        <input type="number" id="nominal" name="nominal" value="{{ old('nominal') }}" 
+                                placeholder="Masukkan jumlah nominal top up" required>
                         @error('nominal') <span class="error">{{ $message }}</span> @enderror
                     </div>
     
@@ -54,15 +55,15 @@
     
             <!-- Tabel Data -->
             <form method="GET" action="{{ route('buku-bank.index') }}" class="filter-form">
-    <label for="bank_id">Pilih Bank</label>
-    <select name="bank_id" id="bank_id" onchange="this.form.submit()">
-        @foreach ($bankList as $bank)
-            <option value="{{ $bank->id }}" {{ $bank->id == $bankId ? 'selected' : '' }}>
-                {{ $bank->name }}
-            </option>
-        @endforeach
-    </select>
-</form>
+                <label for="bank_id">Pilih Bank</label>
+                <select name="bank_id" id="bank_id" onchange="this.form.submit()">
+                    @foreach ($bankList as $bank)
+                        <option value="{{ $bank->id }}" {{ $bank->id == $bankId ? 'selected' : '' }}>
+                            {{ $bank->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </form>
 
 <style>
 .filter-form {
@@ -74,7 +75,7 @@
 
 .filter-form label {
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 600;p
     color: #1f3a3a;
     white-space: nowrap;
 }

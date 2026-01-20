@@ -14,6 +14,7 @@ class JenisBayar extends Model
     
     protected $fillable = [
         'jenis',
+        'saldo',
         'indicacs'
     ];
     

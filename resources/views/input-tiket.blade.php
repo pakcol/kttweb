@@ -426,13 +426,15 @@
 
 <script>
     const statusCustomer = document.getElementById('statusCustomer');
-    const form = document.getElementById('inputDataForm');
+    const form = document.getElementById('inputDataForm');p
+
+    const piutangSelect = document.getElementById('nama_piutang_select');
+    const piutangInput  = document.getElementById('nama_piutang_input');
+
     const ntaInput = document.getElementById('nta');
     const hargaJualInput = document.getElementById('harga_jual');
     const diskonInput = document.getElementById('diskon');
     const komisiInput = document.getElementById('komisi');
-    const piutangSelect = document.getElementById('nama_piutang_select');
-    const piutangInput  = document.getElementById('nama_piutang_input');
 
     function updateKomisi() {
         const nta = parseInt(ntaInput.value) || 0;
@@ -441,8 +443,6 @@
 
         const komisi = hargaJual - diskon - nta;
         komisiInput.value = komisi >= 0 ? komisi : 0;
-
-        komisiInput
     }
 
     piutangSelect.addEventListener('change', () => {
