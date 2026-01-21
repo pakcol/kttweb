@@ -69,10 +69,10 @@
 
 
         <button class="btn-tampil">TAMPIL</button>
-        <a href="{{ route('rekap-penjualan.export', request()->query()) }}"
-   class="btn-excel">
-    EXPORT EXCEL
-</a>
+                <a href="{{ route('rekap-penjualan.export', request()->query()) }}"
+        class="btn-excel">
+            EXPORT EXCEL
+        </a>
 
 
         
@@ -86,13 +86,6 @@
             <h4>PENJUALAN</h4>
 
             @foreach($penjualan['tiket'] as $nama => $row)
-                <div class="row-input">
-                    <span>{{ $nama }}</span>
-                    <input readonly value="{{ number_format($row['penjualan'],0,',','.') }}">
-                </div>
-            @endforeach
-
-            @foreach($penjualan['ppob'] as $nama => $row)
                 <div class="row-input">
                     <span>{{ $nama }}</span>
                     <input readonly value="{{ number_format($row['penjualan'],0,',','.') }}">
@@ -150,16 +143,31 @@
             </div>
         </div>
 
-        {{-- PLN --}}
         <div class="rekap-panel small">
-            <h4>PLN</h4>
+            <h4>PENJUALAN PPOB</h4>
+            @foreach($penjualan['ppob'] as $nama => $row)
+                <div class="row-input">
+                    <span>{{ $nama }}</span>
+                    <input readonly value="{{ number_format($row['penjualan'],0,',','.') }}">
+                </div>
+            @endforeach
+        </div>
+
+        <div class="rekap-panel small">
+            <h4>NTA PPOB</h4>
+            @foreach($penjualan['ppob'] as $nama => $row)
+                <div class="row-input">
+                    <span>{{ $nama }}</span>
+                    <input readonly value="{{ number_format($row['nta'],0,',','.') }}">
+                </div>
+            @endforeach
+        </div>
+
+        <div class="rekap-panel small">
+            <h4>PPOB</h4>
             <div class="row-input">
-                <span>PLN</span>
-                <input readonly>
-            </div>
-            <div class="row-input">
-                <span>SISA SALDO</span>
-                <input readonly>
+                <span>Sisa Saldo</span>
+                <input readonly value="{{ number_format($SISA_SALDO_PPOB,0,',','.') }}">
             </div>
         </div>
 
@@ -180,9 +188,9 @@
                         <th>JENIS TIKET</th>
                         <th>NAMA</th>
                         <th>RUTE</th>
-<th>TGL FLIGHT</th>
-<th>RUTE 2</th>
-<th>TGL FLIGHT 2</th>
+                        <th>TGL FLIGHT</th>
+                        <th>RUTE 2</th>
+                        <th>TGL FLIGHT 2</th>
 
                     @else
                         <th>KATEGORI PPOB</th>

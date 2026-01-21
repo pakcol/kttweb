@@ -261,7 +261,7 @@ class MutasiTiketController extends Controller
 
         /* ================= MASTER DATA ================= */
         $jenisTiket = JenisTiket::orderBy('name_jenis')->get();
-        $ppobs      = JenisPpob::orderBy('jenis_ppob')->get();
+        $ppobs = JenisPpob::where('id', '!=', 5)->get();
 
         /* ================= PENJUALAN PER JENIS ================= */
         $penjualan = [];
@@ -360,6 +360,9 @@ class MutasiTiketController extends Controller
             $tableData = $detailTiket;
         }
 
+        $SISA_SALDO_PPOB = PpobHistory::orderBy('id', 'desc')
+            ->value('saldo');
+
 
         return view('rekap-penjualan', compact(
             'tanggalAwal',
@@ -370,7 +373,8 @@ class MutasiTiketController extends Controller
             'TTL_PENJUALAN',
             'TTL_NTA',
             'tableData',
-            'jenisData'
+            'jenisData',
+            'SISA_SALDO_PPOB'
         ));
     }
 
