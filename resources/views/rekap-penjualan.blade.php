@@ -103,13 +103,6 @@
                     <input readonly value="{{ number_format($row['nta'],0,',','.') }}">
                 </div>
             @endforeach
-
-            @foreach($penjualan['ppob'] as $nama => $row)
-                <div class="row-input">
-                    <span>{{ $nama }}</span>
-                    <input readonly value="{{ number_format($row['nta'],0,',','.') }}">
-                </div>
-            @endforeach
         </div>
 
 
