@@ -17,6 +17,7 @@
             {{ $fromInputKas ? 'TUTUP KAS' : 'CASH FLOW' }}
         </h2>
 
+
         {{-- FILTER --}}
         <form method="GET" class="search-form">
             <label>
@@ -35,122 +36,115 @@
             @endif
         </form>
 
-        {{-- FORM UTAMA --}}
+        {{-- GRID --}}
         <form method="POST" action="{{ route('cashflow.store') }}">
             @csrf
 
-            {{-- GRID ATAS (PENJUALAN, SALDO, TOPUP) --}}
-            <div class="cashflow-grid">
-                {{-- PENJUALAN --}}
+            <div class="form-grid cashflow-grid">
+
+                {{-- BARIS 1 --}}
                 <div class="card penjualan">
                     <h3>PENJUALAN</h3>
-                    
                     <label>PENJUALAN</label>
                     <input readonly value="{{ number_format($TTL_PENJUALAN,0,',','.') }}">
-                    
                     <label>PIUTANG</label>
                     <input readonly value="{{ number_format($PIUTANG,0,',','.') }}">
-                    
                     <label>PENGELUARAN</label>
                     <input readonly value="{{ number_format($BIAYA,0,',','.') }}">
-                    
                     <label>REFUND</label>
                     <input readonly value="0">
                 </div>
 
-                {{-- SALDO AIRLINES --}}
                 <div class="card saldo-airlines">
-                    <h3>SALDO AIRLINES</h3>
-                    
+                    <h3>SALDO JENIS TIKET</h3>
+
                     @foreach($jenisTiket as $jt)
                         <label>{{ strtoupper($jt->name_jenis) }}</label>
                         <input readonly value="{{ number_format($jt->saldo,0,',','.') }}">
                     @endforeach
-                    
-                    <div style="margin-top: 12px;">
-                        <label>PLN</label>
-                        <input readonly value="">
-                    </div>
-                    
-                    <div class="sisa-saldo-box">
-                        <label>SISA SALDO</label>
-                        <input readonly value="">
-                    </div>
                 </div>
 
-                {{-- TOP UP AIRLINES --}}
                 <div class="card topup-airlines">
-                    <h3>TOP UP AIRLINES</h3>
-                    
+                    <h3>TOP UP JENIS TIKET</h3>
+
                     @foreach($topupJenisTiket as $jt)
                         <label>{{ strtoupper($jt->name_jenis) }}</label>
                         <input readonly value="{{ number_format($jt->total_topup,0,',','.') }}">
                     @endforeach
                 </div>
-            </div>
 
-            {{-- GRID TENGAH (TRANSFER) --}}
-            <div style="margin-bottom: 20px;">
+                {{-- BARIS 2 --}}
                 <div class="card transfer">
                     <h3>TRANSFER</h3>
-                    
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
-                        @foreach($banks as $bank)
-                            <div>
-                                <label>TRANSFER {{ strtoupper($bank->name) }}</label>
-                                <input readonly value="{{ number_format($transfer[$bank->id] ?? 0,0,',','.') }}">
-                            </div>
-                        @endforeach
-                    </div>
+
+                    @foreach($banks as $bank)
+                        <label>TRANSFER {{ strtoupper($bank->name) }}</label>
+                        <input readonly value="{{ number_format($transfer[$bank->id] ?? 0,0,',','.') }}">
+                    @endforeach
+                </div>
+
+                <div class="card pln">
+                <h3>PPOB</h3>
+
+                <label>TOTAL PENJUALAN</label>
+                <input readonly value="{{ number_format($TOTAL_PENJUALAN_PPOB,0,',','.') }}">
+
+                <div class="sisa-saldo-box">
+                    <label>SISA SALDO</label>
+                    <input readonly value="{{ number_format($SISA_SALDO_PPOB,0,',','.') }}">
                 </div>
             </div>
 
-            {{-- GRID BAWAH (SETORAN & LAINNYA) --}}
-            <div class="cashflow-grid">
-                {{-- SETORAN --}}
-                <div class="card setoran">
-                    <h3>SETORAN</h3>
-                    
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
-                        @foreach($banks as $bank)
-                            <div>
-                                <label>SETORAN {{ strtoupper($bank->name) }}</label>
-                                <input
-                                    type="number"
-                                    name="setoran[{{ $bank->id }}]"
-                                    min="0"
-                                    placeholder="0">
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-
-                {{-- SALDO SUB AGENT --}}
                 <div class="card sub-agent">
                     <h3>SALDO SUB AGENT</h3>
-                    
+
                     @foreach($subagents as $sa)
                         <label>{{ strtoupper($sa->nama) }}</label>
                         <input readonly value="{{ number_format($sa->saldo,0,',','.') }}">
                     @endforeach
-                    
-                    <div style="margin-top: 12px;">
-                        <label>CASH</label>
-                        <input readonly value="{{ number_format($CASH_FLOW,0,',','.') }}">
-                    </div>
                 </div>
 
-                {{-- BUTTONS --}}
-                <div style="display: flex; align-items: flex-end; justify-content: flex-end;">
-                    <div style="display: flex; gap: 14px;">
-                        <button class="btn red" type="reset" onclick="resetSetoran()">BATAL</button>
-                        <button class="btn green" type="submit">SIMPAN</button>
-                    </div>
+
+                {{-- BARIS 3 --}}
+                <div class="card setoran">
+                    <h3>SETORAN</h3>
+
+                    @foreach($banks as $bank)
+                        <label>SETORAN {{ strtoupper($bank->name) }}</label>
+                        <input 
+                            type="number" 
+                            name="setoran[{{ $bank->id }}]"
+                            value=""
+                            min="0"
+                        >
+                    @endforeach
                 </div>
+
+                <div class="card cash">
+                    <h3>CASH</h3>
+                    <input readonly value="{{ number_format($CASH_FLOW,0,',','.') }}">
+                </div>
+
             </div>
+
+            <div class="button-container">
+                <button class="btn red" type="reset" onclick="resetSetoran()"><script>
+                    function resetSetoran() {
+                        const setoranInputs = document.querySelectorAll('.card.setoran input');
+
+                        setoranInputs.forEach(input => {
+                            input.value = '';
+                        });
+                    }
+                </script>BATAL</button>
+                <button class="btn green" type="submit">SIMPAN</button>
+            </div>
+
         </form>
 
-        {{-- TABEL LAPORAN --}}
+    </div>
+</div>
+
         @if(isset($penjualan) && count($penjualan) > 0)
         <div class="table-laporan">
             <table>
@@ -187,16 +181,9 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Fungsi reset setoran
-        window.resetSetoran = function() {
-            const setoranInputs = document.querySelectorAll('.card.setoran input');
-            setoranInputs.forEach(input => {
-                input.value = '';
-            });
-        };
 
         const cashAwal = {{ $CASH_FLOW }};
-        const cashInput = document.querySelector('.card.sub-agent input[placeholder*="CASH"]');
+        const cashInput = document.querySelector('.card.cash input');
         const setoranInputs = document.querySelectorAll('.card.setoran input');
 
         function hitungCash() {
@@ -208,16 +195,15 @@
             });
 
             const cashAkhir = cashAwal - totalSetoran;
-            if (cashInput) {
-                cashInput.value = cashAkhir.toLocaleString('id-ID');
-            }
+            cashInput.value = cashAkhir.toLocaleString('id-ID');
         }
 
         setoranInputs.forEach(input => {
-            // Realtime calculation
+
+            // realtime
             input.addEventListener('input', hitungCash);
 
-            // Prevent ENTER from submitting form
+            // ENTER tidak submit form
             input.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') {
                     e.preventDefault();
@@ -225,7 +211,9 @@
                 }
             });
         });
+
     });
 </script>
+
 
 </x-layouts.app>

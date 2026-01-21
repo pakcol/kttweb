@@ -1,601 +1,158 @@
-/* ===================== RESET & BASE ===================== */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    font-family: 'Poppins', 'Segoe UI', sans-serif;
-    margin: 0;
-    background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
-    min-height: 100vh;
-}
-
-/* ===================== WRAPPER ===================== */
-.cash-flow-wrapper {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 40px 24px;
-}
-
-.cash-flow-card {
-    width: 100%;
-    max-width: 1400px;
-    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
-    border-radius: 24px;
-    padding: 40px;
-    box-shadow: 
-        0 20px 60px rgba(0, 0, 0, 0.08),
-        0 8px 20px rgba(0, 0, 0, 0.04),
-        inset 0 1px 0 rgba(255, 255, 255, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.9);
-    position: relative;
-    overflow: hidden;
-}
-
-.cash-flow-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #22c55e 0%, #3b82f6 50%, #8b5cf6 100%);
-    border-radius: 24px 24px 0 0;
-}
-
-/* ===================== TITLE ===================== */
-.page-title {
-    text-align: center;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-    color: #1e293b;
-    margin-bottom: 32px;
-    font-size: 28px;
-    position: relative;
-    padding-bottom: 16px;
-}
-
-.page-title::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 120px;
-    height: 4px;
-    background: linear-gradient(90deg, #22c55e, #3b82f6);
-    border-radius: 2px;
-}
-
-/* ===================== FILTER ===================== */
-.search-form {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
-    padding: 18px 24px;
-    border-radius: 16px;
-    margin-bottom: 32px;
-    border: 1px solid rgba(59, 130, 246, 0.1);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.08);
-}
-
-.search-form label {
-    font-weight: 700;
-    font-size: 14px;
-    color: #1e40af;
-    background: white;
-    padding: 8px 16px;
-    border-radius: 12px;
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
-}
-
-.search-form input {
-    border: 2px solid rgba(59, 130, 246, 0.2);
-    border-radius: 12px;
-    padding: 10px 16px;
-    font-size: 14px;
-    background: white;
-    color: #334155;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.search-form input:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.search-form button {
-    margin-left: auto;
-    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    padding: 10px 36px;
-    font-weight: 700;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
-}
-
-.search-form button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(34, 197, 94, 0.4);
-}
-
-/* ===================== GRID UTAMA ===================== */
-.cashflow-grid {
-    display: grid;
-    grid-template-columns: 1.1fr 1.2fr 1.1fr;
-    gap: 24px;
-    margin-bottom: 24px;
-}
-
-/* ===================== CARD BASE ===================== */
-.card {
-    background: white;
-    border-radius: 16px;
-    padding: 20px 24px;
-    border: 1px solid rgba(226, 232, 240, 0.8);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-}
-
-.card h3 {
-    font-size: 15px;
-    font-weight: 800;
-    border-bottom: 2px solid;
-    padding-bottom: 10px;
-    margin-bottom: 16px;
-    color: #1e293b;
-    letter-spacing: -0.2px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+body{
+    font-family:Poppins,sans-serif;
+    background:linear-gradient(90deg,#0f4d4d,#b8d3d6);
+    margin:0;
+}
+
+/* WRAPPER */
+.cash-flow-wrapper{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:100px 20px;
 }
+
+.cash-flow-card{
+    width:100%;
+    max-width:1250px;
+    background:#fff;
+    border-radius:26px;
+    padding:32px;
+    box-shadow:0 20px 45px rgba(0,0,0,.25);
+}
 
-.card h3::before {
-    content: '';
-    width: 6px;
-    height: 18px;
-    border-radius: 3px;
-    background: currentColor;
-    display: inline-block;
+/* TITLE */
+.page-title{
+    text-align:center;
+    font-weight:800;
+    color:#0f4d4d;
+    margin-bottom:25px;
 }
 
-/* ===================== FORM ELEMENTS ===================== */
-.card label {
-    font-size: 13px;
-    font-weight: 600;
-    display: block;
-    margin-top: 12px;
-    color: #475569;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+/* FILTER */
+.search-form{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    background:#dff2ff;
+    padding:12px 18px;
+    border-radius:16px;
+    margin-bottom:30px;
 }
 
-.card label::after {
-    content: ':';
-    color: #94a3b8;
+.search-form input{
+    border:none;
+    border-radius:10px;
+    padding:8px 14px;
 }
 
-.card input {
-    width: 100%;
-    padding: 10px 14px;
-    border-radius: 10px;
-    border: 2px solid #e2e8f0;
-    margin-top: 6px;
-    font-size: 13px;
-    background: #f8fafc;
-    color: #334155;
-    font-weight: 500;
-    transition: all 0.3s ease;
+.search-form button{
+    margin-left:auto;
+    background:#22c55e;
+    color:#fff;
+    border:none;
+    border-radius:20px;
+    padding:8px 28px;
+    font-weight:800;
 }
 
-.card input:focus {
-    outline: none;
-    border-color: #3b82f6;
-    background: white;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+/* GRID */
+.cashflow-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:22px;
 }
 
-.card input[readonly] {
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    border-color: #e2e8f0;
-    color: #475569;
-    cursor: not-allowed;
-    font-weight: 600;
+/* CARD BASE */
+.card{
+    background:#dff2f3;
+    border-radius:18px;
+    padding:16px 18px;
 }
 
-/* ===================== CARD VARIAN WARNA ===================== */
-
-/* PENJUALAN CARD */
-.card.penjualan {
-    background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
-    border-color: rgba(34, 197, 94, 0.2);
-}
-
-.card.penjualan h3 {
-    color: #059669;
-    border-bottom-color: rgba(5, 150, 105, 0.3);
-}
-
-/* SALDO AIRLINES CARD */
-.card.saldo-airlines {
-    background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
-    border-color: rgba(59, 130, 246, 0.2);
-}
-
-.card.saldo-airlines h3 {
-    color: #2563eb;
-    border-bottom-color: rgba(37, 99, 235, 0.3);
-}
-
-/* TOPUP AIRLINES CARD */
-.card.topup-airlines {
-    background: linear-gradient(135deg, #faf5ff 0%, #f8fafc 100%);
-    border-color: rgba(168, 85, 247, 0.2);
-}
-
-.card.topup-airlines h3 {
-    color: #7c3aed;
-    border-bottom-color: rgba(124, 58, 237, 0.3);
-}
-
-/* TRANSFER CARD */
-.transfer-section {
-    margin-bottom: 24px;
-}
-
-.card.transfer {
-    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-    border-color: rgba(245, 158, 11, 0.2);
-    padding-bottom: 8px;
-}
-
-.card.transfer h3 {
-    color: #d97706;
-    border-bottom-color: rgba(217, 119, 6, 0.3);
-}
-
-.transfer-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-}
-
-/* ===================== GRID BAWAH ===================== */
-.bottom-section {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-    margin-top: 8px;
-}
-
-/* SETORAN CARD */
-.card.setoran {
-    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-    border-color: rgba(14, 165, 233, 0.2);
-}
-
-.card.setoran h3 {
-    color: #0284c7;
-    border-bottom-color: rgba(2, 132, 199, 0.3);
-}
-
-.setoran-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-}
-
-/* SALDO SUB AGENT CARD */
-.card.sub-agent {
-    background: linear-gradient(135deg, #f0fdf9 0%, #ccfbf1 100%);
-    border-color: rgba(20, 184, 166, 0.2);
-}
-
-.card.sub-agent h3 {
-    color: #0d9488;
-    border-bottom-color: rgba(13, 148, 136, 0.3);
-}
-
-/* BUTTON SECTION */
-.button-section {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding-bottom: 4px;
-}
-
-.button-group {
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-}
-
-/* ===================== SISA SALDO BOX ===================== */
-.sisa-saldo-box {
-    margin-top: 16px;
-    padding: 16px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%);
-    border: 1px solid rgba(245, 158, 11, 0.2);
-}
-
-.sisa-saldo-box label {
-    font-weight: 800;
-    font-size: 13px;
-    color: #92400e;
-}
-
-/* ===================== BUTTON STYLES ===================== */
-.btn {
-    padding: 12px 36px;
-    border-radius: 12px;
-    border: none;
-    font-weight: 700;
-    color: #fff;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-    min-width: 120px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.btn::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-}
-
-.btn:hover::before {
-    width: 300px;
-    height: 300px;
+/* SAMAKAN TINGGI CARD KOLOM KIRI */
+.card.penjualan,
+.card.transfer,
+.card.setoran{
+    min-height: 340px;
+    display:flex;
+    flex-direction:column;
 }
 
-.btn:active {
-    transform: translateY(0);
-}
-
-.btn.red {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-}
-
-.btn.red:hover {
-    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
-}
-
-.btn.green {
-    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-}
 
-.btn.green:hover {
-    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(34, 197, 94, 0.4);
+.card h3{
+    font-size:14px;
+    font-weight:800;
+    border-bottom:2px solid #0f4d4d;
+    padding-bottom:4px;
+    margin-bottom:12px;
+    color:#0f4d4d;
 }
 
-/* ===================== TABLE STYLES ===================== */
-.table-section {
-    margin-top: 40px;
-    padding-top: 32px;
-    border-top: 2px solid #e2e8f0;
+.card label{
+    font-size:12px;
+    font-weight:600;
+    display:block;
+    margin-top:6px;
 }
 
-.table-laporan {
-    overflow-x: auto;
-    border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-    border: 1px solid #e2e8f0;
+.card input{
+    width:100%;
+    padding:7px 8px;
+    border-radius:8px;
+    border:none;
+    margin-top:4px;
 }
 
-.table-laporan table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    background: white;
-    border-radius: 16px;
-    overflow: hidden;
-}
-
-.table-laporan thead {
-    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-}
-
-.table-laporan th {
-    color: white;
-    padding: 16px 20px;
-    text-align: left;
-    font-weight: 600;
-    font-size: 13px;
-    letter-spacing: 0.3px;
-    border-bottom: 2px solid #475569;
-    white-space: nowrap;
-}
-
-.table-laporan th:first-child {
-    border-radius: 16px 0 0 0;
-}
+/* VARIAN WARNA */
+.saldo-airlines{ background:#d6eef4; }
+.topup-airlines{ background:#9ebdcc; }
 
-.table-laporan th:last-child {
-    border-radius: 0 16px 0 0;
+/* PLN CARD */
+.pln{
+    background:#d6f2ff;
 }
 
-.table-laporan td {
-    padding: 14px 20px;
-    border-bottom: 1px solid #f1f5f9;
-    font-size: 13px;
-    color: #334155;
-    font-weight: 500;
+/* SISA SALDO DI DALAM PLN */
+.sisa-saldo-box{
+    margin-top:14px;
+    padding:10px;
+    border-radius:14px;
+    background:#c7baff;
 }
 
-.table-laporan tbody tr {
-    transition: all 0.2s ease;
+.sisa-saldo-box label{
+    color:#1f1f1f;
+    font-weight:800;
 }
 
-.table-laporan tbody tr:hover {
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    transform: translateX(4px);
+/* CASH CARD */
+.cash{
+    background:#c7baff;
 }
 
-.table-laporan tbody tr:last-child td {
-    border-bottom: none;
+/* BUTTON */
+.button-container{
+    display:flex;
+    justify-content:flex-end;
+    gap:14px;
+    margin-top:28px;
 }
 
-/* ===================== NO DATA ===================== */
-.no-data {
-    text-align: center;
-    padding: 40px 20px;
-    color: #64748b;
-    font-style: italic;
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    border-radius: 16px;
-    margin-top: 24px;
-    border: 2px dashed #cbd5e1;
+.btn{
+    padding:9px 28px;
+    border-radius:22px;
+    border:none;
+    font-weight:800;
+    color:#fff;
 }
 
-.no-data::before {
-    content: '📊';
-    font-size: 32px;
-    display: block;
-    margin-bottom: 12px;
-}
+.btn.red{ background:#ef4444; }
+.btn.green{ background:#22c55e; }
 
-/* ===================== RESPONSIVE ===================== */
-@media (max-width: 1200px) {
-    .cashflow-grid,
-    .bottom-section {
-        grid-template-columns: 1fr;
-        gap: 20px;
+/* RESPONSIVE */
+@media(max-width:1000px){
+    .cashflow-grid{
+        grid-template-columns:1fr;
     }
-    
-    .transfer-grid,
-    .setoran-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .button-group {
-        justify-content: center;
-    }
-}
-
-@media (max-width: 768px) {
-    .cash-flow-card {
-        padding: 24px;
-        border-radius: 20px;
-    }
-    
-    .page-title {
-        font-size: 24px;
-        margin-bottom: 24px;
-    }
-    
-    .search-form {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 12px;
-        padding: 16px;
-    }
-    
-    .search-form label {
-        text-align: center;
-    }
-    
-    .search-form button {
-        margin-left: 0;
-        width: 100%;
-    }
-    
-    .card {
-        padding: 16px;
-    }
-    
-    .btn {
-        padding: 12px 24px;
-        min-width: 100px;
-    }
-}
-
-@media (max-width: 480px) {
-    .cash-flow-wrapper {
-        padding: 20px 16px;
-    }
-    
-    .cash-flow-card {
-        padding: 20px;
-    }
-    
-    .button-group {
-        flex-direction: column;
-        width: 100%;
-    }
-    
-    .btn {
-        width: 100%;
-    }
-}
-
-/* ===================== ANIMATIONS ===================== */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.card {
-    animation: fadeIn 0.5s ease-out;
-}
-
-/* ===================== SCROLLBAR STYLING ===================== */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, #64748b 0%, #475569 100%);
 }
