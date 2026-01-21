@@ -55,4 +55,3 @@ class BiayaController extends Controller
         return redirect()->back()->with('success', 'Data biaya (CASH) berhasil disimpan');
     }
 }
-     

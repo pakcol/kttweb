@@ -46,7 +46,7 @@
                 <label for="jenis_bayar_id">JENIS PEMBAYARAN*</label>
                 <select id="jenis_bayar_id" name="jenis_bayar_id" class="text-uppercase" required>
                     <option value="">-- Pilih Jenis Pembayaran --</option>
-                    @if(isset($jenisBayar) && $jenisBayar->count() > 0)
+                    @if(isset($jenisBayar) && $jenisBayap               r->count() > 0)
                         @foreach($jenisBayar as $jenis)
                             @if($jenis->id != 4) <!-- KECUALI REFUND -->
                                 <option value="{{ $jenis->id }}">
