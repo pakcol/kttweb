@@ -23,7 +23,7 @@
         <option value="tiket" {{ request('jenis_data','tiket') == 'tiket' ? 'selected' : '' }}>
             TIKET
         </option>
-        <option value="ppob" {{ request('jenis_data') == 'ppob' ? 'selected' : '' }}>
+        <option value="ppob" {{ request('jenis_data') == 'ppob' ? 'selected' : '' }}>p
             PPOB
         </option>
     </select>
@@ -31,7 +31,7 @@
 
 <style>
 .filter-group {
-    display: flex;
+    display: flex;p
     align-items: center;
     gap: 10px;
 }
@@ -69,8 +69,8 @@
 
 
         <button class="btn-tampil">TAMPIL</button>
-                <a href="{{ route('rekap-penjualan.export', request()->query()) }}"
-        class="btn-excel">
+        <a href="{{ route('rekap-penjualan.export', request()->query()) }}"
+            class="btn-excel">
             EXPORT EXCEL
         </a>
 
@@ -108,7 +108,7 @@
 
         {{-- NTA SUMMARY --}}
         <div class="rekap-panel">
-            <h4>NTA</h4>
+            <h4>SUMMARY</h4>
 
             <div class="row-input">
                 <span>PENJUALAN</span>
@@ -121,14 +121,14 @@
             </div>
 
             <div class="row-input">
-        <span>DISKON</span>
-        <input readonly value="{{ number_format($TTL_DISKON ?? 0,0,',','.') }}">
-    </div>
+                <span>DISKON</span>
+                <input readonly value="{{ number_format($TTL_DISKON ?? 0,0,',','.') }}">
+            </div>
 
-    <div class="row-input">
-        <span>BIAYA</span>
-        <input readonly value="{{ number_format($TTL_BIAYA ?? 0,0,',','.') }}">
-    </div>
+            <div class="row-input">
+                <span>BIAYA</span>
+                <input readonly value="{{ number_format($TTL_BIAYA ?? 0,0,',','.') }}">
+            </div>
 
             <div class="row-input">
                 <span>RUGI / LABA</span>

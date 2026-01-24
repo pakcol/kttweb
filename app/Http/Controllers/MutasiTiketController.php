@@ -285,7 +285,6 @@ class MutasiTiketController extends Controller
             ];
         }
 
-
         // --- JENIS PPOB ---
         foreach ($ppobs as $ppob) {
             $penjualan['ppob'][$ppob->jenis_ppob] = [
@@ -334,8 +333,6 @@ class MutasiTiketController extends Controller
             )
             ->orderBy('mutasi_tiket.tgl_bayar')
             ->get();
-
-
 
         /* --- DATA PPOB --- */
         $ppob = DB::table('ppob_histories')

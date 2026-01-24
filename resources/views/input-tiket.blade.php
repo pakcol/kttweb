@@ -426,7 +426,7 @@
 
 <script>
     const statusCustomer = document.getElementById('statusCustomer');
-    const form = document.getElementById('inputDataForm');p
+    const form = document.getElementById('inputDataForm');
 
     const piutangSelect = document.getElementById('nama_piutang_select');
     const piutangInput  = document.getElementById('nama_piutang_input');
@@ -672,16 +672,16 @@
         /* ===================== INVOICE ===================== */
         //Cetak Invoice
         document.getElementById('btnCetakInvoice').addEventListener('click', () => {
-    const checked = document.querySelectorAll('.check-row:checked');
+            const checked = document.querySelectorAll('.check-row:checked');
 
-    if (checked.length === 0) {
-        alert('Pilih minimal satu tiket');
-        return;
-    }
+            if (checked.length === 0) {
+                alert('Pilih minimal satu tiket');
+                return;
+            }
 
-    const codes = Array.from(checked).map(cb => cb.value).join(',');
-    window.open(`/invoice-multi?codes=${codes}`, '_blank');
-});
+            const codes = Array.from(checked).map(cb => cb.value).join(',');
+            window.open(`/invoice-multi?codes=${codes}`, '_blank');
+        });
 /* ===================== CARI TIKET ===================== */
 
 // buka modal
