@@ -35,61 +35,81 @@ class Tiket extends Model
     ];
     
     protected $casts = [
-        'tgl_issued' => 'datetime',
-        'tgl_flight' => 'datetime',
-        'tgl_flight2' => 'datetime',
-        'nta' => 'integer',
-        'harga_jual' => 'integer',
-        'diskon' => 'integer',
-        'nilai_refund' => 'integer',
+        'tgl_issued'    => 'datetime',
+        'tgl_flight'    => 'datetime',
+        'tgl_flight2'   => 'datetime',
+        'nta'           => 'integer',
+        'harga_jual'    => 'integer',
+        'diskon'        => 'integer',
+        'nilai_refund'  => 'integer',
         'tgl_realisasi' => 'datetime',
     ];
-    
-    /**
-     * Relasi ke JenisTiket
-     */
+
+    // =====================================================
+    // RELASI
+    // =====================================================
+
     public function jenisTiket(): BelongsTo
     {
         return $this->belongsTo(JenisTiket::class, 'jenis_tiket_id');
     }
-    
-    /**
-     * Relasi ke Subagent
-     */
+
     public function subagent(): HasOne
     {
         return $this->hasOne(Subagent::class, 'tiket_kode_booking', 'kode_booking');
     }
-    
-    /**
-     * Relasi ke Mutasi Tiket
-     */
-    public function mutasiTiket()
+
+    public function mutasiTiket(): HasOne
     {
         return $this->hasOne(MutasiTiket::class, 'tiket_kode_booking', 'kode_booking');
     }
 
-
-    public function subagentHistories()
+    public function subagentHistories(): HasMany
     {
         return $this->hasMany(SubagentHistory::class, 'kode_booking', 'kode_booking');
     }
 
-    public function getPembayaranLabelAttribute()
+    // =====================================================
+    // ACCESSOR — ambil data dari mutasi_tiket via relasi
+    // =====================================================
+
+    /**
+     * Ambil jenis_bayar_id dari mutasi_tiket
+     * Dipakai untuk filter tabel di blade (@if $t->jenis_bayar_id == 3)
+     */
+    public function getJenisBayarIdAttribute(): ?int
     {
-        // tidak ada mutasi / jenis bayar
+        return $this->mutasiTiket?->jenis_bayar_id;
+    }
+
+    /**
+     * Ambil nama_piutang dari tabel piutang via mutasi_tiket.piutang_id
+     * Dipakai untuk kolom "Nama Piutang" di tabel
+     */
+    public function getNamaPiutangAttribute(): ?string
+    {
+        return $this->mutasiTiket?->piutang?->nama;
+    }
+
+    /**
+     * Label pembayaran untuk kolom "Pembayaran" di tabel
+     */
+    public function getPembayaranLabelAttribute(): string
+    {
         if (!$this->mutasiTiket || !$this->mutasiTiket->jenisBayar) {
             return '-';
         }
 
         $jenis = strtoupper($this->mutasiTiket->jenisBayar->jenis);
 
-        // khusus BANK → tambahkan nama bank
         if ($jenis === 'BANK') {
             return 'BANK ' . ($this->mutasiTiket->bank->name ?? '');
         }
 
-        // selain BANK → tampilkan jenis saja
+        if ($jenis === 'PIUTANG') {
+            return 'PIUTANG - ' . ($this->mutasiTiket->piutang->nama ?? '-');
+        }
+
         return $jenis;
     }
 }
