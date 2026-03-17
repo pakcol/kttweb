@@ -82,7 +82,8 @@
             <tbody id="tbodyPiutang">
                 @foreach ($piutang as $row)
                 @php
-                    $namaPiutang = strtoupper(trim($row->piutang?->nama ?? $row->nama_piutang ?? ''));
+                    {{-- Murni dari relasi piutang, tidak ada fallback nama_piutang --}}
+                    $namaPiutang = strtoupper(trim($row->piutang?->nama ?? ''));
                 @endphp
                 <tr
                     data-mutasi-id="{{ $row->id }}"
@@ -92,7 +93,7 @@
                     <td>{{ $row->tiket?->tgl_issued?->format('Y-m-d') ?? '-' }}</td>
 
                     <td class="nama-piutang" style="cursor:pointer; color:#1a73e8; font-weight:600;">
-                        {{ $row->piutang?->nama ?? $row->nama_piutang ?? '-' }}
+                        {{ $row->piutang?->nama ?? '-' }}
                     </td>
 
                     <td>{{ $row->tiket_kode_booking }}</td>
@@ -126,7 +127,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const tableTitle    = document.getElementById('tableTitle');
     const tbody         = document.getElementById('tbodyPiutang');
 
-    // ===================== FUNGSI NORMALIZE STRING =====================
     function normalize(str) {
         return (str || '').toString().trim().toUpperCase();
     }
@@ -135,7 +135,6 @@ document.addEventListener('DOMContentLoaded', function () {
     function filterTabel(selectedId, selectedNama, labelText) {
         const allRows = tbody.querySelectorAll('tr');
 
-        // Jika ALL dipilih (selectedId kosong & selectedNama kosong)
         if (!selectedId && !selectedNama) {
             allRows.forEach(function(row) { row.style.display = ''; });
             tableTitle.textContent = 'Data Piutang';
@@ -146,11 +145,7 @@ document.addEventListener('DOMContentLoaded', function () {
             var rowId   = normalize(row.getAttribute('data-piutang-id'));
             var rowNama = normalize(row.getAttribute('data-nama-piutang'));
 
-            // FIX: cocokById tidak lagi mensyaratkan rowId !== ''
-            // sehingga baris dengan piutang_id null tetap bisa lolos via cocokByNama
             var cocokById   = (selectedId !== '' && rowId === normalize(selectedId));
-
-            // FIX: tambah trim() & toUpperCase() via normalize() agar tidak mismatch spasi/case
             var cocokByNama = (selectedNama !== '' && rowNama !== '' && rowNama === normalize(selectedNama));
 
             row.style.display = (cocokById || cocokByNama) ? '' : 'none';
@@ -177,7 +172,6 @@ document.addEventListener('DOMContentLoaded', function () {
             var namaTeks  = normalize(row.getAttribute('data-nama-piutang'));
             var label     = this.textContent.trim();
 
-            // Sync dropdown: cari option yang cocok by ID dulu, lalu fallback by nama
             var matched = false;
             for (var i = 0; i < piutangSelect.options.length; i++) {
                 var opt     = piutangSelect.options[i];

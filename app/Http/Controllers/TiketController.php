@@ -24,7 +24,7 @@ class TiketController extends Controller
     {
         return view('input-tiket', [
             'subagents'   => Subagent::all(),
-            'piutangList' => Piutang::all(),
+            'piutangList' => Piutang::orderBy('nama')->get(),
             'ticket'      => Tiket::with([
                 'jenisTiket',
                 'mutasiTiket.jenisBayar',
@@ -50,8 +50,6 @@ class TiketController extends Controller
             ->orderBy('tgl_issued', 'asc')
             ->get();
 
-        // ✅ FIX: ambil SEMUA dari tabel piutang, bukan filter dari mutasi
-        // Sehingga nama piutang yg sudah diinput di halaman tiket pasti muncul
         $piutangNames = Piutang::orderBy('nama')->get();
 
         return view('piutang', [
@@ -259,7 +257,7 @@ class TiketController extends Controller
             $request->validate([
                 'jenis_bayar_id' => 'required|exists:jenis_bayar,id',
                 'bank_id'        => 'nullable|exists:bank,id',
-                'nama_piutang'   => 'nullable|string|max:100',
+                'piutang_id'     => 'nullable|exists:piutangs,id',
             ]);
 
             $tiket = Tiket::create([
@@ -281,10 +279,8 @@ class TiketController extends Controller
 
             $piutangId = null;
             if ((int)$request->jenis_bayar_id === 3) {
-                $piutang = Piutang::firstOrCreate(
-                    ['nama' => strtoupper($request->nama_piutang)],
-                    ['jumlah' => 0]
-                );
+                // piutang_id wajib dipilih dari tabel piutangs
+                $piutang = Piutang::findOrFail($request->piutang_id);
                 $piutang->increment('jumlah', $tiket->harga_jual);
                 $piutangId = $piutang->id;
             }
@@ -315,9 +311,6 @@ class TiketController extends Controller
                 'jenis_bayar_id'     => $request->jenis_bayar_id,
                 'bank_id'            => $request->bank_id,
                 'piutang_id'         => $piutangId,
-                'nama_piutang'       => (int)$request->jenis_bayar_id === 3
-                                            ? strtoupper($request->nama_piutang)
-                                            : null,
                 'keterangan'         => $request->keterangan,
             ]);
         });
@@ -345,7 +338,7 @@ class TiketController extends Controller
             'status'         => 'required|in:issued,canceled,refunded',
             'jenis_bayar_id' => 'nullable|exists:jenis_bayar,id',
             'bank_id'        => 'nullable|exists:bank,id',
-            'nama_piutang'   => 'nullable|string|max:100',
+            'piutang_id'     => 'nullable|exists:piutangs,id',
             'nilai_refund'   => 'nullable|integer|min:0',
             'tgl_realisasi'  => 'nullable|date',
             'keterangan'     => 'nullable|string|max:200',
@@ -362,11 +355,8 @@ class TiketController extends Controller
             }
 
             $piutangId = null;
-            if ((int)$request->jenis_bayar_id === 3 && $request->filled('nama_piutang')) {
-                $piutang   = Piutang::firstOrCreate(
-                    ['nama' => strtoupper($request->nama_piutang)],
-                    ['jumlah' => 0]
-                );
+            if ((int)$request->jenis_bayar_id === 3 && $request->filled('piutang_id')) {
+                $piutang   = Piutang::findOrFail($request->piutang_id);
                 $piutangId = $piutang->id;
             }
 
@@ -402,9 +392,6 @@ class TiketController extends Controller
                         'jenis_bayar_id' => $request->jenis_bayar_id,
                         'bank_id'        => $request->bank_id,
                         'piutang_id'     => $piutangId,
-                        'nama_piutang'   => (int)$request->jenis_bayar_id === 3
-                                                ? strtoupper($request->nama_piutang)
-                                                : null,
                         'keterangan'     => 'UPDATE DATA TIKET',
                     ]);
                 } else {
@@ -415,9 +402,6 @@ class TiketController extends Controller
                         'jenis_bayar_id'     => 4,
                         'bank_id'            => $request->bank_id,
                         'piutang_id'         => $piutangId,
-                        'nama_piutang'       => (int)$request->jenis_bayar_id === 3
-                                                    ? strtoupper($request->nama_piutang)
-                                                    : null,
                         'keterangan'         => 'ISSUED TIKET',
                     ]);
                 }
@@ -555,8 +539,8 @@ class TiketController extends Controller
         return response()->json([
             'jenis_bayar_id' => $mutasi?->jenis_bayar_id,
             'bank_id'        => $mutasi?->bank_id,
-            'nama_piutang'   => $mutasi?->piutang?->nama ?? $mutasi?->nama_piutang,
             'piutang_id'     => $mutasi?->piutang_id,
+            'piutang_nama'   => $mutasi?->piutang?->nama,
             'nilai_refund'   => $tiket?->nilai_refund ?? 0,
             'tgl_realisasi'  => $tiket?->tgl_realisasi
                 ? Carbon::parse($tiket->tgl_realisasi)->format('Y-m-d H:i:s')

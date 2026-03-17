@@ -19,7 +19,7 @@ class MutasiTiketService
                 'insentif'       => $data['insentif'] ?? 0,
                 'jenis_bayar_id' => $data['jenis_bayar_id'],
                 'bank_id'        => $data['bank_id'] ?? null,
-                'nama_piutang'   => $data['nama_piutang'] ?? null,
+                'piutang_id'     => $data['piutang_id'] ?? null,
                 'keterangan'     => $data['keterangan'] ?? null,
             ]
         );

@@ -1,93 +1,21 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 /**
- * Migration ini memperbaiki kolom pada tabel mutasi_tiket dan topup_histories
- * untuk database yang sudah berjalan (production-safe).
- *
- * Perubahan:
- * 1. mutasi_tiket  → jenis_bayar_id dibuat nullable
- * 2. mutasi_tiket  → tambah kolom nama_piutang (jika belum ada)
- * 3. topup_histories → jenis_bayar_id dibuat nullable
+ * Migration ini sudah tidak diperlukan.
+ * Semua struktur sudah benar di migration awal (fresh install).
+ * File ini dikosongkan agar tidak konflik saat php artisan migrate:fresh.
  */
 return new class extends Migration
 {
     public function up(): void
     {
-        // =============================================
-        // 1. PERBAIKI tabel mutasi_tiket
-        // =============================================
-        Schema::table('mutasi_tiket', function (Blueprint $table) {
-
-            // Drop foreign key dulu sebelum ubah kolom
-            $table->dropForeign(['jenis_bayar_id']);
-
-            // Ubah jenis_bayar_id menjadi nullable
-            $table->foreignId('jenis_bayar_id')
-                ->nullable()
-                ->change();
-
-            // Tambah foreign key kembali dengan nullOnDelete
-            $table->foreign('jenis_bayar_id')
-                ->references('id')
-                ->on('jenis_bayar')
-                ->nullOnDelete();
-        });
-
-        // =============================================
-        // 2. PERBAIKI tabel topup_histories
-        // =============================================
-        Schema::table('topup_histories', function (Blueprint $table) {
-
-            // Drop foreign key dulu sebelum ubah kolom
-            $table->dropForeign(['jenis_bayar_id']);
-
-            // Ubah jenis_bayar_id menjadi nullable
-            $table->foreignId('jenis_bayar_id')
-                ->nullable()
-                ->change();
-
-            // Tambah foreign key kembali dengan nullOnDelete
-            $table->foreign('jenis_bayar_id')
-                ->references('id')
-                ->on('jenis_bayar')
-                ->nullOnDelete();
-        });
+        // no-op
     }
 
     public function down(): void
     {
-        // =============================================
-        // ROLLBACK mutasi_tiket
-        // =============================================
-        Schema::table('mutasi_tiket', function (Blueprint $table) {
-            $table->dropForeign(['jenis_bayar_id']);
-
-            $table->foreignId('jenis_bayar_id')
-                ->nullable(false)
-                ->change();
-
-            $table->foreign('jenis_bayar_id')
-                ->references('id')
-                ->on('jenis_bayar');
-        });
-
-        // =============================================
-        // ROLLBACK topup_histories
-        // =============================================
-        Schema::table('topup_histories', function (Blueprint $table) {
-            $table->dropForeign(['jenis_bayar_id']);
-
-            $table->foreignId('jenis_bayar_id')
-                ->nullable(false)
-                ->change();
-
-            $table->foreign('jenis_bayar_id')
-                ->references('id')
-                ->on('jenis_bayar');
-        });
+        // no-op
     }
 };

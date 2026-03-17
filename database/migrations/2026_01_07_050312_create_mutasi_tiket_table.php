@@ -11,18 +11,15 @@ return new class extends Migration
         Schema::create('mutasi_tiket', function (Blueprint $table) {
             $table->id();
 
-            // ✅ FIX BUG 1: kolom string dideklarasikan DULU, baru foreign key
             $table->string('tiket_kode_booking', 10);
             $table->foreign('tiket_kode_booking')
                 ->references('kode_booking')
                 ->on('tiket')
                 ->cascadeOnDelete();
 
-            // Tanggal
             $table->datetime('tgl_issued');
             $table->datetime('tgl_bayar')->nullable();
 
-            // Nominal
             $table->decimal('harga_bayar', 15, 2)->default(0);
             $table->decimal('insentif', 15, 2)->default(0);
 
@@ -31,19 +28,17 @@ return new class extends Migration
                   ->constrained('jenis_bayar')
                   ->nullOnDelete();
 
-            // Relasi ke bank (nullable)
             $table->foreignId('bank_id')
                   ->nullable()
                   ->constrained('bank')
                   ->nullOnDelete();
 
+            // Relasi ke tabel piutangs — TIDAK ada kolom nama_piutang
             $table->foreignId('piutang_id')
                   ->nullable()
-                  ->constrained()
+                  ->constrained('piutangs')
                   ->nullOnDelete();
 
-
-            // Keterangan tambahan
             $table->text('keterangan')->nullable();
 
             $table->timestamps();

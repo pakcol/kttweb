@@ -42,7 +42,6 @@
             <tbody>
                 @php $indexCashBank = 1; @endphp
                 @foreach ($ticket as $t)
-                    {{-- ✅ FIX: filter lewat accessor yang baca mutasiTiket->jenis_bayar_id --}}
                     @if($t->jenis_bayar_id != 3)
                     <tr data-id="{{ $t->kode_booking }}" data-jenis-tiket-id="{{ $t->jenis_tiket_id }}">
                         <td><input type="checkbox" class="check-row" value="{{ $t->kode_booking }}"></td>
@@ -94,7 +93,6 @@
             <tbody>
                 @php $indexPiutang = 1; @endphp
                 @foreach ($ticket as $t)
-                    {{-- ✅ FIX: filter lewat accessor --}}
                     @if($t->jenis_bayar_id == 3)
                     <tr data-id="{{ $t->kode_booking }}" data-jenis-tiket-id="{{ $t->jenis_tiket_id }}">
                         <td><input type="checkbox" class="check-row" value="{{ $t->kode_booking }}"></td>
@@ -112,7 +110,7 @@
                         <td>{{ number_format($t->komisi, 0, ',', '.') }}</td>
                         <td>{{ ucfirst($t->status) }}</td>
                         <td>{{ $t->jenisTiket->name_jenis ?? '-' }}</td>
-                        {{-- ✅ FIX: nama_piutang dari tabel piutang via relasi --}}
+                        {{-- Murni dari relasi piutang, tidak ada fallback string --}}
                         <td>{{ $t->mutasiTiket?->piutang?->nama ?? '-' }}</td>
                         <td>{{ $t->keterangan ?? '-' }}</td>
                         <td>{{ number_format($t->nilai_refund ?? 0, 0, ',', '.') }}</td>
@@ -262,23 +260,15 @@
                         <input type="datetime-local" id="tgl_realisasi" name="tgl_realisasi">
                     </div>
 
-                    {{-- ✅ NAMA PIUTANG — dropdown dari tabel piutang --}}
+                    {{-- NAMA PIUTANG — dropdown dari tabel piutangs, kirim piutang_id --}}
                     <div class="form-group" id="namaPiutangContainer" style="display:none;">
                         <label>NAMA PIUTANG</label>
-                        <select id="nama_piutang_select" class="text-uppercase">
+                        <select id="piutang_id" name="piutang_id" class="text-uppercase">
                             <option value="">-- Pilih Nama Piutang --</option>
                             @foreach($piutangList as $p)
-                                <option value="{{ $p->nama }}">{{ $p->nama }}</option>
+                                <option value="{{ $p->id }}">{{ $p->nama }}</option>
                             @endforeach
-                            <option value="__BARU__">+ TAMBAH BARU</option>
                         </select>
-                        {{-- hidden input yang dikirim ke server --}}
-                        <input type="text"
-                            id="nama_piutang_input"
-                            name="nama_piutang"
-                            class="text-uppercase"
-                            placeholder="Masukkan nama piutang baru"
-                            style="display:none; margin-top:8px;">
                     </div>
 
                     <div class="button-group">
@@ -378,8 +368,7 @@ document.addEventListener('DOMContentLoaded', function () {
     /* ========= REFERENSI ELEMEN ========= */
     const statusCustomer  = $('statusCustomer');
     const form            = $('inputDataForm');
-    const piutangSelect   = $('nama_piutang_select');
-    const piutangInput    = $('nama_piutang_input');
+    const piutangSelect   = $('piutang_id');
     const ntaInput        = $('nta');
     const hargaJualInput  = $('harga_jual');
     const diskonInput     = $('diskon');
@@ -393,21 +382,6 @@ document.addEventListener('DOMContentLoaded', function () {
         komisiInput.value = Math.max(0, harga - diskon - nta);
     }
     [ntaInput, hargaJualInput, diskonInput].forEach(el => el.addEventListener('input', updateKomisi));
-
-    /* ========= NAMA PIUTANG SELECT ========= */
-    piutangSelect.addEventListener('change', () => {
-        if (piutangSelect.value === '__BARU__') {
-            piutangInput.style.display = 'block';
-            piutangInput.required = true;
-            piutangInput.value = '';
-            piutangInput.focus();
-        } else {
-            piutangInput.style.display = 'none';
-            piutangInput.required = false;
-            // ✅ nilai nama_piutang = yang dipilih dari tabel piutang
-            piutangInput.value = piutangSelect.value;
-        }
-    });
 
     /* ========= STATUS SHOW/HIDE ========= */
     const showBasicStatus = () =>
@@ -450,9 +424,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (!isPiutang) {
             piutangSelect.value = '';
-            piutangInput.value  = '';
-            piutangInput.style.display = 'none';
-            piutangInput.required = false;
         }
     }
     $('jenis_bayar_id').addEventListener('change', toggleJenisPembayaran);
@@ -462,7 +433,6 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(`tiket/by-tiket/${kodeBooking}`, { headers: { 'Accept': 'application/json' } })
         .then(r => r.ok ? r.json() : Promise.reject(r.status))
         .then(d => {
-            // Set tipe customer
             if (d.subagent_id) {
                 statusCustomer.value = 'subagent';
                 toggleCustomerType();
@@ -472,30 +442,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 toggleCustomerType();
             }
 
-            // Set jenis bayar
             $('jenis_bayar_id').value = d.jenis_bayar_id ?? '';
             $('bank_id').value        = d.bank_id ?? '';
 
-            // ✅ FIX: Set nama piutang — sync SELECT dulu, baru input
-            const namaPiutang = d.nama_piutang ?? '';
-            if (namaPiutang) {
-                // Cari option dengan value = namaPiutang di select
-                const matchOpt = Array.from(piutangSelect.options)
-                    .find(o => o.value === namaPiutang);
-
-                if (matchOpt) {
-                    // Nama ada di daftar tabel piutang → pilih option-nya
-                    piutangSelect.value   = namaPiutang;
-                    piutangInput.value    = namaPiutang;
-                    piutangInput.style.display = 'none';
-                    piutangInput.required = false;
-                } else {
-                    // Nama tidak ada di dropdown → tampilkan input manual
-                    piutangSelect.value   = '__BARU__';
-                    piutangInput.value    = namaPiutang;
-                    piutangInput.style.display = 'block';
-                    piutangInput.required = true;
-                }
+            // Set piutang_id dari relasi — langsung set value ID ke select
+            if (d.piutang_id) {
+                piutangSelect.value = d.piutang_id;
+            } else {
+                piutangSelect.value = '';
             }
 
             $('nilai_refund').value  = d.nilai_refund ?? 0;
@@ -503,7 +457,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 ? d.tgl_realisasi.replace(' ', 'T').substring(0, 16)
                 : '';
 
-            // ✅ FIX: toggle SETELAH semua nilai di-set
             toggleJenisPembayaran();
             toggleRefund();
         })
@@ -677,7 +630,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function buildRowP(t, i) {
-        // ✅ nama piutang dari relasi mutasi_tiket.piutang.nama
+        // Nama piutang murni dari relasi mutasi_tiket -> piutang -> nama
         const namaPiutang = t.mutasi_tiket?.piutang?.nama ?? '-';
         return `<tr data-id="${t.kode_booking}" data-jenis-tiket-id="${t.jenis_tiket_id}">
             <td><input type="checkbox" class="check-row" value="${t.kode_booking}"></td>

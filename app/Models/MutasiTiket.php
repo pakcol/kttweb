@@ -50,10 +50,10 @@ class MutasiTiket extends Model
         return $this->hasOneThrough(
             JenisTiket::class,
             Tiket::class,
-            'kode_booking',      // FK di tiket
-            'id',                // FK di jenis_tiket
-            'tiket_kode_booking',// local key di mutasi_tiket
-            'jenis_tiket_id'     // local key di tiket
+            'kode_booking',
+            'id',
+            'tiket_kode_booking',
+            'jenis_tiket_id'
         );
     }
 }
