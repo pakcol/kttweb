@@ -35,11 +35,6 @@ return new class extends Migration
                 ->references('id')
                 ->on('jenis_bayar')
                 ->nullOnDelete();
-
-            // Tambah kolom nama_piutang jika belum ada
-            if (!Schema::hasColumn('mutasi_tiket', 'nama_piutang')) {
-                $table->string('nama_piutang', 100)->nullable()->after('piutang_id');
-            }
         });
 
         // =============================================

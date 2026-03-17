@@ -61,7 +61,7 @@
                     <button type="reset" class="btn-hapus">Reset</button>
                 </div>
             </form>
-        </div>p
+        </div>
 
         <div class="user-table-container">
             <h3>Daftar User</h3>

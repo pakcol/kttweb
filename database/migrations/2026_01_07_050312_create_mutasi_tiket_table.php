@@ -26,8 +26,6 @@ return new class extends Migration
             $table->decimal('harga_bayar', 15, 2)->default(0);
             $table->decimal('insentif', 15, 2)->default(0);
 
-            // ✅ FIX BUG 2: jenis_bayar_id dibuat nullable
-            // (subagent tidak memiliki jenis_bayar)
             $table->foreignId('jenis_bayar_id')
                   ->nullable()
                   ->constrained('jenis_bayar')
@@ -44,8 +42,6 @@ return new class extends Migration
                   ->constrained()
                   ->nullOnDelete();
 
-            // ✅ FIX BUG 4: tambah kolom nama_piutang yang dipakai di controller
-            $table->string('nama_piutang', 100)->nullable();
 
             // Keterangan tambahan
             $table->text('keterangan')->nullable();

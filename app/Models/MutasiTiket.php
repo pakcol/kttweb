@@ -18,7 +18,6 @@ class MutasiTiket extends Model
         'jenis_bayar_id',
         'bank_id',
         'piutang_id',
-        'nama_piutang',   // ✅ FIX: sebelumnya tidak ada di fillable
         'keterangan',
     ];
 
