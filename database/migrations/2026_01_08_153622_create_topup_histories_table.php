@@ -17,7 +17,7 @@ return new class extends Migration {
             $table->integer('transaksi');
 
             // ================= RELASI =================
-            // target tiket (nullable)
+            // target jenis tiket (nullable)
             $table->foreignId('jenis_tiket_id')
                 ->nullable()
                 ->constrained('jenis_tiket')
@@ -29,15 +29,19 @@ return new class extends Migration {
                 ->constrained('subagents')
                 ->nullOnDelete();
 
-            // jenis pembayaran (WAJIB)
+            // ✅ FIX BUG 3: jenis_bayar_id dibuat nullable
+            // (mode refund tiket tidak selalu memiliki jenis_bayar)
             $table->foreignId('jenis_bayar_id')
-                ->constrained('jenis_bayar');
+                ->nullable()
+                ->constrained('jenis_bayar')
+                ->nullOnDelete();
 
             // bank (hanya jika BANK)
             $table->foreignId('bank_id')
                 ->nullable()
                 ->constrained('bank')
                 ->nullOnDelete();
+
             $table->text('keterangan')->nullable();
 
             $table->timestamps();
