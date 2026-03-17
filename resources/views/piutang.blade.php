@@ -18,7 +18,7 @@
                 <select id="piutang_id_select" class="form-control">
                     <option value="" data-nama="">ALL</option>
                     @foreach($piutangNames as $p)
-                        <option value="{{ $p->id }}" data-nama="{{ strtoupper($p->nama) }}">{{ $p->nama }}</option>
+                        <option value="{{ $p->id }}" data-nama="{{ strtoupper(trim($p->nama)) }}">{{ $p->nama }}</option>
                     @endforeach
                 </select>
             </div>
@@ -82,7 +82,7 @@
             <tbody id="tbodyPiutang">
                 @foreach ($piutang as $row)
                 @php
-                    $namaPiutang = strtoupper($row->piutang?->nama ?? $row->nama_piutang ?? '');
+                    $namaPiutang = strtoupper(trim($row->piutang?->nama ?? $row->nama_piutang ?? ''));
                 @endphp
                 <tr
                     data-mutasi-id="{{ $row->id }}"
@@ -126,6 +126,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const tableTitle    = document.getElementById('tableTitle');
     const tbody         = document.getElementById('tbodyPiutang');
 
+    // ===================== FUNGSI NORMALIZE STRING =====================
+    function normalize(str) {
+        return (str || '').toString().trim().toUpperCase();
+    }
+
     // ===================== FUNGSI FILTER TABEL =====================
     function filterTabel(selectedId, selectedNama, labelText) {
         const allRows = tbody.querySelectorAll('tr');
@@ -138,11 +143,15 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         allRows.forEach(function(row) {
-            var rowId   = row.getAttribute('data-piutang-id') || '';
-            var rowNama = row.getAttribute('data-nama-piutang') || '';
+            var rowId   = normalize(row.getAttribute('data-piutang-id'));
+            var rowNama = normalize(row.getAttribute('data-nama-piutang'));
 
-            var cocokById   = (selectedId !== '' && rowId !== '' && rowId === selectedId);
-            var cocokByNama = (selectedNama !== '' && rowNama !== '' && rowNama === selectedNama);
+            // FIX: cocokById tidak lagi mensyaratkan rowId !== ''
+            // sehingga baris dengan piutang_id null tetap bisa lolos via cocokByNama
+            var cocokById   = (selectedId !== '' && rowId === normalize(selectedId));
+
+            // FIX: tambah trim() & toUpperCase() via normalize() agar tidak mismatch spasi/case
+            var cocokByNama = (selectedNama !== '' && rowNama !== '' && rowNama === normalize(selectedNama));
 
             row.style.display = (cocokById || cocokByNama) ? '' : 'none';
         });
@@ -154,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function () {
     piutangSelect.addEventListener('change', function () {
         var selectedOpt  = this.options[this.selectedIndex];
         var selectedId   = this.value;
-        var selectedNama = selectedOpt.getAttribute('data-nama') || '';
+        var selectedNama = normalize(selectedOpt.getAttribute('data-nama'));
         var labelText    = selectedOpt.text.trim();
 
         filterTabel(selectedId, selectedNama, labelText);
@@ -165,18 +174,20 @@ document.addEventListener('DOMContentLoaded', function () {
         cell.addEventListener('click', function () {
             var row       = this.closest('tr');
             var piutangId = row.getAttribute('data-piutang-id') || '';
-            var namaTeks  = row.getAttribute('data-nama-piutang') || '';
+            var namaTeks  = normalize(row.getAttribute('data-nama-piutang'));
             var label     = this.textContent.trim();
 
-            // Sync dropdown
+            // Sync dropdown: cari option yang cocok by ID dulu, lalu fallback by nama
             var matched = false;
             for (var i = 0; i < piutangSelect.options.length; i++) {
-                var opt    = piutangSelect.options[i];
-                var optId  = opt.value;
-                var optNama = opt.getAttribute('data-nama') || '';
+                var opt     = piutangSelect.options[i];
+                var optId   = opt.value;
+                var optNama = normalize(opt.getAttribute('data-nama'));
 
-                if ((piutangId !== '' && optId === piutangId) ||
-                    (piutangId === '' && optNama === namaTeks)) {
+                var matchId   = (piutangId !== '' && optId !== '' && optId === piutangId);
+                var matchNama = (namaTeks !== '' && optNama === namaTeks);
+
+                if (matchId || matchNama) {
                     piutangSelect.selectedIndex = i;
                     matched = true;
                     break;
