@@ -73,10 +73,6 @@ return new class extends Migration
             $table->foreign('jenis_bayar_id')
                 ->references('id')
                 ->on('jenis_bayar');
-
-            if (Schema::hasColumn('mutasi_tiket', 'nama_piutang')) {
-                $table->dropColumn('nama_piutang');
-            }
         });
 
         // =============================================
