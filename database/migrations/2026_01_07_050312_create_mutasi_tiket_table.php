@@ -11,33 +11,41 @@ return new class extends Migration
         Schema::create('mutasi_tiket', function (Blueprint $table) {
             $table->id();
 
+            // Foreign key ke tiket via string kode_booking
             $table->string('tiket_kode_booking', 10);
             $table->foreign('tiket_kode_booking')
                 ->references('kode_booking')
                 ->on('tiket')
                 ->cascadeOnDelete();
 
+            // Tanggal
             $table->datetime('tgl_issued');
             $table->datetime('tgl_bayar')->nullable();
 
+            // Nominal
             $table->decimal('harga_bayar', 15, 2)->default(0);
             $table->decimal('insentif', 15, 2)->default(0);
 
-            $table->foreignId('jenis_bayar_id')
-                  ->nullable()
-                  ->constrained('jenis_bayar')
-                  ->nullOnDelete();
+            // jenis_bayar_id NULLABLE sejak awal — subagent tidak punya jenis_bayar
+            $table->unsignedBigInteger('jenis_bayar_id')->nullable();
+            $table->foreign('jenis_bayar_id')
+                ->references('id')
+                ->on('jenis_bayar')
+                ->nullOnDelete();
 
-            $table->foreignId('bank_id')
-                  ->nullable()
-                  ->constrained('bank')
-                  ->nullOnDelete();
+            // bank (nullable)
+            $table->unsignedBigInteger('bank_id')->nullable();
+            $table->foreign('bank_id')
+                ->references('id')
+                ->on('bank')
+                ->nullOnDelete();
 
             // Relasi ke tabel piutangs — TIDAK ada kolom nama_piutang
-            $table->foreignId('piutang_id')
-                  ->nullable()
-                  ->constrained('piutangs')
-                  ->nullOnDelete();
+            $table->unsignedBigInteger('piutang_id')->nullable();
+            $table->foreign('piutang_id')
+                ->references('id')
+                ->on('piutangs')
+                ->nullOnDelete();
 
             $table->text('keterangan')->nullable();
 
