@@ -197,6 +197,37 @@ class TiketController extends Controller
         }
     }
 
+    /**
+     * Resolve piutang: jika piutang_id diisi pakai itu,
+     * jika tidak tapi nama_piutang diisi maka firstOrCreate berdasarkan nama.
+     * Return piutang_id atau null.
+     */
+    private function resolvePiutangId(Request $request): ?int
+    {
+        if ((int)$request->jenis_bayar_id !== 3) {
+            return null;
+        }
+
+        // Jika ada ID valid dari rekomendasi yang dipilih
+        if ($request->filled('piutang_id')) {
+            $piutang = Piutang::findOrFail($request->piutang_id);
+            $piutang->increment('jumlah', 0); // pastikan record exist
+            return $piutang->id;
+        }
+
+        // Jika hanya ada nama (input manual tanpa memilih rekomendasi)
+        if ($request->filled('nama_piutang_input')) {
+            $nama    = strtoupper(trim($request->nama_piutang_input));
+            $piutang = Piutang::firstOrCreate(
+                ['nama' => $nama],
+                ['jumlah' => 0]
+            );
+            return $piutang->id;
+        }
+
+        return null;
+    }
+
     public function store(Request $request, MutasiTiketService $mutasiService)
     {
         $request->validate([
@@ -255,9 +286,10 @@ class TiketController extends Controller
             }
 
             $request->validate([
-                'jenis_bayar_id' => 'required|exists:jenis_bayar,id',
-                'bank_id'        => 'nullable|exists:bank,id',
-                'piutang_id'     => 'nullable|exists:piutangs,id',
+                'jenis_bayar_id'    => 'required|exists:jenis_bayar,id',
+                'bank_id'           => 'nullable|exists:bank,id',
+                'piutang_id'        => 'nullable|exists:piutangs,id',
+                'nama_piutang_input'=> 'nullable|string|max:100',
             ]);
 
             $tiket = Tiket::create([
@@ -277,12 +309,10 @@ class TiketController extends Controller
                 'keterangan'     => strtoupper($request->keterangan),
             ]);
 
-            $piutangId = null;
-            if ((int)$request->jenis_bayar_id === 3) {
-                // piutang_id wajib dipilih dari tabel piutangs
-                $piutang = Piutang::findOrFail($request->piutang_id);
-                $piutang->increment('jumlah', $tiket->harga_jual);
-                $piutangId = $piutang->id;
+            $piutangId = $this->resolvePiutangId($request);
+
+            if ($piutangId) {
+                Piutang::findOrFail($piutangId)->increment('jumlah', $tiket->harga_jual);
             }
 
             JenisTiket::find($tiket->jenis_tiket_id)->decrement('saldo', $tiket->nta);
@@ -324,25 +354,26 @@ class TiketController extends Controller
         MutasiTiketService $mutasiService
     ) {
         $request->validate([
-            'kode_booking'   => 'required|string|max:10',
-            'tgl_issued'     => 'required|date',
-            'name'           => 'required|string|max:100',
-            'harga_jual'     => 'required|integer|min:0',
-            'nta'            => 'required|integer|min:0',
-            'diskon'         => 'required|integer|min:0',
-            'komisi'         => 'required|integer|min:0',
-            'rute'           => 'required|string|max:45',
-            'tgl_flight'     => 'required|date',
-            'rute2'          => 'nullable|string|max:45',
-            'tgl_flight2'    => 'nullable|date',
-            'status'         => 'required|in:issued,canceled,refunded',
-            'jenis_bayar_id' => 'nullable|exists:jenis_bayar,id',
-            'bank_id'        => 'nullable|exists:bank,id',
-            'piutang_id'     => 'nullable|exists:piutangs,id',
-            'nilai_refund'   => 'nullable|integer|min:0',
-            'tgl_realisasi'  => 'nullable|date',
-            'keterangan'     => 'nullable|string|max:200',
-            'subagent_id'    => 'nullable|exists:subagents,id',
+            'kode_booking'      => 'required|string|max:10',
+            'tgl_issued'        => 'required|date',
+            'name'              => 'required|string|max:100',
+            'harga_jual'        => 'required|integer|min:0',
+            'nta'               => 'required|integer|min:0',
+            'diskon'            => 'required|integer|min:0',
+            'komisi'            => 'required|integer|min:0',
+            'rute'              => 'required|string|max:45',
+            'tgl_flight'        => 'required|date',
+            'rute2'             => 'nullable|string|max:45',
+            'tgl_flight2'       => 'nullable|date',
+            'status'            => 'required|in:issued,canceled,refunded',
+            'jenis_bayar_id'    => 'nullable|exists:jenis_bayar,id',
+            'bank_id'           => 'nullable|exists:bank,id',
+            'piutang_id'        => 'nullable|exists:piutangs,id',
+            'nama_piutang_input'=> 'nullable|string|max:100',
+            'nilai_refund'      => 'nullable|integer|min:0',
+            'tgl_realisasi'     => 'nullable|date',
+            'keterangan'        => 'nullable|string|max:200',
+            'subagent_id'       => 'nullable|exists:subagents,id',
         ]);
 
         DB::transaction(function () use ($request, $kode_booking, $mutasiService) {
@@ -354,11 +385,7 @@ class TiketController extends Controller
                 throw new \Exception('Tiket refund tidak bisa diubah');
             }
 
-            $piutangId = null;
-            if ((int)$request->jenis_bayar_id === 3 && $request->filled('piutang_id')) {
-                $piutang   = Piutang::findOrFail($request->piutang_id);
-                $piutangId = $piutang->id;
-            }
+            $piutangId = $this->resolvePiutangId($request);
 
             $tiket->update([
                 'kode_booking'   => strtoupper($request->kode_booking),
@@ -464,9 +491,18 @@ class TiketController extends Controller
         return back()->with('success', 'Tiket berhasil diperbarui');
     }
 
+    /**
+     * Endpoint autocomplete: cari nama piutang, return [{id, nama}]
+     */
     public function searchPiutang(Request $request)
     {
-        return Piutang::where('nama', 'LIKE', "%{$request->q}%")->limit(10)->get();
+        $q = strtoupper(trim($request->q ?? ''));
+        return response()->json(
+            Piutang::when($q, fn($query) => $query->where('nama', 'LIKE', "%{$q}%"))
+                ->orderBy('nama')
+                ->limit(10)
+                ->get(['id', 'nama'])
+        );
     }
 
     public function destroy($kode_booking)
