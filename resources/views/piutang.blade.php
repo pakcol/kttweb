@@ -16,7 +16,7 @@
             <div class="form-group">
                 <label>Nama Piutang</label>
                 <select id="piutang_id_select" class="form-control">
-                    <option value="">ALL</option>
+                    <option value="" data-nama="">ALL</option>
                     @foreach($piutangNames as $p)
                         <option value="{{ $p->id }}" data-nama="{{ strtoupper($p->nama) }}">{{ $p->nama }}</option>
                     @endforeach
@@ -64,7 +64,7 @@
     {{-- ===================== TABEL DATA PIUTANG ===================== --}}
     <div class="card-table">
         <h3 id="tableTitle">Data Piutang</h3>
-        <table class="table">
+        <table class="table" id="tabelPiutang">
             <thead>
                 <tr>
                     <th>Tanggal</th>
@@ -79,7 +79,7 @@
                     <th>Aksi</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="tbodyPiutang">
                 @foreach ($piutang as $row)
                 @php
                     $namaPiutang = strtoupper($row->piutang?->nama ?? $row->nama_piutang ?? '');
@@ -120,79 +120,89 @@
 </div>
 
 <script>
-const piutangSelect = document.getElementById('piutang_id_select');
-const tableTitle    = document.getElementById('tableTitle');
+document.addEventListener('DOMContentLoaded', function () {
 
-/**
- * Filter baris tabel.
- * Cocokkan by piutang_id ATAU nama teks (fallback untuk data lama yg piutang_id = null)
- */
-function filterTabel(selectedId, selectedNama, labelText) {
-    const rows = document.querySelectorAll('.table tbody tr');
-    rows.forEach(row => {
+    const piutangSelect = document.getElementById('piutang_id_select');
+    const tableTitle    = document.getElementById('tableTitle');
+    const tbody         = document.getElementById('tbodyPiutang');
+
+    // ===================== FUNGSI FILTER TABEL =====================
+    function filterTabel(selectedId, selectedNama, labelText) {
+        const allRows = tbody.querySelectorAll('tr');
+
+        // Jika ALL dipilih (selectedId kosong & selectedNama kosong)
         if (!selectedId && !selectedNama) {
-            row.style.display = '';
+            allRows.forEach(function(row) { row.style.display = ''; });
+            tableTitle.textContent = 'Data Piutang';
             return;
         }
-        const rowId   = row.dataset.piutangId;
-        const rowNama = row.dataset.namaPiutang;
 
-        const cocokById   = selectedId   && rowId   === selectedId;
-        const cocokByNama = selectedNama && rowNama === selectedNama.toUpperCase();
+        allRows.forEach(function(row) {
+            var rowId   = row.getAttribute('data-piutang-id') || '';
+            var rowNama = row.getAttribute('data-nama-piutang') || '';
 
-        row.style.display = (cocokById || cocokByNama) ? '' : 'none';
+            var cocokById   = (selectedId !== '' && rowId !== '' && rowId === selectedId);
+            var cocokByNama = (selectedNama !== '' && rowNama !== '' && rowNama === selectedNama);
+
+            row.style.display = (cocokById || cocokByNama) ? '' : 'none';
+        });
+
+        tableTitle.textContent = 'Data Piutang — ' + labelText;
+    }
+
+    // ===================== FILTER BY DROPDOWN =====================
+    piutangSelect.addEventListener('change', function () {
+        var selectedOpt  = this.options[this.selectedIndex];
+        var selectedId   = this.value;
+        var selectedNama = selectedOpt.getAttribute('data-nama') || '';
+        var labelText    = selectedOpt.text.trim();
+
+        filterTabel(selectedId, selectedNama, labelText);
     });
 
-    tableTitle.textContent = labelText ? `Data Piutang — ${labelText}` : 'Data Piutang';
-}
+    // ===================== KLIK NAMA PIUTANG DI TABEL =====================
+    tbody.querySelectorAll('.nama-piutang').forEach(function(cell) {
+        cell.addEventListener('click', function () {
+            var row       = this.closest('tr');
+            var piutangId = row.getAttribute('data-piutang-id') || '';
+            var namaTeks  = row.getAttribute('data-nama-piutang') || '';
+            var label     = this.textContent.trim();
 
-// ===================== FILTER BY DROPDOWN =====================
-piutangSelect.addEventListener('change', function () {
-    const selectedId   = this.value;
-    const opt          = this.options[this.selectedIndex];
-    const selectedNama = opt?.dataset?.nama ?? '';
-    const labelText    = selectedId ? opt.text.trim() : '';
+            // Sync dropdown
+            var matched = false;
+            for (var i = 0; i < piutangSelect.options.length; i++) {
+                var opt    = piutangSelect.options[i];
+                var optId  = opt.value;
+                var optNama = opt.getAttribute('data-nama') || '';
 
-    filterTabel(selectedId, selectedNama, labelText);
-});
-
-// ===================== KLIK NAMA PIUTANG DI TABEL → FILTER + SYNC DROPDOWN =====================
-document.querySelectorAll('.nama-piutang').forEach(cell => {
-    cell.addEventListener('click', function () {
-        const row       = this.closest('tr');
-        const piutangId = row.dataset.piutangId;
-        const namaTeks  = row.dataset.namaPiutang;
-        const label     = this.textContent.trim();
-
-        // Sync dropdown — cari option by id dulu, fallback by nama
-        let matched = false;
-        for (const opt of piutangSelect.options) {
-            if ((piutangId && opt.value === piutangId) ||
-                (!piutangId && opt.dataset?.nama === namaTeks)) {
-                piutangSelect.value = opt.value;
-                matched = true;
-                break;
+                if ((piutangId !== '' && optId === piutangId) ||
+                    (piutangId === '' && optNama === namaTeks)) {
+                    piutangSelect.selectedIndex = i;
+                    matched = true;
+                    break;
+                }
             }
-        }
-        if (!matched) piutangSelect.value = '';
+            if (!matched) piutangSelect.selectedIndex = 0;
 
-        filterTabel(piutangId, namaTeks, label);
+            filterTabel(piutangId, namaTeks, label);
+        });
     });
-});
 
-// ===================== TOMBOL BAYAR =====================
-document.querySelectorAll('.btn-edit').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.getElementById('mutasi_id').value    = btn.dataset.id;
-        document.getElementById('kode_booking').value = btn.dataset.kode;
-        document.getElementById('nominal').value      = btn.dataset.nominal;
+    // ===================== TOMBOL BAYAR =====================
+    tbody.querySelectorAll('.btn-edit').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            document.getElementById('mutasi_id').value    = this.getAttribute('data-id');
+            document.getElementById('kode_booking').value = this.getAttribute('data-kode');
+            document.getElementById('nominal').value      = this.getAttribute('data-nominal');
+        });
     });
-});
 
-// ===================== TOGGLE BANK =====================
-document.getElementById('jenis_bayar_id').addEventListener('change', function () {
-    document.getElementById('bankContainer').style.display =
-        this.value === '1' ? 'block' : 'none';
+    // ===================== TOGGLE BANK =====================
+    document.getElementById('jenis_bayar_id').addEventListener('change', function () {
+        document.getElementById('bankContainer').style.display =
+            this.value === '1' ? 'block' : 'none';
+    });
+
 });
 </script>
 
