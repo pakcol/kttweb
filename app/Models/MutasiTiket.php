@@ -2,12 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class MutasiTiket extends Model
 {
-    protected $table = 'mutasi_tiket';
+    protected $table    = 'mutasi_tiket';
     protected $primaryKey = 'id';
 
     protected $fillable = [
@@ -19,8 +18,13 @@ class MutasiTiket extends Model
         'jenis_bayar_id',
         'bank_id',
         'piutang_id',
+        'nama_piutang',   // ✅ FIX: sebelumnya tidak ada di fillable
         'keterangan',
     ];
+
+    // =====================================================
+    // RELASI
+    // =====================================================
 
     public function piutang()
     {
@@ -44,8 +48,13 @@ class MutasiTiket extends Model
 
     public function jenisTiket()
     {
-        return $this->hasOne(JenisTiket::class, 'jenis_tiket_id');
+        return $this->hasOneThrough(
+            JenisTiket::class,
+            Tiket::class,
+            'kode_booking',      // FK di tiket
+            'id',                // FK di jenis_tiket
+            'tiket_kode_booking',// local key di mutasi_tiket
+            'jenis_tiket_id'     // local key di tiket
+        );
     }
-
-
 }
