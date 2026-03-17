@@ -110,7 +110,6 @@
                         <td>{{ number_format($t->komisi, 0, ',', '.') }}</td>
                         <td>{{ ucfirst($t->status) }}</td>
                         <td>{{ $t->jenisTiket->name_jenis ?? '-' }}</td>
-                        {{-- Murni dari relasi piutang, tidak ada fallback string --}}
                         <td>{{ $t->mutasiTiket?->piutang?->nama ?? '-' }}</td>
                         <td>{{ $t->keterangan ?? '-' }}</td>
                         <td>{{ number_format($t->nilai_refund ?? 0, 0, ',', '.') }}</td>
@@ -260,15 +259,30 @@
                         <input type="datetime-local" id="tgl_realisasi" name="tgl_realisasi">
                     </div>
 
-                    {{-- NAMA PIUTANG — dropdown dari tabel piutangs, kirim piutang_id --}}
+                    {{-- NAMA PIUTANG — textbox autocomplete, kirim piutang_id (jika ada) + nama_piutang_input --}}
                     <div class="form-group" id="namaPiutangContainer" style="display:none;">
                         <label>NAMA PIUTANG</label>
-                        <select id="piutang_id" name="piutang_id" class="text-uppercase">
-                            <option value="">-- Pilih Nama Piutang --</option>
-                            @foreach($piutangList as $p)
-                                <option value="{{ $p->id }}">{{ $p->nama }}</option>
-                            @endforeach
-                        </select>
+                        {{-- Hidden: id piutang jika dipilih dari rekomendasi --}}
+                        <input type="hidden" id="piutang_id" name="piutang_id">
+                        {{-- Textbox: teks yang diketik pengguna --}}
+                        <input
+                            type="text"
+                            id="nama_piutang_input"
+                            name="nama_piutang_input"
+                            class="text-uppercase"
+                            placeholder="Ketik nama piutang..."
+                            autocomplete="off"
+                            maxlength="100"
+                        >
+                        {{-- Dropdown rekomendasi --}}
+                        <ul id="piutangSuggestions" style="
+                            display:none; position:absolute; z-index:9999;
+                            background:#fff; border:1px solid #ccc; border-radius:6px;
+                            list-style:none; margin:0; padding:4px 0;
+                            min-width:220px; max-height:200px; overflow-y:auto;
+                            box-shadow:0 4px 12px rgba(0,0,0,0.15);
+                        "></ul>
+                        <small id="piutangHint" style="color:#888; font-size:11px;"></small>
                     </div>
 
                     <div class="button-group">
@@ -350,6 +364,18 @@
         border: 1px solid #ddd; border-radius: 6px;
     }
     .modal-buttons { display: flex; gap: 10px; justify-content: center; }
+    /* Autocomplete highlight */
+    #piutangSuggestions li {
+        padding: 8px 14px; cursor: pointer; font-size: 13px;
+    }
+    #piutangSuggestions li:hover,
+    #piutangSuggestions li.active {
+        background: #e8f5e9; color: #1b5e20;
+    }
+    #piutangSuggestions li.create-new {
+        color: #0277bd; font-style: italic;
+    }
+    #namaPiutangContainer { position: relative; }
 </style>
 
 <script>
@@ -366,19 +392,22 @@ document.addEventListener('DOMContentLoaded', function () {
     function closeInputModal() { $('modalInputTiket').style.display = 'none'; }
 
     /* ========= REFERENSI ELEMEN ========= */
-    const statusCustomer  = $('statusCustomer');
-    const form            = $('inputDataForm');
-    const piutangSelect   = $('piutang_id');
-    const ntaInput        = $('nta');
-    const hargaJualInput  = $('harga_jual');
-    const diskonInput     = $('diskon');
-    const komisiInput     = $('komisi');
+    const statusCustomer    = $('statusCustomer');
+    const form              = $('inputDataForm');
+    const piutangIdInput    = $('piutang_id');          // hidden
+    const namaPiutangInput  = $('nama_piutang_input');  // textbox
+    const piutangSuggestions= $('piutangSuggestions');
+    const piutangHint       = $('piutangHint');
+    const ntaInput          = $('nta');
+    const hargaJualInput    = $('harga_jual');
+    const diskonInput       = $('diskon');
+    const komisiInput       = $('komisi');
 
     /* ========= KOMISI AUTO ========= */
     function updateKomisi() {
-        const nta      = parseInt(ntaInput.value) || 0;
-        const harga    = parseInt(hargaJualInput.value) || 0;
-        const diskon   = parseInt(diskonInput.value) || 0;
+        const nta    = parseInt(ntaInput.value)    || 0;
+        const harga  = parseInt(hargaJualInput.value) || 0;
+        const diskon = parseInt(diskonInput.value) || 0;
         komisiInput.value = Math.max(0, harga - diskon - nta);
     }
     [ntaInput, hargaJualInput, diskonInput].forEach(el => el.addEventListener('input', updateKomisi));
@@ -398,6 +427,121 @@ document.addEventListener('DOMContentLoaded', function () {
         $('tgl_realisasi').required = isRefund;
     };
     $('status').addEventListener('change', toggleRefund);
+
+    /* ========= AUTOCOMPLETE PIUTANG ========= */
+    let acDebounce = null;
+    let acActiveIndex = -1;
+    let acData = [];
+
+    function resetPiutangInput() {
+        piutangIdInput.value   = '';
+        namaPiutangInput.value = '';
+        piutangHint.textContent = '';
+        hideSuggestions();
+    }
+
+    function hideSuggestions() {
+        piutangSuggestions.style.display = 'none';
+        piutangSuggestions.innerHTML = '';
+        acActiveIndex = -1;
+        acData = [];
+    }
+
+    function renderSuggestions(items, keyword) {
+        piutangSuggestions.innerHTML = '';
+        acData = items;
+        acActiveIndex = -1;
+
+        items.forEach((item, idx) => {
+            const li = document.createElement('li');
+            li.textContent = item.nama;
+            li.dataset.id  = item.id;
+            li.addEventListener('mousedown', e => {
+                e.preventDefault();
+                selectPiutang(item);
+            });
+            piutangSuggestions.appendChild(li);
+        });
+
+        // Opsi buat baru jika tidak ada yang cocok persis
+        const exactMatch = items.some(i => i.nama === keyword.toUpperCase());
+        if (keyword && !exactMatch) {
+            const li = document.createElement('li');
+            li.className   = 'create-new';
+            li.textContent = `+ Buat baru: "${keyword.toUpperCase()}"`;
+            li.addEventListener('mousedown', e => {
+                e.preventDefault();
+                createNewPiutang(keyword);
+            });
+            piutangSuggestions.appendChild(li);
+        }
+
+        if (piutangSuggestions.children.length > 0) {
+            piutangSuggestions.style.display = 'block';
+        } else {
+            hideSuggestions();
+        }
+    }
+
+    function selectPiutang(item) {
+        piutangIdInput.value    = item.id;
+        namaPiutangInput.value  = item.nama;
+        piutangHint.textContent = '✓ Terhubung ke data piutang yang ada';
+        piutangHint.style.color = '#2e7d32';
+        hideSuggestions();
+    }
+
+    function createNewPiutang(keyword) {
+        piutangIdInput.value    = '';  // kosong → controller akan firstOrCreate
+        namaPiutangInput.value  = keyword.toUpperCase();
+        piutangHint.textContent = '✦ Nama baru — akan otomatis dibuat saat disimpan';
+        piutangHint.style.color = '#0277bd';
+        hideSuggestions();
+    }
+
+    namaPiutangInput.addEventListener('input', function () {
+        const val = this.value.trim();
+        piutangIdInput.value = ''; // reset id saat mengetik ulang
+        piutangHint.textContent = '';
+
+        clearTimeout(acDebounce);
+        if (!val) { hideSuggestions(); return; }
+
+        acDebounce = setTimeout(() => {
+            fetch(`{{ route('input-tiket.searchPiutang') }}?q=${encodeURIComponent(val)}`, {
+                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(r => r.json())
+            .then(data => renderSuggestions(data, val))
+            .catch(() => hideSuggestions());
+        }, 250);
+    });
+
+    // Navigasi keyboard pada suggestion list
+    namaPiutangInput.addEventListener('keydown', function (e) {
+        const items = piutangSuggestions.querySelectorAll('li');
+        if (!items.length) return;
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            acActiveIndex = Math.min(acActiveIndex + 1, items.length - 1);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            acActiveIndex = Math.max(acActiveIndex - 1, 0);
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (acActiveIndex >= 0) items[acActiveIndex].dispatchEvent(new Event('mousedown'));
+            return;
+        } else if (e.key === 'Escape') {
+            hideSuggestions(); return;
+        } else { return; }
+
+        items.forEach((li, i) => li.classList.toggle('active', i === acActiveIndex));
+    });
+
+    namaPiutangInput.addEventListener('blur', () => {
+        setTimeout(hideSuggestions, 200);
+    });
 
     /* ========= TOGGLE JENIS PEMBAYARAN ========= */
     function toggleJenisPembayaran() {
@@ -423,7 +567,7 @@ document.addEventListener('DOMContentLoaded', function () {
         $('namaPiutangContainer').style.display = isPiutang ? 'block' : 'none';
 
         if (!isPiutang) {
-            piutangSelect.value = '';
+            resetPiutangInput();
         }
     }
     $('jenis_bayar_id').addEventListener('change', toggleJenisPembayaran);
@@ -445,11 +589,11 @@ document.addEventListener('DOMContentLoaded', function () {
             $('jenis_bayar_id').value = d.jenis_bayar_id ?? '';
             $('bank_id').value        = d.bank_id ?? '';
 
-            // Set piutang_id dari relasi — langsung set value ID ke select
-            if (d.piutang_id) {
-                piutangSelect.value = d.piutang_id;
+            // Set autocomplete piutang dari relasi
+            if (d.piutang_id && d.piutang_nama) {
+                selectPiutang({ id: d.piutang_id, nama: d.piutang_nama });
             } else {
-                piutangSelect.value = '';
+                resetPiutangInput();
             }
 
             $('nilai_refund').value  = d.nilai_refund ?? 0;
@@ -630,7 +774,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function buildRowP(t, i) {
-        // Nama piutang murni dari relasi mutasi_tiket -> piutang -> nama
         const namaPiutang = t.mutasi_tiket?.piutang?.nama ?? '-';
         return `<tr data-id="${t.kode_booking}" data-jenis-tiket-id="${t.jenis_tiket_id}">
             <td><input type="checkbox" class="check-row" value="${t.kode_booking}"></td>
@@ -660,6 +803,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const mi = form.querySelector('input[name="_method"]');
         if (mi) mi.remove();
         form.reset();
+        resetPiutangInput();
         $('btnInputData').textContent = 'Input Data';
         showBasicStatus();
         toggleJenisPembayaran();
