@@ -1,9 +1,154 @@
 <x-layouts.app title="Input Tiket - PT. Kupang Tour & Travel">
 
-<section class="input-data-section">
-    <div class="form-container">
-        <h2>INPUT TIKET</h2>
-        <div class="current-time" id="currentDateTime"></div>
+{{-- ===================== TOMBOL & TABEL DATA TIKET ===================== --}}
+<section class="tiket-section">
+
+    {{-- Tombol aksi di atas tabel --}}
+    <div class="tiket-action-bar">
+        <button type="button" class="btn-hijau" id="btnOpenModal">+ Input Tiket</button>
+        <button type="button" class="btn-hijau" id="btnCari">Cari</button>
+        <button type="button" class="btn-merah" id="btnCetakInvoice">Cetak Invoice</button>
+        <a href="{{ route('cash-flow.cashFlow', ['from' => 'input-kas']) }}" class="btn-oranye btn-link">Tutup Kas</a>
+    </div>
+
+    {{-- TABEL 1: Data Tiket Pembayaran Cash & Bank --}}
+    <div class="table-card">
+        <h3>Data Tiket — Pembayaran Cash & Bank</h3>
+        <table id="tiketTableCashBank">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="checkAllCashBank"></th>
+                    <th>No</th>
+                    <th>Tgl Issued</th>
+                    <th>Kode Booking</th>
+                    <th>Nama</th>
+                    <th>Rute</th>
+                    <th>Tgl Flight</th>
+                    <th>Rute 2</th>
+                    <th>Tgl Flight 2</th>
+                    <th>Harga Jual</th>
+                    <th>NTA</th>
+                    <th>Diskon</th>
+                    <th>Komisi</th>
+                    <th>Status</th>
+                    <th>Jenis Tiket</th>
+                    <th>Pembayaran</th>
+                    <th>Keterangan</th>
+                    <th>Nilai Refund</th>
+                    <th style="text-align:center;">Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php $indexCashBank = 1; @endphp
+                @foreach ($ticket as $t)
+                    @if($t->jenis_bayar_id != 3)
+                    <tr data-id="{{ $t->kode_booking }}" data-jenis-tiket-id="{{ $t->jenis_tiket_id }}">
+                        <td><input type="checkbox" class="check-row" value="{{ $t->kode_booking }}"></td>
+                        <td>{{ $indexCashBank++ }}</td>
+                        <td>{{ \Carbon\Carbon::parse($t->tgl_issued)->format('Y-m-d') }}</td>
+                        <td>{{ $t->kode_booking }}</td>
+                        <td>{{ $t->name }}</td>
+                        <td>{{ $t->rute }}</td>
+                        <td>{{ \Carbon\Carbon::parse($t->tgl_flight)->format('Y-m-d') }}</td>
+                        <td>{{ $t->rute2 ?? '-' }}</td>
+                        <td>{{ $t->tgl_flight2 ? \Carbon\Carbon::parse($t->tgl_flight2)->format('Y-m-d') : '-' }}</td>
+                        <td>{{ number_format($t->harga_jual, 0, ',', '.') }}</td>
+                        <td>{{ number_format($t->nta, 0, ',', '.') }}</td>
+                        <td>{{ number_format($t->diskon, 0, ',', '.') }}</td>
+                        <td>{{ number_format($t->komisi, 0, ',', '.') }}</td>
+                        <td>{{ ucfirst($t->status) }}</td>
+                        <td>{{ $t->jenisTiket->name_jenis ?? '-' }}</td>
+                        <td>{{ $t->pembayaran_label }}</td>
+                        <td>{{ $t->keterangan ?? '-' }}</td>
+                        <td>{{ number_format($t->nilai_refund ?? 0, 0, ',', '.') }}</td>
+                        <td style="text-align:center;">
+                            <form action="{{ route('input-tiket.destroy', $t->kode_booking) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn-delete" type="submit" onclick="return confirm('Hapus tiket ini?')">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    @endif
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+
+    {{-- TABEL 2: Data Tiket Pembayaran Piutang --}}
+    <div class="table-card" style="margin-top: 30px;">
+        <h3>Data Tiket — Pembayaran Piutang</h3>
+        <table id="tiketTablePiutang">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="checkAllPiutang"></th>
+                    <th>No</th>
+                    <th>Tgl Issued</th>
+                    <th>Kode Booking</th>
+                    <th>Nama</th>
+                    <th>Rute</th>
+                    <th>Tgl Flight</th>
+                    <th>Rute 2</th>
+                    <th>Tgl Flight 2</th>
+                    <th>Harga Jual</th>
+                    <th>NTA</th>
+                    <th>Diskon</th>
+                    <th>Komisi</th>
+                    <th>Status</th>
+                    <th>Jenis Tiket</th>
+                    <th>Nama Piutang</th>
+                    <th>Keterangan</th>
+                    <th>Nilai Refund</th>
+                    <th style="text-align:center;">Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php $indexPiutang = 1; @endphp
+                @foreach ($ticket as $t)
+                    @if($t->jenis_bayar_id == 3)
+                    <tr data-id="{{ $t->kode_booking }}" data-jenis-tiket-id="{{ $t->jenis_tiket_id }}">
+                        <td><input type="checkbox" class="check-row" value="{{ $t->kode_booking }}"></td>
+                        <td>{{ $indexPiutang++ }}</td>
+                        <td>{{ \Carbon\Carbon::parse($t->tgl_issued)->format('Y-m-d') }}</td>
+                        <td>{{ $t->kode_booking }}</td>
+                        <td>{{ $t->name }}</td>
+                        <td>{{ $t->rute }}</td>
+                        <td>{{ \Carbon\Carbon::parse($t->tgl_flight)->format('Y-m-d') }}</td>
+                        <td>{{ $t->rute2 ?? '-' }}</td>
+                        <td>{{ $t->tgl_flight2 ? \Carbon\Carbon::parse($t->tgl_flight2)->format('Y-m-d') : '-' }}</td>
+                        <td>{{ number_format($t->harga_jual, 0, ',', '.') }}</td>
+                        <td>{{ number_format($t->nta, 0, ',', '.') }}</td>
+                        <td>{{ number_format($t->diskon, 0, ',', '.') }}</td>
+                        <td>{{ number_format($t->komisi, 0, ',', '.') }}</td>
+                        <td>{{ ucfirst($t->status) }}</td>
+                        <td>{{ $t->jenisTiket->name_jenis ?? '-' }}</td>
+                        <td>{{ $t->nama_piutang ?? '-' }}</td>
+                        <td>{{ $t->keterangan ?? '-' }}</td>
+                        <td>{{ number_format($t->nilai_refund ?? 0, 0, ',', '.') }}</td>
+                        <td style="text-align:center;">
+                            <form action="{{ route('input-tiket.destroy', $t->kode_booking) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn-delete" type="submit" onclick="return confirm('Hapus tiket ini?')">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    @endif
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+
+</section>
+
+{{-- ===================== MODAL POPUP INPUT TIKET ===================== --}}
+<div id="modalInputTiket" class="modal-overlay" style="display:none;">
+    <div class="modal-tiket-content">
+        <div class="modal-tiket-header">
+            <h2>INPUT TIKET</h2>
+            <div class="current-time" id="currentDateTime"></div>
+            <button type="button" class="btn-close-modal" id="btnCloseModal">&times;</button>
+        </div>
 
         <form action="{{ route('input-tiket.store') }}" id="inputDataForm" method="POST">
             @csrf
@@ -22,6 +167,7 @@
                     @endforeach
                 </select>
             </div>
+
             <div class="input-grid">
                 {{-- Kolom Kiri --}}
                 <div>
@@ -100,23 +246,21 @@
                     </div>
                 </div>
 
-                {{-- Kolom Tambahan untuk Fitur Lama (opsional) --}}
+                {{-- Kolom Kanan --}}
                 <div>
                     <div class="form-group subagent-hide">
                         <label for="jenis_bayar_id">JENIS PEMBAYARAN</label>
                         <select id="jenis_bayar_id" name="jenis_bayar_id" class="text-uppercase">
                             @if(isset($jenisBayar) && $jenisBayar->count() > 0)
                                 @foreach($jenisBayar as $jenis)
-                                    <option value="{{ $jenis->id }}">
-                                        {{ $jenis->jenis }}
-                                    </option>
+                                    <option value="{{ $jenis->id }}">{{ $jenis->jenis }}</option>
                                 @endforeach
                             @else
                                 <option value="" disabled>Data jenis pembayaran tidak ditemukan</option>
                             @endif
                         </select>
                     </div>
-                    
+
                     <div class="form-group" id="bankContainer" style="display: none;">
                         <label for="bank_id">BANK</label>
                         <select id="bank_id" name="bank_id" class="text-uppercase">
@@ -127,7 +271,7 @@
                             @endif
                         </select>
                     </div>
-                    
+
                     <div class="form-group" id="refundValueContainer" style="display:none;">
                         <label for="nilai_refund">NILAI REFUND</label>
                         <input type="number" id="nilai_refund" name="nilai_refund" value="0">
@@ -140,16 +284,13 @@
 
                     <div class="form-group" id="namaPiutangContainer" style="display:none;">
                         <label for="nama_piutang_select">NAMA PIUTANG</label>
-
                         <select id="nama_piutang_select" class="text-uppercase">
                             <option value="">-- Pilih Nama Piutang --</option>
-                            {{-- opsi dari backend --}}
                             @foreach($piutangList as $p)
                                 <option value="{{ $p->nama }}">{{ $p->nama }}</option>
                             @endforeach
                             <option value="LAINNYA">LAINNYA</option>
                         </select>
-
                         <input type="text"
                             id="nama_piutang_input"
                             name="nama_piutang"
@@ -158,90 +299,137 @@
                             style="display:none; margin-top:8px;">
                     </div>
 
-
                     <div class="button-group">
-                        <button type="submit" id="btnInputData" class="btn-hijau">
-                         Input Data
-                        </button>
-
-                     <a href="{{ route('cash-flow.cashFlow', ['from' => 'input-kas']) }}"
-                          class="btn-oranye btn-link">
-                          Tutup Kas
-                    </a>
-                        <button type="button" class="btn-hijau" id="btnCari">Cari</button>
-                        <button type="button" class="btn-merah" id="btnCetakInvoice">Cetak Invoice</button>
+                        <button type="submit" id="btnInputData" class="btn-hijau">Input Data</button>
                         <button type="button" class="btn-hijau" id="btnBatal">Batal</button>
                     </div>
                 </div>
             </div>
         </form>
     </div>
-</section>
-
-<div class="table-card">
-    <h3>Data Tiket</h3>
-    <table id="tiketTable">
-        <thead>
-            <tr>
-                <th><input type="checkbox" id="checkAll"></th>
-                <th>No</th>
-                <th>Tgl Issued</th>
-                <th>Kode Booking</th>
-                <th>Nama</th>
-                <th>Rute</th>
-                <th>Tgl Flight</th>
-                <th>Rute 2</th>
-                <th>Tgl Flight 2</th>
-                <th>Harga Jual</th>
-                <th>NTA</th>
-                <th>Diskon</th>
-                <th>Komisi</th>
-                <th>Status</th>
-                <th>Jenis Tiket</th>
-                <th>Pembayaran</th>
-                <th>Keterangan</th>
-                <th>Nilai Refund</th>
-                <th style="text-align:center;">Delete</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($ticket as $index => $t)
-            <tr data-id="{{ $t->kode_booking }}"
-                data-jenis-tiket-id="{{ $t->jenis_tiket_id }}">
-                <td><input type="checkbox" class="check-row" value="{{ $t->kode_booking }}"></td>
-                <td>{{ $index + 1 }}</td>
-                <td>{{ \Carbon\Carbon::parse($t->tgl_issued)->format('Y-m-d') }}</td>
-                <td>{{ $t->kode_booking }}</td>
-                <td>{{ $t->name }}</td>
-                <td>{{ $t->rute }}</td>
-                <td>{{ \Carbon\Carbon::parse($t->tgl_flight)->format('Y-m-d') }}</td>
-                <td>{{ $t->rute2 ?? '-' }}</td>
-                <td>{{ $t->tgl_flight2 ? \Carbon\Carbon::parse($t->tgl_flight2)->format('Y-m-d') : '-' }}</td>
-                <td>{{ number_format($t->harga_jual, 0, ',', '.') }}</td>
-                <td>{{ number_format($t->nta, 0, ',', '.') }}</td>
-                <td>{{ number_format($t->diskon, 0, ',', '.') }}</td>
-                <td>{{ number_format($t->komisi, 0, ',', '.') }}</td>
-                <td>{{ ucfirst($t->status) }}</td>
-                <td>{{ $t->jenisTiket->name_jenis ?? '-' }}</td>
-                <td>{{ $t->pembayaran_label }}</td>
-                <td>{{ $t->keterangan ?? '-' }}</td>
-                <td>{{ number_format($t->nilai_refund ?? 0,0,',','.') }}</td>
-                <td style="text-align:center;">
-                    <form action="{{ route('input-tiket.destroy', $t->kode_booking) }}" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <button class="btn-delete" type="submit" onclick="return confirm('Hapus tiket ini?')">
-                            Delete
-                        </button>
-                    </form>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
 </div>
 
+{{-- ===================== MODAL CARI ===================== --}}
+<div id="modalCari" class="modal-cari">
+    <div class="modal-content">
+        <p>Masukan <b>KODE BOOKING</b> atau <b>NAMA</b> :</p>
+        <input type="text" id="searchInput" placeholder="Search">
+        <div class="modal-buttons">
+            <button id="btnCariOk" class="btn-ok">OK</button>
+            <button id="btnCariCancel" class="btn-cancel">CANCEL</button>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="{{ asset('css/input-data.css') }}">
+
 <style>
+    /* ========= LAYOUT SECTION ========= */
+    .tiket-section {
+        padding: 20px;
+    }
+
+    .tiket-action-bar {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .tiket-action-bar > * {
+        height: 40px;
+        padding: 8px 18px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        text-decoration: none;
+        box-sizing: border-box;
+        transition: all 0.25s ease;
+    }
+
+    /* ========= TABLE ========= */
+    .table-card {
+        background: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        overflow-x: auto;
+    }
+
+    .table-card h3 {
+        margin-bottom: 14px;
+        font-size: 16px;
+        color: #2c3e50;
+    }
+
+    /* ========= MODAL OVERLAY ========= */
+    .modal-overlay {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background-color: rgba(0,0,0,0.55);
+        z-index: 2000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow-y: auto;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .modal-tiket-content {
+        background: #fff;
+        border-radius: 12px;
+        padding: 30px;
+        width: 100%;
+        max-width: 960px;
+        position: relative;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    }
+
+    .modal-tiket-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+    .modal-tiket-header h2 {
+        margin: 0;
+        font-size: 20px;
+        color: #2c3e50;
+    }
+
+    .btn-close-modal {
+        margin-left: auto;
+        background: #e74c3c;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        width: 36px;
+        height: 36px;
+        font-size: 20px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+    }
+
+    .btn-close-modal:hover {
+        background: #c0392b;
+    }
+
+    /* ========= FORM ========= */
     .btn-delete {
         background-color: #e74c3c;
         color: #fff;
@@ -251,9 +439,7 @@
         cursor: pointer;
         transition: 0.3s;
     }
-    .btn-delete:hover {
-        background-color: #c0392b;
-    }
+    .btn-delete:hover { background-color: #c0392b; }
 
     .input-grid {
         display: grid;
@@ -262,9 +448,7 @@
         margin-top: 20px;
     }
 
-    .form-group {
-        margin-bottom: 15px;
-    }
+    .form-group { margin-bottom: 15px; }
 
     .form-group label {
         display: block;
@@ -287,80 +471,55 @@
         font-size: 14px;
     }
 
-    .form-group input[type="text"]:focus,
-    .form-group input[type="number"]:focus,
-    .form-group input[type="datetime-local"]:focus,
-    .form-group input[type="date"]:focus,
-    .form-group input[type="time"]:focus,
+    .form-group input:focus,
     .form-group select:focus,
     .form-group textarea:focus {
         border-color: #4CAF50;
         outline: none;
-        box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+        box-shadow: 0 0 0 2px rgba(76,175,80,0.2);
     }
 
-    .text-uppercase {
-        text-transform: uppercase;
+    .text-uppercase { text-transform: uppercase; }
+
+    .button-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 10px;
     }
 
     .button-group > * {
-    flex: 1 1 100%;
-    height: 44px;                
-    padding: 10px 14px;
-
-    border: none;
-    border-radius: 10px;
-
-    font-weight: 600;
-    font-size: 14px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    cursor: pointer;
-    text-decoration: none;
-    box-sizing: border-box;
-    transition: all 0.25s ease;
-}
-
-    .btn-hijau {
-        background-color: #27ae60;
-        color: white;
+        flex: 1 1 100%;
+        height: 44px;
+        padding: 10px 14px;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        text-decoration: none;
+        box-sizing: border-box;
+        transition: all 0.25s ease;
     }
 
-    .btn-hijau:hover {
-        background-color: #219653;
-    }
+    .btn-hijau { background-color: #27ae60; color: white; }
+    .btn-hijau:hover { background-color: #219653; }
+    .btn-oranye { background-color: #f39c12; color: white; }
+    .btn-oranye:hover { background-color: #e67e22; }
+    .btn-merah { background-color: #e74c3c; color: white; }
+    .btn-merah:hover { background-color: #c0392b; }
 
-    .btn-oranye {
-        background-color: #f39c12;
-        color: white;
-    }
-
-    .btn-oranye:hover {
-        background-color: #e67e22;
-    }
-
-    .btn-merah {
-        background-color: #e74c3c;
-        color: white;
-    }
-
-    .btn-merah:hover {
-        background-color: #c0392b;
-    }
-
-    /* Modal Styling */
+    /* ========= MODAL CARI ========= */
     .modal-cari {
         display: none;
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
         background-color: rgba(0,0,0,0.5);
-        z-index: 1000;
+        z-index: 3000;
         align-items: center;
         justify-content: center;
     }
@@ -373,10 +532,7 @@
         text-align: center;
     }
 
-    .modal-content p {
-        margin-bottom: 20px;
-        font-size: 16px;
-    }
+    .modal-content p { margin-bottom: 20px; font-size: 16px; }
 
     .modal-content input[type="text"] {
         width: 100%;
@@ -386,11 +542,7 @@
         border-radius: 6px;
     }
 
-    .modal-buttons {
-        display: flex;
-        gap: 10px;
-        justify-content: center;
-    }
+    .modal-buttons { display: flex; gap: 10px; justify-content: center; }
 
     .btn-ok, .btn-cancel {
         padding: 10px 20px;
@@ -400,48 +552,46 @@
         font-weight: bold;
     }
 
-    .btn-ok {
-        background-color: #27ae60;
-        color: white;
-    }
-
-    .btn-cancel {
-        background-color: #95a5a6;
-        color: white;
-    }
+    .btn-ok { background-color: #27ae60; color: white; }
+    .btn-cancel { background-color: #95a5a6; color: white; }
 </style>
 
-<div id="modalCari" class="modal-cari">
-    <div class="modal-content">
-        <p>Masukan <b>KODE BOOKING</b> atau <b>NAMA</b> :</p>
-        <input type="text" id="searchInput" placeholder="Search">
-        <div class="modal-buttons">
-            <button id="btnCariOk" class="btn-ok">OK</button>
-            <button id="btnCariCancel" class="btn-cancel">CANCEL</button>
-        </div>
-    </div>
-</div>
-
-<link rel="stylesheet" href="{{ asset('css/input-data.css') }}">
-
 <script>
-    const statusCustomer = document.getElementById('statusCustomer');
-    const form = document.getElementById('inputDataForm');
+    /* ========= UTIL ========= */
+    const $ = id => document.getElementById(id);
 
-    const piutangSelect = document.getElementById('nama_piutang_select');
-    const piutangInput  = document.getElementById('nama_piutang_input');
+    /* ========= OPEN / CLOSE MODAL INPUT TIKET ========= */
+    $('btnOpenModal').addEventListener('click', () => {
+        $('modalInputTiket').style.display = 'flex';
+    });
 
-    const ntaInput = document.getElementById('nta');
-    const hargaJualInput = document.getElementById('harga_jual');
-    const diskonInput = document.getElementById('diskon');
-    const komisiInput = document.getElementById('komisi');
+    $('btnCloseModal').addEventListener('click', closeInputModal);
+
+    $('modalInputTiket').addEventListener('click', e => {
+        if (e.target === $('modalInputTiket')) closeInputModal();
+    });
+
+    function closeInputModal() {
+        $('modalInputTiket').style.display = 'none';
+    }
+
+    /* ========= FORM LOGIC ========= */
+    const statusCustomer = $('statusCustomer');
+    const form = $('inputDataForm');
+
+    const piutangSelect = $('nama_piutang_select');
+    const piutangInput  = $('nama_piutang_input');
+
+    const ntaInput      = $('nta');
+    const hargaJualInput = $('harga_jual');
+    const diskonInput   = $('diskon');
+    const komisiInput   = $('komisi');
 
     function updateKomisi() {
-        const nta = parseInt(ntaInput.value) || 0;
+        const nta      = parseInt(ntaInput.value) || 0;
         const hargaJual = parseInt(hargaJualInput.value) || 0;
-        const diskon = parseInt(diskonInput.value) || 0;
-
-        const komisi = hargaJual - diskon - nta;
+        const diskon   = parseInt(diskonInput.value) || 0;
+        const komisi   = hargaJual - diskon - nta;
         komisiInput.value = komisi >= 0 ? komisi : 0;
     }
 
@@ -458,302 +608,247 @@
         }
     });
 
-    document.getElementById('tgl_issued').addEventListener('change', function () {
-        const selectedDateTime = this.value;
+    const showBasicStatus = () => {
+        document.querySelectorAll('.status-advanced').forEach(o => o.style.display = 'none');
+        document.querySelectorAll('.status-basic').forEach(o => o.style.display = 'block');
+    };
 
-        // jika kosong → tampilkan semua
-        if (!selectedDateTime) {
-            document.querySelectorAll('#tiketTable tbody tr').forEach(row => {
-                row.style.display = '';
-            });
+    const showAllStatus = () => {
+        document.querySelectorAll('.status-advanced, .status-basic')
+            .forEach(o => o.style.display = 'block');
+    };
+
+    const toggleRefund = () => {
+        const isRefund = $('status').value === 'refunded';
+        $('refundValueContainer').style.display = isRefund ? 'block' : 'none';
+        $('refundDateContainer').style.display  = isRefund ? 'block' : 'none';
+        $('nilai_refund').required    = isRefund;
+        $('tgl_realisasi').required   = isRefund;
+    };
+
+    $('status').addEventListener('change', toggleRefund);
+
+    function toggleJenisPembayaran() {
+        const jenisSelect = $('jenis_bayar_id');
+        const bankSelect  = $('bank_id');
+
+        if (jenisSelect.disabled) {
+            bankSelect.value = '';
+            bankSelect.disabled = true;
+            $('bankContainer').style.display = 'none';
             return;
         }
 
-        // ambil tanggal saja (YYYY-MM-DD)
-        const selectedDate = selectedDateTime.split('T')[0];
+        const jenis   = jenisSelect.value;
+        const isBank  = jenis === '1';
+        $('bankContainer').style.display = isBank ? 'block' : 'none';
+        bankSelect.disabled = !isBank;
+        if (!isBank) bankSelect.value = '';
 
-        document.querySelectorAll('#tiketTable tbody tr').forEach(row => {
-            // kolom ke-3 = Tgl Issued
-            const tableDate = row.children[2].innerText.trim();
+        const isPiutang = jenis === '3';
+        $('namaPiutangContainer').style.display = isPiutang ? 'block' : 'none';
 
-            row.style.display = (tableDate === selectedDate) ? '' : 'none';
+        if (!isPiutang) {
+            piutangSelect.value = '';
+            piutangInput.value = '';
+            piutangInput.style.display = 'none';
+            piutangInput.required = false;
+        }
+    }
+
+    $('jenis_bayar_id').addEventListener('change', toggleJenisPembayaran);
+
+    function loadTiketDetail(kodeBooking) {
+        fetch(`tiket/by-tiket/${kodeBooking}`, { headers: { 'Accept': 'application/json' } })
+        .then(r => r.ok ? r.json() : Promise.reject(r.status))
+        .then(d => {
+            if (d.subagent_id !== null && d.subagent_id !== '') {
+                statusCustomer.value = 'subagent';
+                toggleCustomerType();
+                $('subagent_id').value = d.subagent_id;
+            } else {
+                statusCustomer.value = 'customer';
+                toggleCustomerType();
+            }
+            $('jenis_bayar_id').value = d.jenis_bayar_id ?? '';
+            $('bank_id').value = d.bank_id ?? '';
+            $('nama_piutang').value = d.nama_piutang ?? '';
+            $('nilai_refund').value = d.nilai_refund ?? 0;
+            $('tgl_realisasi').value = d.tgl_realisasi ? d.tgl_realisasi.replace(' ', 'T') : '';
+            toggleJenisPembayaran();
+            toggleRefund();
+        })
+        .catch(err => console.error('Mutasi error:', err));
+    }
+
+    function toggleCustomerType() {
+        const type = statusCustomer.value;
+        const subagentSelect   = $('subagent_id');
+        const jenisBayarSelect = $('jenis_bayar_id');
+        const bankSelect       = $('bank_id');
+
+        document.querySelectorAll('.subagent-hide').forEach(el => {
+            el.style.display = (type === 'subagent') ? 'none' : 'block';
+        });
+
+        $('subagentContainer').style.display = type === 'subagent' ? 'block' : 'none';
+
+        if (type === 'subagent') {
+            subagentSelect.disabled = false;
+            subagentSelect.required = true;
+            jenisBayarSelect.value = '';
+            jenisBayarSelect.disabled = true;
+            bankSelect.value = '';
+            bankSelect.disabled = true;
+            $('bankContainer').style.display = 'none';
+        } else {
+            subagentSelect.disabled = true;
+            subagentSelect.required = false;
+            subagentSelect.value = '';
+            jenisBayarSelect.disabled = false;
+        }
+        toggleJenisPembayaran();
+    }
+
+    statusCustomer.addEventListener('change', toggleCustomerType);
+    toggleCustomerType();
+
+    let formMode = 'create';
+
+    function fillFormFromRow(row) {
+        showAllStatus();
+        const td = row.children;
+        formMode = 'update';
+        form.action = `/input-tiket/${row.dataset.id}`;
+        // inject PUT method
+        let methodInput = form.querySelector('input[name="_method"]');
+        if (!methodInput) {
+            methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            form.appendChild(methodInput);
+        }
+        methodInput.value = 'PUT';
+
+        $('kode_booking').value = row.dataset.id;
+        $('name').value       = td[4].innerText;
+        $('rute').value       = td[5].innerText;
+        $('rute2').value      = td[7].innerText !== '-' ? td[7].innerText : '';
+        $('harga_jual').value = td[9].innerText.replace(/\./g, '');
+        $('nta').value        = td[10].innerText.replace(/\./g, '');
+        $('diskon').value     = td[11].innerText.replace(/\./g, '');
+        $('komisi').value     = td[12].innerText.replace(/\./g, '');
+        $('status').value     = td[13].innerText.toLowerCase();
+        $('keterangan').value = td[16].innerText !== '-' ? td[16].innerText : '';
+
+        toggleRefund();
+        $('tgl_issued').value  = `${td[2].innerText}T00:00`;
+        $('tgl_flight').value  = `${td[6].innerText}T00:00`;
+        $('tgl_flight2').value = td[8].innerText !== '-' ? `${td[8].innerText}T00:00` : '';
+        $('jenis_tiket_id').value = row.dataset.jenisTiketId;
+
+        loadTiketDetail(row.dataset.id);
+        $('btnInputData').textContent = 'UPDATE';
+
+        // Buka modal
+        $('modalInputTiket').style.display = 'flex';
+    }
+
+    /* Row click — dua tabel */
+    document.querySelectorAll('#tiketTableCashBank tbody tr, #tiketTablePiutang tbody tr').forEach(row => {
+        row.addEventListener('click', e => {
+            if (e.target.classList.contains('btn-delete')) return;
+            document.querySelectorAll('#tiketTableCashBank tr, #tiketTablePiutang tr')
+                .forEach(r => r.classList.remove('selected'));
+            row.classList.add('selected');
+            fillFormFromRow(row);
         });
     });
 
-    /* ===================== UTIL ===================== */
-    const $ = id => document.getElementById(id);
-    $('status').dispatchEvent(new Event('change'));
+    /* ========= CETAK INVOICE ========= */
+    $('btnCetakInvoice').addEventListener('click', () => {
+        const checked = document.querySelectorAll('.check-row:checked');
+        if (checked.length === 0) { alert('Pilih minimal satu tiket'); return; }
+        const codes = Array.from(checked).map(cb => cb.value).join(',');
+        window.open(`/invoice-multi?codes=${codes}`, '_blank');
+    });
 
-        const showBasicStatus = () => {
-            document.querySelectorAll('.status-advanced').forEach(o => o.style.display = 'none');
-            document.querySelectorAll('.status-basic').forEach(o => o.style.display = 'block');
-        };
+    /* ========= MODAL CARI ========= */
+    $('btnCari').addEventListener('click', () => {
+        $('modalCari').style.display = 'flex';
+        $('searchInput').focus();
+    });
 
-        const showAllStatus = () => {
-            document.querySelectorAll('.status-advanced, .status-basic')
-                .forEach(o => o.style.display = 'block');
-        };
+    function loadAllTickets() {
+        fetch(`{{ route('input-tiket.search') }}`, { headers: { 'Accept': 'application/json' } })
+        .then(res => res.json())
+        .then(data => renderTables(data))
+        .catch(err => console.error('Load all tickets error:', err));
+    }
 
-        const toggleRefund = () => {
-            const isRefund = $('status').value === 'refunded';
+    $('btnCariCancel').addEventListener('click', () => {
+        $('modalCari').style.display = 'none';
+        $('searchInput').value = '';
+        loadAllTickets();
+    });
 
-            $('refundValueContainer').style.display = isRefund ? 'block' : 'none';
-            $('refundDateContainer').style.display = isRefund ? 'block' : 'none';
+    $('searchInput').addEventListener('keydown', e => {
+        if (e.key === 'Enter') $('btnCariOk').click();
+    });
 
-            $('nilai_refund').required = isRefund;
-            $('tgl_realisasi').required = isRefund;
-        };
+    $('btnCariOk').addEventListener('click', () => {
+        const keyword = $('searchInput').value.trim();
+        if (!keyword) { alert('Masukkan nama atau kode booking'); return; }
 
+        fetch(`{{ route('input-tiket.search') }}?q=${encodeURIComponent(keyword)}`, {
+            headers: { 'Accept': 'application/json' }
+        })
+        .then(res => res.json())
+        .then(data => renderTables(data))
+        .catch(err => { console.error(err); alert('Gagal mengambil data'); });
 
-        $('status').addEventListener('change', toggleRefund);
+        $('modalCari').style.display = 'none';
+    });
 
-        /* ===================== TOGGLE JENIS BAYAR ===================== */
-        function toggleJenisPembayaran() {
-            const jenisSelect = $('jenis_bayar_id');
-            const bankSelect  = $('bank_id');
+    function renderTables(data) {
+        const tbodyCashBank = document.querySelector('#tiketTableCashBank tbody');
+        const tbodyPiutang  = document.querySelector('#tiketTablePiutang tbody');
+        tbodyCashBank.innerHTML = '';
+        tbodyPiutang.innerHTML  = '';
 
-            // kalau jenis bayar di-disable (mode subagent)
-            if (jenisSelect.disabled) {
-                bankSelect.value = '';
-                bankSelect.disabled = true;
-                $('bankContainer').style.display = 'none';
-                return;
-            }
+        const cashBankData = data.filter(t => t.jenis_bayar_id != 3);
+        const piutangData  = data.filter(t => t.jenis_bayar_id == 3);
 
-            const jenis = jenisSelect.value;
-
-            // BANK
-            const isBank = jenis === '1';
-            $('bankContainer').style.display = isBank ? 'block' : 'none';
-            bankSelect.disabled = !isBank;
-
-            if (!isBank) {
-                bankSelect.value = '';
-            }
-
-            // PIUTANG
-            const isPiutang = jenis === '3';
-            $('namaPiutangContainer').style.display = isPiutang ? 'block' : 'none';
-
-            if (!isPiutang) {
-                piutangSelect.value = '';
-                piutangInput.value = '';
-                piutangInput.style.display = 'none';
-                piutangInput.required = false;
-            }
-
-        }
-
-        $('jenis_bayar_id').addEventListener('change', toggleJenisPembayaran);
-
-        /* ===================== LOAD NOTA ===================== */
-        function loadTiketDetail(kodeBooking) {
-            fetch(`tiket/by-tiket/${kodeBooking}`, {
-                headers: { 'Accept': 'application/json' }
-            })
-            .then(r => r.ok ? r.json() : Promise.reject(r.status))
-            .then(d => {
-                // ====== SUBAGENT / CUSTOMER ======
-                if (d.subagent_id !== null && d.subagent_id !== '') {
-                    // mode subagent
-                    statusCustomer.value = 'subagent';
-                    toggleCustomerType();
-                    $('subagent_id').value = d.subagent_id;
-                } else {
-                    // mode customer biasa
-                    statusCustomer.value = 'customer';
-                    toggleCustomerType();
-                }
-
-                $('jenis_bayar_id').value = d.jenis_bayar_id ?? '';
-                $('bank_id').value = d.bank_id ?? '';
-                $('nama_piutang').value = d.nama_piutang ?? '';
-
-                // REFUND
-                $('nilai_refund').value = d.nilai_refund ?? 0;
-
-                if (d.tgl_realisasi) {
-                    $('tgl_realisasi').value = d.tgl_realisasi.replace(' ', 'T');
-                } else {
-                    $('tgl_realisasi').value = '';
-                }
-
-                toggleJenisPembayaran();
-                toggleRefund();
-            })
-
-            .catch(err => console.error('Mutasi error:', err));
-        }
-
-        function toggleCustomerType() {
-            const type = statusCustomer.value;
-            const subagentSelect = document.getElementById('subagent_id');
-            const jenisBayarSelect = $('jenis_bayar_id'); // 🔥 WAJIB
-            const bankSelect       = $('bank_id');         // 🔥 WAJIB
-
-            document.querySelectorAll('.subagent-hide').forEach(el => {
-                el.style.display = (type === 'subagent') ? 'none' : 'block';
+        if (cashBankData.length === 0) {
+            tbodyCashBank.innerHTML = `<tr><td colspan="19" style="text-align:center;">Data tidak ditemukan</td></tr>`;
+        } else {
+            cashBankData.forEach((t, i) => {
+                tbodyCashBank.innerHTML += buildRow(t, i);
             });
-
-            $('subagentContainer').style.display =
-                    type === 'subagent' ? 'block' : 'none';
-
-            if (type === 'subagent') {
-                subagentSelect.disabled = false;
-                subagentSelect.required = true;
-
-                // KUNCI UTAMA
-                jenisBayarSelect.value = '';
-                jenisBayarSelect.disabled = true;
-
-                // KUNCI BANK
-                bankSelect.value = '';
-                bankSelect.disabled = true;
-                $('bankContainer').style.display = 'none';
-            } else {
-                subagentSelect.disabled = true;   
-                subagentSelect.required = false;
-                subagentSelect.value = '';
-
-                jenisBayarSelect.disabled = false;
-            }
-            toggleJenisPembayaran();
         }
 
-        statusCustomer.addEventListener('change', toggleCustomerType);
-        toggleCustomerType();
-
-        /* ===================== FILL FORM ===================== */
-        function fillFormFromRow(row) {
-            showAllStatus();
-            const td = row.children;
-            formMode = 'update'; 
-            form.action = `/input-tiket/${row.dataset.id}`; 
-
-            $('kode_booking').value = row.dataset.id;
-            $('name').value = td[4].innerText;
-            $('rute').value = td[5].innerText;
-            $('rute2').value = td[7].innerText !== '-' ? td[7].innerText : '';
-            $('harga_jual').value = td[9].innerText.replace(/\./g, '');
-            $('nta').value = td[10].innerText.replace(/\./g, '');
-            $('diskon').value = td[11].innerText.replace(/\./g, '');
-            $('komisi').value = td[12].innerText.replace(/\./g, '');
-            $('status').value = td[13].innerText.toLowerCase();
-            $('keterangan').value = td[16].innerText !== '-' ? td[16].innerText : '';
-
-            toggleRefund();
-            // tanggal
-            $('tgl_issued').value = `${td[2].innerText}T00:00`;
-            $('tgl_flight').value = `${td[6].innerText}T00:00`;
-            $('tgl_flight2').value = td[8].innerText !== '-' ? `${td[8].innerText}T00:00` : '';
-
-            $('jenis_tiket_id').value = row.dataset.jenisTiketId;
-
-            // AJAX
-            loadTiketDetail(row.dataset.id);
-
-            $('btnInputData').textContent = 'UPDATE';
+        if (piutangData.length === 0) {
+            tbodyPiutang.innerHTML = `<tr><td colspan="19" style="text-align:center;">Data tidak ditemukan</td></tr>`;
+        } else {
+            piutangData.forEach((t, i) => {
+                tbodyPiutang.innerHTML += buildRow(t, i);
+            });
         }
 
-        /* ===================== ROW CLICK ===================== */
-        document.querySelectorAll('#tiketTable tbody tr').forEach(row => {
+        // Re-attach click events
+        document.querySelectorAll('#tiketTableCashBank tbody tr, #tiketTablePiutang tbody tr').forEach(row => {
             row.addEventListener('click', e => {
                 if (e.target.classList.contains('btn-delete')) return;
-
-                document.querySelectorAll('#tiketTable tr').forEach(r => r.classList.remove('selected'));
+                document.querySelectorAll('#tiketTableCashBank tr, #tiketTablePiutang tr')
+                    .forEach(r => r.classList.remove('selected'));
                 row.classList.add('selected');
-
                 fillFormFromRow(row);
             });
         });
-
-        
-
-        /* ===================== INVOICE ===================== */
-        //Cetak Invoice
-        document.getElementById('btnCetakInvoice').addEventListener('click', () => {
-            const checked = document.querySelectorAll('.check-row:checked');
-
-            if (checked.length === 0) {
-                alert('Pilih minimal satu tiket');
-                return;
-            }
-
-            const codes = Array.from(checked).map(cb => cb.value).join(',');
-            window.open(`/invoice-multi?codes=${codes}`, '_blank');
-        });
-/* ===================== CARI TIKET ===================== */
-
-// buka modal
-document.getElementById('btnCari').addEventListener('click', () => {
-    document.getElementById('modalCari').style.display = 'flex';
-    document.getElementById('searchInput').focus();
-});
-
-function loadAllTickets() {
-    fetch(`{{ route('input-tiket.search') }}`, {
-        headers: { 'Accept': 'application/json' }
-    })
-    .then(res => res.json())
-    .then(data => renderTable(data))
-    .catch(err => console.error('Load all tickets error:', err));
-}
-
-
-// cancel
-document.getElementById('btnCariCancel').addEventListener('click', () => {
-    document.getElementById('modalCari').style.display = 'none';
-    document.getElementById('searchInput').value = '';
-
-    // kembalikan tabel ke kondisi awal
-    loadAllTickets();
-});
-
-
-// tekan ENTER di input
-document.getElementById('searchInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-        document.getElementById('btnCariOk').click();
-    }
-});
-
-// OK → fetch data
-document.getElementById('btnCariOk').addEventListener('click', () => {
-    const keyword = document.getElementById('searchInput').value.trim();
-
-    if (!keyword) {
-        alert('Masukkan nama atau kode booking');
-        return;
     }
 
-    fetch(`{{ route('input-tiket.search') }}?q=${encodeURIComponent(keyword)}`, {
-        headers: { 'Accept': 'application/json' }
-    })
-    .then(res => res.json())
-    .then(data => renderTable(data))
-    .catch(err => {
-        console.error(err);
-        alert('Gagal mengambil data');
-    });
-
-    document.getElementById('modalCari').style.display = 'none';
-});
-
-// render ulang tabel
-function renderTable(data) {
-    const tbody = document.querySelector('#tiketTable tbody');
-    tbody.innerHTML = '';
-
-    if (data.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="17" style="text-align:center;">Data tidak ditemukan</td>
-            </tr>`;
-        return;
-    }
-
-    data.forEach((t, i) => {
-        tbody.innerHTML += `
+    function buildRow(t, i) {
+        return `
         <tr data-id="${t.kode_booking}" data-jenis-tiket-id="${t.jenis_tiket_id}">
             <td><input type="checkbox" class="check-row" value="${t.kode_booking}"></td>
             <td>${i + 1}</td>
@@ -770,78 +865,56 @@ function renderTable(data) {
             <td>${Number(t.komisi).toLocaleString('id-ID')}</td>
             <td>${t.status}</td>
             <td>${t.jenis_tiket?.name_jenis ?? '-'}</td>
+            <td>${t.pembayaran_label ?? t.nama_piutang ?? '-'}</td>
             <td>${t.keterangan ?? '-'}</td>
-            <td>${Number(t.nilai_refund ?? 0).toLocaleString('id-ID')}</td>  
+            <td>${Number(t.nilai_refund ?? 0).toLocaleString('id-ID')}</td>
             <td>-</td>
         </tr>`;
-    });
-}
+    }
 
-/* ===================== TUTUP KAS ===================== */
-document.getElementById('btnTutupKas')?.addEventListener('click', () => {
-    window.location.href = "{{ route('cash-flow.cashFlow') }}";
-});
+    /* ========= RESET / BATAL ========= */
+    $('btnBatal').onclick = () => {
+        formMode = 'create';
+        form.action = "{{ route('input-tiket.store') }}";
+        const methodInput = form.querySelector('input[name="_method"]');
+        if (methodInput) methodInput.remove();
 
-
-        /* ===================== RESET ===================== */
-        $('btnBatal').onclick = () => {
-            formMode = 'create';
-            form.action = "{{ route('input-tiket.store') }}";
-
-            form.reset();
-            $('btnInputData').textContent = 'INPUT DATA';
-            showBasicStatus();
-            toggleJenisPembayaran();
-            toggleRefund();
-        };
-
-
+        form.reset();
+        $('btnInputData').textContent = 'Input Data';
         showBasicStatus();
+        toggleJenisPembayaran();
         toggleRefund();
+        closeInputModal();
+    };
 
-        document.addEventListener('DOMContentLoaded', () => {
+    $('status').dispatchEvent(new Event('change'));
+    showBasicStatus();
+    toggleRefund();
 
+    /* ========= ENTER KEY FLOW ========= */
+    document.addEventListener('DOMContentLoaded', () => {
         const enterFlow = [
-            'kode_booking',
-            'name',
-            'rute',
-            'tgl_flight',
-            'rute2',
-            'tgl_flight2',
-            'harga_jual',
-            'nta',
-            'diskon',
-            'status',
-            'jenis_tiket_id',
-            'keterangan'
+            'kode_booking','name','rute','tgl_flight','rute2','tgl_flight2',
+            'harga_jual','nta','diskon','status','jenis_tiket_id','keterangan'
         ];
 
         enterFlow.forEach((id, index) => {
             const el = document.getElementById(id);
             if (!el) return;
-
             el.addEventListener('keydown', e => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
-
                     updateKomisi();
-                    const nextId = enterFlow[index + 1];
-                    if (!nextId) return;
-
-                    const nextEl = document.getElementById(nextId);
+                    const nextEl = document.getElementById(enterFlow[index + 1]);
                     if (nextEl) {
                         nextEl.focus();
-
-                        if (nextEl.tagName === 'TEXTAREA') {
+                        if (nextEl.tagName === 'TEXTAREA')
                             nextEl.selectionStart = nextEl.selectionEnd = nextEl.value.length;
-                        }
                     }
                 }
             });
         });
-
     });
-
 </script>
 
 </x-layouts.app>
