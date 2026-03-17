@@ -40,26 +40,23 @@ class TiketController extends Controller
 
     public function indexPiutang()
     {
-        // ✅ FIX: filter hanya jenis_bayar_id=3 (PIUTANG) + eager load relasi piutang
         $piutang = MutasiTiket::with([
                 'tiket',
                 'tiket.jenisTiket',
-                'piutang',           // ✅ eager load relasi piutang
+                'piutang',
             ])
-            ->where('jenis_bayar_id', 3)   // ✅ FIX: hanya piutang
-            ->whereNull('tgl_bayar')        // belum lunas
+            ->where('jenis_bayar_id', 3)
+            ->whereNull('tgl_bayar')
             ->orderBy('tgl_issued', 'asc')
             ->get();
 
-        // ✅ FIX: daftar nama piutang unik dari tabel piutang yang benar-benar terpakai
-        $piutangNames = Piutang::whereIn(
-            'id',
-            $piutang->pluck('piutang_id')->filter()->unique()->values()
-        )->orderBy('nama')->get();
+        // ✅ FIX: ambil SEMUA dari tabel piutang, bukan filter dari mutasi
+        // Sehingga nama piutang yg sudah diinput di halaman tiket pasti muncul
+        $piutangNames = Piutang::orderBy('nama')->get();
 
         return view('piutang', [
             'piutang'              => $piutang,
-            'piutangNames'         => $piutangNames,   // ✅ FIX: variabel baru untuk dropdown
+            'piutangNames'         => $piutangNames,
             'jenisBayarNonPiutang' => JenisBayar::whereNotIn('id', [3, 4])->get(),
             'bank'                 => Bank::orderBy('name')->get(),
         ]);
