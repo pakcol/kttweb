@@ -29,7 +29,7 @@ class TiketController extends Controller
                 'jenisTiket',
                 'mutasiTiket.jenisBayar',
                 'mutasiTiket.bank',
-                'mutasiTiket.piutang',   // ✅ eager load relasi piutang
+                'mutasiTiket.piutang',
             ])->latest()->get(),
             'jenisBayar'           => JenisBayar::where('id', '!=', 4)->get(),
             'jenisBayarNonPiutang' => JenisBayar::whereNotIn('id', [3, 4])->get(),
@@ -40,13 +40,26 @@ class TiketController extends Controller
 
     public function indexPiutang()
     {
-        $piutang = MutasiTiket::with(['tiket', 'tiket.jenisTiket'])
-            ->whereNull('tgl_bayar')
+        // ✅ FIX: filter hanya jenis_bayar_id=3 (PIUTANG) + eager load relasi piutang
+        $piutang = MutasiTiket::with([
+                'tiket',
+                'tiket.jenisTiket',
+                'piutang',           // ✅ eager load relasi piutang
+            ])
+            ->where('jenis_bayar_id', 3)   // ✅ FIX: hanya piutang
+            ->whereNull('tgl_bayar')        // belum lunas
             ->orderBy('tgl_issued', 'asc')
             ->get();
 
+        // ✅ FIX: daftar nama piutang unik dari tabel piutang yang benar-benar terpakai
+        $piutangNames = Piutang::whereIn(
+            'id',
+            $piutang->pluck('piutang_id')->filter()->unique()->values()
+        )->orderBy('nama')->get();
+
         return view('piutang', [
             'piutang'              => $piutang,
+            'piutangNames'         => $piutangNames,   // ✅ FIX: variabel baru untuk dropdown
             'jenisBayarNonPiutang' => JenisBayar::whereNotIn('id', [3, 4])->get(),
             'bank'                 => Bank::orderBy('name')->get(),
         ]);
@@ -121,7 +134,6 @@ class TiketController extends Controller
                     ->firstOrFail();
 
                 $nominalRefund = $tiket->harga_jual;
-
                 JenisTiket::findOrFail($tiket->jenis_tiket_id)->increment('saldo', $nominalRefund);
 
                 TopupHistory::create([
@@ -211,7 +223,6 @@ class TiketController extends Controller
 
         DB::transaction(function () use ($request, $mutasiService) {
 
-            // ========================= SUBAGENT =========================
             if ($request->statusCustomer === 'subagent') {
                 $request->validate(['subagent_id' => 'required|exists:subagents,id']);
 
@@ -248,7 +259,6 @@ class TiketController extends Controller
                 return;
             }
 
-            // ========================= CUSTOMER =========================
             $request->validate([
                 'jenis_bayar_id' => 'required|exists:jenis_bayar,id',
                 'bank_id'        => 'nullable|exists:bank,id',
@@ -272,7 +282,6 @@ class TiketController extends Controller
                 'keterangan'     => strtoupper($request->keterangan),
             ]);
 
-            // ✅ Resolve piutang_id dari tabel piutang
             $piutangId = null;
             if ((int)$request->jenis_bayar_id === 3) {
                 $piutang = Piutang::firstOrCreate(
@@ -283,16 +292,12 @@ class TiketController extends Controller
                 $piutangId = $piutang->id;
             }
 
-            // stok tiket
             JenisTiket::find($tiket->jenis_tiket_id)->decrement('saldo', $tiket->nta);
-
-            // kas masuk
             JenisBayar::find($request->jenis_bayar_id)->increment('saldo', $tiket->harga_jual);
 
-            // mutasi bank
             if ((int)$request->jenis_bayar_id === 1 && $request->bank_id) {
-                $bank        = Bank::lockForUpdate()->findOrFail($request->bank_id);
-                $saldoAkhir  = $bank->saldo + $tiket->harga_jual;
+                $bank       = Bank::lockForUpdate()->findOrFail($request->bank_id);
+                $saldoAkhir = $bank->saldo + $tiket->harga_jual;
                 $bank->update(['saldo' => $saldoAkhir]);
 
                 MutasiBank::create([
@@ -305,7 +310,6 @@ class TiketController extends Controller
                 ]);
             }
 
-            // ✅ mutasi tiket — piutang_id sudah terisi
             $mutasiService->create([
                 'tiket_kode_booking' => $tiket->kode_booking,
                 'tgl_issued'         => $tiket->tgl_issued,
@@ -313,7 +317,7 @@ class TiketController extends Controller
                 'harga_bayar'        => $tiket->nta * -1,
                 'jenis_bayar_id'     => $request->jenis_bayar_id,
                 'bank_id'            => $request->bank_id,
-                'piutang_id'         => $piutangId,      // ✅ FIX: sebelumnya tidak dikirim
+                'piutang_id'         => $piutangId,
                 'nama_piutang'       => (int)$request->jenis_bayar_id === 3
                                             ? strtoupper($request->nama_piutang)
                                             : null,
@@ -360,7 +364,6 @@ class TiketController extends Controller
                 throw new \Exception('Tiket refund tidak bisa diubah');
             }
 
-            // ✅ Resolve piutang_id untuk update
             $piutangId = null;
             if ((int)$request->jenis_bayar_id === 3 && $request->filled('nama_piutang')) {
                 $piutang   = Piutang::firstOrCreate(
@@ -401,7 +404,7 @@ class TiketController extends Controller
                         'harga_bayar'    => $tiket->harga_jual,
                         'jenis_bayar_id' => $request->jenis_bayar_id,
                         'bank_id'        => $request->bank_id,
-                        'piutang_id'     => $piutangId,     // ✅ FIX: sebelumnya tidak dikirim
+                        'piutang_id'     => $piutangId,
                         'nama_piutang'   => (int)$request->jenis_bayar_id === 3
                                                 ? strtoupper($request->nama_piutang)
                                                 : null,
@@ -414,7 +417,7 @@ class TiketController extends Controller
                         'harga_bayar'        => $tiket->harga_jual,
                         'jenis_bayar_id'     => 4,
                         'bank_id'            => $request->bank_id,
-                        'piutang_id'         => $piutangId,  // ✅ FIX
+                        'piutang_id'         => $piutangId,
                         'nama_piutang'       => (int)$request->jenis_bayar_id === 3
                                                     ? strtoupper($request->nama_piutang)
                                                     : null,
@@ -423,7 +426,6 @@ class TiketController extends Controller
                 }
             }
 
-            // ========================= ISSUED → REFUNDED =========================
             if ($statusLama === 'issued' && $tiket->status === 'refunded') {
                 if (!$request->filled('nilai_refund') || !$request->filled('tgl_realisasi')) {
                     throw new \Exception('Nilai refund & tanggal realisasi wajib diisi');
@@ -519,7 +521,7 @@ class TiketController extends Controller
             'jenisTiket',
             'mutasiTiket.jenisBayar',
             'mutasiTiket.bank',
-            'mutasiTiket.piutang',   // ✅ eager load piutang agar JS bisa baca nama
+            'mutasiTiket.piutang',
         ])->orderBy('tgl_issued', 'desc');
 
         if ($q && strlen($q) >= 2) {
@@ -556,7 +558,6 @@ class TiketController extends Controller
         return response()->json([
             'jenis_bayar_id' => $mutasi?->jenis_bayar_id,
             'bank_id'        => $mutasi?->bank_id,
-            // ✅ FIX: nama_piutang diambil dari relasi tabel piutang (bukan kolom nama_piutang saja)
             'nama_piutang'   => $mutasi?->piutang?->nama ?? $mutasi?->nama_piutang,
             'piutang_id'     => $mutasi?->piutang_id,
             'nilai_refund'   => $tiket?->nilai_refund ?? 0,
