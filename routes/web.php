@@ -63,7 +63,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/', [TiketController::class, 'store'])->name('store');      
         Route::get('/search', [TiketController::class, 'search'])->name('search');
         Route::get('/{kode_booking}', [TiketController::class, 'getTiket'])->name('get');
-        Route::post('/{kode_booking}', [TiketController::class, 'update'])->name('update');
+        Route::put('/{kode_booking}', [TiketController::class, 'update'])->name('update');
         Route::delete('/{kode_booking}', [TiketController::class, 'destroy'])->name('destroy');
     });
 
@@ -82,42 +82,38 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/biaya', [BiayaController::class, 'index'])->name('biaya.index');
     Route::post('/biaya', [BiayaController::class, 'store'])->name('biaya.store');
 
-    // ======== PPOB CONTROLLER ======== 
     // ======== PPOB CONTROLLER ========
-Route::prefix('ppob')->name('ppob.')->group(function () {
+    Route::prefix('ppob')->name('ppob.')->group(function () {
 
-    // Halaman utama PPOB
-    Route::get('/', [PpobController::class, 'index'])
-        ->name('index');
+        // Halaman utama PPOB
+        Route::get('/', [PpobController::class, 'index'])
+            ->name('index');
 
-    // Simpan data PPOB baru
-    Route::post('/', [PpobController::class, 'store'])
-        ->name('store');
+        // Simpan data PPOB baru
+        Route::post('/', [PpobController::class, 'store'])
+            ->name('store');
 
-    // Top up PPOB (jenis_ppob_id = 5, id_pel = 0)
-    Route::post('/topup', [PpobController::class, 'topup'])
-        ->name('topup');
+        // Top up PPOB (jenis_ppob_id = 5, id_pel = 0)
+        Route::post('/topup', [PpobController::class, 'topup'])
+            ->name('topup');
 
-    // ✅ UPDATE / EDIT PPOB
-    Route::put('/{id}', [PpobController::class, 'update'])
-        ->name('update');
+        // ✅ UPDATE / EDIT PPOB
+        Route::put('/{id}', [PpobController::class, 'update'])
+            ->name('update');
 
-    // Halaman piutang PPOB
-    Route::get('/piutang', [PpobController::class, 'ppobPiutang'])
-        ->name('piutang');
+        // Halaman piutang PPOB
+        Route::get('/piutang', [PpobController::class, 'ppobPiutang'])
+            ->name('piutang');
 
-    // Bayar / realisasi piutang
-    Route::put('/piutang/{id}', [PpobController::class, 'updatePiutang'])
-        ->name('piutang.update');
-    Route::get('/piutang/search', [TiketController::class, 'searchPiutang']);
+        // Bayar / realisasi piutang
+        Route::put('/piutang/{id}', [PpobController::class, 'updatePiutang'])
+            ->name('piutang.update');
+        Route::get('/piutang/search', [TiketController::class, 'searchPiutang']);
 
-
-    // Hapus data PPOB
-    Route::delete('/{id}', [PpobController::class, 'destroy'])
-        ->name('destroy');
-});
-
-
+        // Hapus data PPOB
+        Route::delete('/{id}', [PpobController::class, 'destroy'])
+            ->name('destroy');
+    });
 
     // ======== FIND TICKET CONTROLLER ======== 
     Route::prefix('find-ticket')->name('find.')->group(function () {
@@ -132,7 +128,6 @@ Route::prefix('ppob')->name('ppob.')->group(function () {
         '/mutasi-tiket/piutang/{id}',
         [MutasiTiketController::class, 'updatePiutang']
     )->name('mutasi-tiket.updatePiutang');
-
 
     // ======== CASH FLOW CONTROLLER ========
     Route::get('/cash-flow', [MutasiTiketController::class, 'cashFlow'])
@@ -149,10 +144,9 @@ Route::prefix('ppob')->name('ppob.')->group(function () {
 
     // ======== ADD USER ======== 
     Route::middleware('superuser')->group(function () {
-        Route::get('/register', [UserController::class, 'create'])->name('register.create'); // Menggunakan method create
+        Route::get('/register', [UserController::class, 'create'])->name('register.create');
         Route::post('/register', [UserController::class, 'store'])->name('register.store');
         Route::delete('/register/{username}', [UserController::class, 'destroy'])->name('register.destroy');
-
     });
 
     // ======== LOGOUT ========
