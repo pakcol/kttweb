@@ -82,7 +82,6 @@
             <tbody id="tbodyPiutang">
                 @foreach ($piutang as $row)
                 @php
-                    {{-- Murni dari relasi piutang, tidak ada fallback nama_piutang --}}
                     $namaPiutang = strtoupper(trim($row->piutang?->nama ?? ''));
                 @endphp
                 <tr
