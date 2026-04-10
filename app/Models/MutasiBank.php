@@ -19,9 +19,9 @@ class MutasiBank extends Model
 
     protected $casts = [
         'tanggal' => 'datetime',
-        'debit'   => 'integer',
-        'kredit'  => 'integer',
-        'saldo'   => 'integer',
+        'debit'   => 'decimal:2',
+        'kredit'  => 'decimal:2',
+        'saldo'   => 'decimal:2',
     ];
 
     public function bank()
