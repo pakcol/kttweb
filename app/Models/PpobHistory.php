@@ -27,9 +27,9 @@ class PpobHistory extends Model
 
     protected $casts = [
         'tgl'         => 'date',
-        'nta'         => 'integer',
-        'harga_jual'  => 'integer',
-        'komisi'      => 'integer',
+        'nta'         => 'decimal:2',
+        'harga_jual'  => 'decimal:2',
+        'komisi'      => 'decimal:2',
     ];
 
     /**

@@ -24,7 +24,7 @@ class Biaya extends Model
     
     protected $casts = [
         'tgl' => 'datetime',
-        'biaya' => 'integer',
+        'biaya' => 'decimal:2',
     ];
 
     public function bank()

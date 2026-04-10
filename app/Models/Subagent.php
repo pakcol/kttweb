@@ -17,7 +17,7 @@ class Subagent extends Model
     ];
     
     protected $casts = [
-        'saldo' => 'integer',
+        'saldo' => 'decimal:2',
     ];
     
     public function histories()

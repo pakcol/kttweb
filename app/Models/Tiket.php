@@ -38,10 +38,10 @@ class Tiket extends Model
         'tgl_issued'    => 'datetime',
         'tgl_flight'    => 'datetime',
         'tgl_flight2'   => 'datetime',
-        'nta'           => 'integer',
-        'harga_jual'    => 'integer',
-        'diskon'        => 'integer',
-        'nilai_refund'  => 'integer',
+        'nta'           => 'decimal:2',
+        'harga_jual'    => 'decimal:2',
+        'diskon'        => 'decimal:2',
+        'nilai_refund'  => 'decimal:2',
         'tgl_realisasi' => 'datetime',
     ];
 

@@ -20,7 +20,7 @@ class TopupHistory extends Model
 
     protected $casts = [
         'tgl_issued' => 'date',
-        'transaksi'  => 'integer',
+        'transaksi'  => 'decimal:2',
     ];
 
     /* ================= RELATION ================= */
