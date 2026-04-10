@@ -112,7 +112,7 @@ class TiketController extends Controller
         } else {
             $request->validate([
                 'tanggal'        => 'required|date',
-                'topup'          => 'required|numeric|min:1',
+                'topup'          => 'required|numeric|min:0.01',
                 'jenis_tiket_id' => 'required|exists:jenis_tiket,id',
                 'jenis_bayar_id' => 'required|exists:jenis_bayar,id',
                 'bank_id'        => 'nullable|exists:bank,id',
@@ -197,25 +197,18 @@ class TiketController extends Controller
         }
     }
 
-    /**
-     * Resolve piutang: jika piutang_id diisi pakai itu,
-     * jika tidak tapi nama_piutang diisi maka firstOrCreate berdasarkan nama.
-     * Return piutang_id atau null.
-     */
     private function resolvePiutangId(Request $request): ?int
     {
         if ((int)$request->jenis_bayar_id !== 3) {
             return null;
         }
 
-        // Jika ada ID valid dari rekomendasi yang dipilih
         if ($request->filled('piutang_id')) {
             $piutang = Piutang::findOrFail($request->piutang_id);
-            $piutang->increment('jumlah', 0); // pastikan record exist
+            $piutang->increment('jumlah', 0);
             return $piutang->id;
         }
 
-        // Jika hanya ada nama (input manual tanpa memilih rekomendasi)
         if ($request->filled('nama_piutang_input')) {
             $nama    = strtoupper(trim($request->nama_piutang_input));
             $piutang = Piutang::firstOrCreate(
@@ -235,10 +228,10 @@ class TiketController extends Controller
             'tgl_issued'     => 'required|date',
             'kode_booking'   => 'required|string|max:10|unique:tiket,kode_booking',
             'name'           => 'required|string|max:100',
-            'harga_jual'     => 'required|integer|min:0',
-            'nta'            => 'required|integer|min:0',
-            'diskon'         => 'required|integer|min:0',
-            'komisi'         => 'required|integer|min:0',
+            'harga_jual'     => 'required|numeric|min:0',
+            'nta'            => 'required|numeric|min:0',
+            'diskon'         => 'required|numeric|min:0',
+            'komisi'         => 'required|numeric|min:0',
             'rute'           => 'required|string|max:45',
             'tgl_flight'     => 'required|date',
             'rute2'          => 'nullable|string|max:45',
@@ -357,10 +350,10 @@ class TiketController extends Controller
             'kode_booking'      => 'required|string|max:10',
             'tgl_issued'        => 'required|date',
             'name'              => 'required|string|max:100',
-            'harga_jual'        => 'required|integer|min:0',
-            'nta'               => 'required|integer|min:0',
-            'diskon'            => 'required|integer|min:0',
-            'komisi'            => 'required|integer|min:0',
+            'harga_jual'        => 'required|numeric|min:0',
+            'nta'               => 'required|numeric|min:0',
+            'diskon'            => 'required|numeric|min:0',
+            'komisi'            => 'required|numeric|min:0',
             'rute'              => 'required|string|max:45',
             'tgl_flight'        => 'required|date',
             'rute2'             => 'nullable|string|max:45',
@@ -370,7 +363,7 @@ class TiketController extends Controller
             'bank_id'           => 'nullable|exists:bank,id',
             'piutang_id'        => 'nullable|exists:piutangs,id',
             'nama_piutang_input'=> 'nullable|string|max:100',
-            'nilai_refund'      => 'nullable|integer|min:0',
+            'nilai_refund'      => 'nullable|numeric|min:0',
             'tgl_realisasi'     => 'nullable|date',
             'keterangan'        => 'nullable|string|max:200',
             'subagent_id'       => 'nullable|exists:subagents,id',
@@ -491,9 +484,6 @@ class TiketController extends Controller
         return back()->with('success', 'Tiket berhasil diperbarui');
     }
 
-    /**
-     * Endpoint autocomplete: cari nama piutang, return [{id, nama}]
-     */
     public function searchPiutang(Request $request)
     {
         $q = strtoupper(trim($request->q ?? ''));

@@ -18,8 +18,8 @@ class BukuBankController extends Controller
 
         $bukuBank = DB::table('mutasi_bank')
                 ->where('bank_id', $bankId)
-                ->orderBy('tanggal', 'asc')   
-                ->orderBy('id', 'asc')     
+                ->orderBy('tanggal', 'asc')
+                ->orderBy('id', 'asc')
                 ->get();
 
         $saldo = 0;
@@ -28,7 +28,6 @@ class BukuBankController extends Controller
                 $row->saldo = $saldo;
                 return $row;
             });
-
 
         return view('buku-bank', [
             'bankList' => $bankList,
@@ -42,9 +41,9 @@ class BukuBankController extends Controller
     public function setor(Request $request)
     {
         $request->validate([
-            'tanggal' => 'required|date',
-            'bank_id' => 'required|exists:bank,id',
-            'nominal' => 'required|integer|min:1000',
+            'tanggal'    => 'required|date',
+            'bank_id'    => 'required|exists:bank,id',
+            'nominal'    => 'required|numeric|min:0.01',
             'keterangan' => 'nullable|string'
         ]);
 
@@ -60,7 +59,7 @@ class BukuBankController extends Controller
                 'subagent_id'    => null,
                 'jenis_bayar_id' => 1,
                 'bank_id'        => $bank->id,
-                'keterangan'     => $request->keterangan ?? 'Top up saldo bank '.$bank->name,
+                'keterangan'     => $request->keterangan ?? 'Top up saldo bank ' . $bank->name,
             ]);
 
             MutasiBank::create([
@@ -69,7 +68,7 @@ class BukuBankController extends Controller
                 'debit'      => $request->nominal,
                 'kredit'     => 0,
                 'saldo'      => $saldoSesudah,
-                'keterangan' => $request->keterangan ?? 'Top up saldo bank '.$bank->name,
+                'keterangan' => $request->keterangan ?? 'Top up saldo bank ' . $bank->name,
             ]);
 
             $bank->update([
@@ -94,48 +93,34 @@ class BukuBankController extends Controller
 
             foreach ($setoranBanks as $bankId => $nominal) {
 
-                $nominal = (int) $nominal;
+                $nominal = (float) $nominal;
                 if ($nominal <= 0) continue;
 
-                /** ======================
-                 *  BANK
-                 *  ====================== */
                 $bank = Bank::lockForUpdate()->findOrFail($bankId);
 
-                $saldoAwal = $bank->saldo;
+                $saldoAwal  = $bank->saldo;
                 $saldoAkhir = $saldoAwal + $nominal;
 
-                // update saldo bank
-                $bank->update([
-                    'saldo' => $saldoAkhir
-                ]);
+                $bank->update(['saldo' => $saldoAkhir]);
 
-                /** ======================
-                 *  MUTASI BANK
-                 *  ====================== */
                 MutasiBank::create([
-                    'bank_id'   => $bank->id,
-                    'tanggal'   => now(),
-                    'debit'     => $nominal,
-                    'kredit'    => 0,
-                    'saldo'     => $saldoAkhir,
-                    'keterangan'=> 'Setoran Tutup Kas',
+                    'bank_id'    => $bank->id,
+                    'tanggal'    => now(),
+                    'debit'      => $nominal,
+                    'kredit'     => 0,
+                    'saldo'      => $saldoAkhir,
+                    'keterangan' => 'Setoran Tutup Kas',
                 ]);
 
                 $totalSetoran += $nominal;
             }
 
-            /** ======================
-             *  JENIS BAYAR (BANK = ID 1)
-             *  ====================== */
             if ($totalSetoran > 0) {
                 $jenisBayarBank = JenisBayar::lockForUpdate()->findOrFail(1);
-
                 $jenisBayarBank->update([
                     'saldo' => $jenisBayarBank->saldo + $totalSetoran
                 ]);
             }
-
         });
 
         return redirect()->back()->with('success', 'Setoran berhasil disimpan');

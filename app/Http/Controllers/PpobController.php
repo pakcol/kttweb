@@ -30,8 +30,8 @@ class PpobController extends Controller
             'tgl'            => 'required|date',
             'id_pel'         => 'required|string|max:20',
             'jenis_ppob_id'  => 'required|exists:jenis_ppob,id',
-            'nta'            => 'required|integer',
-            'harga_jual'     => 'required|integer',
+            'nta'            => 'required|numeric|min:0',
+            'harga_jual'     => 'required|numeric|min:0',
             'nama_piutang'   => 'nullable|string|max:100',
             'jenis_bayar_id' => 'required|exists:jenis_bayar,id',
             'bank_id'        => 'nullable|required_if:jenis_bayar_id,1|exists:bank,id',
@@ -52,10 +52,8 @@ class PpobController extends Controller
                     'bank_id'       => $validated['bank_id'] ?? null,
                 ]);
 
-                // Update saldo jenis_bayar
                 $jenisBayar->increment('saldo', $validated['harga_jual']);
 
-                // Update saldo bank jika jenis_bayar_id = 1
                 if ($validated['jenis_bayar_id'] == 1 && $validated['bank_id']) {
                     $bank = Bank::findOrFail($validated['bank_id']);
                     $bank->increment('saldo', $validated['harga_jual']);
@@ -70,15 +68,11 @@ class PpobController extends Controller
             ->with('success', 'Data PPOB berhasil disimpan');
     }
 
-    /**
-     * Top up saldo PPOB (dicatat di ppob_histories sebagai jenis_ppob_id = 5, id_pel = 0)
-     * dan MENGURANGI saldo jenis_bayar BANK serta saldo bank terkait.
-     */
     public function topup(Request $request)
     {
         $validated = $request->validate([
             'tgl'            => 'required|date',
-            'nominal'        => 'required|integer|min:1',
+            'nominal'        => 'required|numeric|min:0.01',
             'jenis_bayar_id' => 'required|in:1',
             'bank_id'        => 'nullable|exists:bank,id',
         ]);
@@ -86,8 +80,8 @@ class PpobController extends Controller
         DB::transaction(function () use ($validated) {
             $jenisBayar = JenisBayar::lockForUpdate()->find(1);
             $bank = null;
-            if ($validated['jenis_bayar_id'] == 1) { 
-                $bank = Bank::lockForUpdate()->find($validated['bank_id']); 
+            if ($validated['jenis_bayar_id'] == 1) {
+                $bank = Bank::lockForUpdate()->find($validated['bank_id']);
             }
 
             $saldoSebelumnya = PpobHistory::where('jenis_ppob_id', 5)
@@ -104,11 +98,13 @@ class PpobController extends Controller
                 'nta'            => 0,
                 'harga_jual'     => 0,
                 'top_up'         => $validated['nominal'],
-                'saldo'         => $saldoSebelumnya + $validated['nominal'],
-                'jenis_bayar_id' => 1, // Set jenis_bayar_id=1
+                'saldo'          => $saldoSebelumnya + $validated['nominal'],
+                'jenis_bayar_id' => 1,
                 'bank_id'        => $bank?->id ?? null,
             ]);
+
             $jenisBayar->decrement('saldo', $validated['nominal']);
+
             if ($bank) {
                 $saldoTerakhir = MutasiBank::where('bank_id', $bank->id)
                     ->orderByDesc('id')
@@ -126,7 +122,6 @@ class PpobController extends Controller
                 ]);
 
                 $bank->update(['saldo' => $saldoSesudah]);
-
             }
         });
 
@@ -141,8 +136,8 @@ class PpobController extends Controller
             'tgl'            => 'required|date',
             'id_pel'         => 'required|string|max:20',
             'jenis_ppob_id'  => 'required|exists:jenis_ppob,id',
-            'nta'            => 'required|integer',
-            'harga_jual'     => 'required|integer',
+            'nta'            => 'required|numeric|min:0',
+            'harga_jual'     => 'required|numeric|min:0',
             'nama_piutang'   => 'nullable|string|max:100',
             'jenis_bayar_id' => 'required|exists:jenis_bayar,id',
             'bank_id'        => 'nullable|required_if:jenis_bayar_id,1|exists:bank,id',
@@ -150,7 +145,7 @@ class PpobController extends Controller
 
         DB::transaction(function () use ($validated, $id) {
 
-            $ppob = PpobHistory::findOrFail($id);
+            $ppob     = PpobHistory::findOrFail($id);
             $hargaLama = $ppob->harga_jual;
 
             $ppob->update([
@@ -175,7 +170,6 @@ class PpobController extends Controller
             ->with('success', 'Data berhasil diperbarui');
     }
 
-
     public function updatePiutang(Request $request, $id)
     {
         $validated = $request->validate([
@@ -184,9 +178,7 @@ class PpobController extends Controller
         ]);
 
         DB::transaction(function () use ($validated, $id) {
-
             $ppob = PpobHistory::findOrFail($id);
-
             $ppob->update([
                 'jenis_bayar_id' => $validated['jenis_bayar_id'],
                 'bank_id'        => $validated['bank_id'] ?? null
@@ -227,12 +219,10 @@ class PpobController extends Controller
             ->values();
 
         return view('ppobPiutang', [
-            'piutang' => $ppobPiutang,
-            'namaPiutangList' => $namaPiutang,
-            'bank' => Bank::all(),
+            'piutang'              => $ppobPiutang,
+            'namaPiutangList'      => $namaPiutang,
+            'bank'                 => Bank::all(),
             'jenisBayarNonPiutang' => JenisBayar::where('id', '!=', 3)->get(),
         ]);
     }
-
-
 }
