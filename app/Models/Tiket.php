@@ -38,11 +38,12 @@ class Tiket extends Model
         'tgl_issued'    => 'datetime',
         'tgl_flight'    => 'datetime',
         'tgl_flight2'   => 'datetime',
+        'tgl_realisasi' => 'datetime',
         'nta'           => 'decimal:2',
         'harga_jual'    => 'decimal:2',
         'diskon'        => 'decimal:2',
+        'komisi'        => 'decimal:2',
         'nilai_refund'  => 'decimal:2',
-        'tgl_realisasi' => 'datetime',
     ];
 
     // =====================================================
@@ -73,27 +74,16 @@ class Tiket extends Model
     // ACCESSOR — ambil data dari mutasi_tiket via relasi
     // =====================================================
 
-    /**
-     * Ambil jenis_bayar_id dari mutasi_tiket
-     * Dipakai untuk filter tabel di blade (@if $t->jenis_bayar_id == 3)
-     */
     public function getJenisBayarIdAttribute(): ?int
     {
         return $this->mutasiTiket?->jenis_bayar_id;
     }
 
-    /**
-     * Ambil nama_piutang dari tabel piutang via mutasi_tiket.piutang_id
-     * Dipakai untuk kolom "Nama Piutang" di tabel
-     */
     public function getNamaPiutangAttribute(): ?string
     {
         return $this->mutasiTiket?->piutang?->nama;
     }
 
-    /**
-     * Label pembayaran untuk kolom "Pembayaran" di tabel
-     */
     public function getPembayaranLabelAttribute(): string
     {
         if (!$this->mutasiTiket || !$this->mutasiTiket->jenisBayar) {

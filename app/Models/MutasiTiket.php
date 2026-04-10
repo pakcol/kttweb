@@ -21,6 +21,13 @@ class MutasiTiket extends Model
         'keterangan',
     ];
 
+    protected $casts = [
+        'tgl_issued'  => 'datetime',
+        'tgl_bayar'   => 'datetime',
+        'harga_bayar' => 'decimal:2',
+        'insentif'    => 'decimal:2',
+    ];
+
     // =====================================================
     // RELASI
     // =====================================================

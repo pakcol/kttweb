@@ -23,7 +23,7 @@ class Biaya extends Model
     ];
     
     protected $casts = [
-        'tgl' => 'datetime',
+        'tgl'   => 'datetime',
         'biaya' => 'decimal:2',
     ];
 
@@ -32,9 +32,6 @@ class Biaya extends Model
         return $this->belongsTo(Bank::class);
     }
 
-    /**
-     * Relasi ke JenisBayar
-     */
     public function jenisBayar(): BelongsTo
     {
         return $this->belongsTo(JenisBayar::class, 'jenis_bayar_id');
@@ -49,5 +46,4 @@ class Biaya extends Model
     {
         return $this->belongsTo(JenisPpob::class, 'jenis_ppob_id');
     }
-
 }

@@ -26,15 +26,15 @@ class PpobHistory extends Model
     ];
 
     protected $casts = [
-        'tgl'         => 'date',
-        'nta'         => 'decimal:2',
-        'harga_jual'  => 'decimal:2',
-        'komisi'      => 'decimal:2',
+        'tgl'        => 'date',
+        'nta'        => 'decimal:2',
+        'harga_jual' => 'decimal:2',
+        'insentif'   => 'decimal:2',
+        'top_up'     => 'decimal:2',
+        'komisi'     => 'decimal:2',
+        'saldo'      => 'decimal:2',
     ];
 
-    /**
-     * Hitung komisi otomatis
-     */
     protected static function booted()
     {
         static::saving(function ($model) {
@@ -42,25 +42,16 @@ class PpobHistory extends Model
         });
     }
 
-    /**
-     * Relasi ke Jenis PPOB
-     */
     public function jenisPpob()
     {
         return $this->belongsTo(JenisPpob::class, 'jenis_ppob_id');
     }
 
-    /**
-     * Relasi ke Jenis Bayar
-     */
     public function jenisBayar()
     {
         return $this->belongsTo(JenisBayar::class, 'jenis_bayar_id');
     }
 
-    /**
-     * Relasi ke Bank (nullable)
-     */
     public function bank()
     {
         return $this->belongsTo(Bank::class, 'bank_id');

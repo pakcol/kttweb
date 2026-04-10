@@ -19,11 +19,9 @@ class TopupHistory extends Model
     ];
 
     protected $casts = [
-        'tgl_issued' => 'date',
-        'transaksi'  => 'decimal:2',
+        'tgl_issued'  => 'date',
+        'transaksi'   => 'decimal:2',
     ];
-
-    /* ================= RELATION ================= */
 
     public function jenisTiket()
     {

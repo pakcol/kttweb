@@ -9,9 +9,12 @@ class Piutang extends Model
 {
     protected $fillable = ['nama', 'jumlah'];
 
+    protected $casts = [
+        'jumlah' => 'decimal:2',
+    ];
+
     public function mutasi()
     {
         return $this->hasMany(MutasiTiket::class);
     }
 }
-

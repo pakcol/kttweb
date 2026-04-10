@@ -17,6 +17,10 @@ class SubagentHistory extends Model
         'transaksi'
     ];
 
+    protected $casts = [
+        'transaksi' => 'decimal:2',
+    ];
+
     public function subagent()
     {
         return $this->belongsTo(Subagent::class);
@@ -26,5 +30,4 @@ class SubagentHistory extends Model
     {
         return $this->belongsTo(Tiket::class, 'kode_booking', 'kode_booking');
     }
-
 }
