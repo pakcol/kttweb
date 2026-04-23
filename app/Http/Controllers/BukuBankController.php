@@ -24,7 +24,7 @@ class BukuBankController extends Controller
 
         $saldo = 0;
         $bukuBank = $bukuBank->map(function ($row) use (&$saldo) {
-                $saldo += ($row->debit ?? 0) - ($row->kredit ?? 0);
+                $saldo += ($row->kredit ?? 0) - ($row->debit ?? 0);
                 $row->saldo = $saldo;
                 return $row;
             });
@@ -65,8 +65,8 @@ class BukuBankController extends Controller
             MutasiBank::create([
                 'bank_id'    => $bank->id,
                 'tanggal'    => $request->tanggal,
-                'debit'      => $request->nominal,
-                'kredit'     => 0,
+                'debit'      => 0,
+                'kredit'     => $request->nominal,
                 'saldo'      => $saldoSesudah,
                 'keterangan' => $request->keterangan ?? 'Top up saldo bank ' . $bank->name,
             ]);

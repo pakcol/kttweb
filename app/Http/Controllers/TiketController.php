@@ -168,8 +168,8 @@ class TiketController extends Controller
                         'tanggal'    => now(),
                         'ref_type'   => 'TOPUP_JENIS_TIKET',
                         'ref_id'     => $request->jenis_tiket_id,
-                        'debit'      => 0,
-                        'kredit'     => $request->topup,
+                        'debit'      => $request->topup,
+                        'kredit'     => 0,
                         'saldo'      => $saldoSesudah,
                         'keterangan' => $request->keterangan ?? 'Top up jenis tiket',
                     ]);
@@ -320,8 +320,8 @@ class TiketController extends Controller
                     'bank_id'    => $bank->id,
                     'tanggal'    => $tiket->tgl_issued,
                     'debit'      => $tiket->harga_jual,
-                    'kredit'     => 0,
-                    'saldo'      => $saldoAkhir,
+                    'kredit'     => $saldoAkhir,
+                    'saldo'      => 0,
                     'keterangan' => 'Penjualan tiket ' . $tiket->kode_booking,
                 ]);
             }

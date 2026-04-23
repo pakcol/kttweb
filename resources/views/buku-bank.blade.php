@@ -140,7 +140,7 @@
                                 <td>{{ $item->keterangan }}</td>
 
                                 {{-- DEBIT = UANG MASUK --}}
-                                <td class="text-right text-success">
+                                <td class="text-right text-danger">
                                     @if ($item->debit > 0)
                                         Rp {{ number_format($item->debit, 2, ',', '.') }}
                                     @else
@@ -149,7 +149,7 @@
                                 </td>
 
                                 {{-- KREDIT = UANG KELUAR --}}
-                                <td class="text-right text-danger">
+                                <td class="text-right text-success">
                                     @if ($item->kredit > 0)
                                         Rp {{ number_format($item->kredit, 2, ',', '.') }}
                                     @else
