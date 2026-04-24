@@ -43,6 +43,11 @@ class PpobController extends Controller
 
                 $saldoSebelumnya = PpobHistory::sum('saldo');
 
+                $bank = null;
+                if ($validated['jenis_bayar_id'] == 1) {
+                    $bank = Bank::lockForUpdate()->find($validated['bank_id']);
+                }
+
                 PpobHistory::create([
                     'tgl'           => $validated['tgl'],
                     'id_pel'        => $validated['id_pel'],
@@ -60,6 +65,25 @@ class PpobController extends Controller
                 if ($validated['jenis_bayar_id'] == 1 && $validated['bank_id']) {
                     $bank = Bank::findOrFail($validated['bank_id']);
                     $bank->increment('saldo', $validated['harga_jual']);
+
+                    if ($bank) {
+                        $saldoTerakhir = MutasiBank::where('bank_id', $bank->id)
+                            ->orderByDesc('id')
+                            ->value('saldo') ?? $bank->saldo;
+
+                        $saldoSesudah = $saldoTerakhir - $validated['nominal'];
+
+                        MutasiBank::create([
+                            'bank_id'    => $bank->id,
+                            'tanggal'    => $validated['tgl'],
+                            'debit'      => $validated['nominal'],
+                            'kredit'     => 0,
+                            'saldo'      => $saldoSesudah,
+                            'keterangan' => 'Top up PPOB',
+                        ]);
+
+                        $bank->update(['saldo' => $saldoSesudah]);
+                    }
                 }
             });
         } catch (\Throwable $e) {
