@@ -41,12 +41,15 @@ class PpobController extends Controller
             DB::transaction(function () use ($validated) {
                 $jenisBayar = JenisBayar::findOrFail($validated['jenis_bayar_id']);
 
+                $saldoSebelumnya = PpobHistory::sum('saldo');
+
                 PpobHistory::create([
                     'tgl'           => $validated['tgl'],
                     'id_pel'        => $validated['id_pel'],
                     'jenis_ppob_id' => $validated['jenis_ppob_id'],
                     'nta'           => $validated['nta'] ?? null,
                     'harga_jual'    => $validated['harga_jual'],
+                    'saldo'         => $saldoSebelumnya - $validated['nta'],
                     'nama_piutang'  => $validated['nama_piutang'],
                     'jenis_bayar_id'=> $validated['jenis_bayar_id'],
                     'bank_id'       => $validated['bank_id'] ?? null,
@@ -115,8 +118,8 @@ class PpobController extends Controller
                 MutasiBank::create([
                     'bank_id'    => $bank->id,
                     'tanggal'    => $validated['tgl'],
-                    'debit'      => 0,
-                    'kredit'     => $validated['nominal'],
+                    'debit'      => $validated['nominal'],
+                    'kredit'     => 0,
                     'saldo'      => $saldoSesudah,
                     'keterangan' => 'Top up PPOB',
                 ]);
@@ -148,12 +151,15 @@ class PpobController extends Controller
             $ppob     = PpobHistory::findOrFail($id);
             $hargaLama = $ppob->harga_jual;
 
+            $saldoSebelumnya = PpobHistory::sum('saldo');
+
             $ppob->update([
                 'tgl'            => $validated['tgl'],
                 'id_pel'         => $validated['id_pel'],
                 'jenis_ppob_id'  => $validated['jenis_ppob_id'],
                 'nta'            => $validated['nta'],
                 'harga_jual'     => $validated['harga_jual'],
+                'saldo'         => $saldoSebelumnya - $validated['nta'],
                 'nama_piutang'   => $validated['nama_piutang'] ?? null,
                 'jenis_bayar_id' => $validated['jenis_bayar_id'],
                 'bank_id'        => $validated['bank_id'] ?? null,
