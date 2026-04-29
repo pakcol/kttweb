@@ -11,6 +11,7 @@ class TopupHistory extends Model
     protected $fillable = [
         'tgl_issued',
         'transaksi',
+        'biaya_admin',
         'jenis_tiket_id',
         'subagent_id',
         'jenis_bayar_id',

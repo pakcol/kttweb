@@ -84,6 +84,51 @@ class BukuBankController extends Controller
             ->with('success', 'Top up bank berhasil & tercatat di biaya');
     }
 
+    public function tarik(Request $request)
+    {
+        $request->validate([
+            'tanggal'    => 'required|date',
+            'bank_id'    => 'required|exists:bank,id',
+            'nominal'    => 'required|numeric|min:0.01',
+            'keterangan' => 'nullable|string'
+        ]);
+
+        DB::transaction(function () use ($request) {
+
+            $bank = Bank::lockForUpdate()->findOrFail($request->bank_id);
+
+            // 🚨 CEK SALDO DULU
+            if ($bank->saldo < $request->nominal) {
+                throw new \Exception('Saldo tidak mencukupi untuk tarik tunai.');
+            }
+
+            $saldoSesudah = $bank->saldo - $request->nominal;
+
+            // Catat ke mutasi bank (uang keluar = debit)
+            MutasiBank::create([
+                'bank_id'    => $bank->id,
+                'tanggal'    => $request->tanggal,
+                'debit'      => $request->nominal,
+                'kredit'     => 0,
+                'saldo'      => $saldoSesudah,
+                'keterangan' => $request->keterangan ?? 'Tarik tunai dari bank ' . $bank->name,
+            ]);
+
+            // Update saldo bank
+            $bank->update([
+                'saldo' => $saldoSesudah,
+            ]);
+
+            // Kurangi saldo jenis bayar
+            $jenisBayarBank = JenisBayar::lockForUpdate()->findOrFail(1);
+            $jenisBayarBank->decrement('saldo', $request->nominal);
+        });
+
+        return redirect()
+            ->back()
+            ->with('success', 'Tarik tunai berhasil dilakukan');
+    }
+
     public function store(Request $request)
     {
         DB::transaction(function () use ($request) {

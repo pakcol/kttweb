@@ -97,7 +97,7 @@
 
                     <td>{{ $row->tiket_kode_booking }}</td>
                     <td>{{ $row->tiket?->jenisTiket?->name_jenis ?? '-' }}</td>
-                    <td>{{ number_format($row->harga_bayar, 0, ',', '.') }}</td>
+                    <td>{{ number_format($row->tiket?->harga_jual, 0, ',', '.') }}</td>
                     <td>{{ $row->tiket?->rute ?? '-' }}</td>
                     <td>{{ $row->tiket?->tgl_flight?->format('Y-m-d') ?? '-' }}</td>
                     <td>{{ $row->tiket?->rute2 ?? '-' }}</td>

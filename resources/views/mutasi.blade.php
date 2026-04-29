@@ -23,8 +23,13 @@
 
     
             <div class="form-group">
-                <label id="labelTopup">TOP UP</label>
-                <input type="number" name="topup" id="nominal" placeholder="Masukkan nominal">
+                <label id="labelTopup">Nominal TOP UP</label>
+                <input type="number" name="topup" id="nominal" placeholder="Masukkan nominal top up">
+            </div>
+
+            <div class="form-group">
+                <label id="labelTopup">Nominal Biaya Admin TOP UP</label>
+                <input type="number" name="biaya_admin" id="nominal" placeholder="Masukkan nominal biaya admin top up">
             </div>
 
             <div class="form-group" id="refundBookingContainer" style="display:none;">

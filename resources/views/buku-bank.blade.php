@@ -43,7 +43,8 @@
                     </div>
     
                     <div class="form-right">
-                        <button type="submit" class="btn-action save">Setor</button>
+                        <button type="submit" name="action" value="tarik" class="btn-action delete">Tarik</button>
+                        <button type="submit" name="action" value="setor" class="btn-action save">Setor</button>
                         <button type="button" class="btn-action delete" onclick="resetForm()">Hapus</button>
                     </div>
                 </div>
@@ -241,6 +242,22 @@
         if (!hiddenInput.value || parseFloat(hiddenInput.value) <= 0) {
             e.preventDefault();
             alert('Nominal setor harus diisi dan lebih dari 0.');
+            displayInput.focus();
+        }
+    });
+
+    document.getElementById('form-setor').addEventListener('submit', function (e) {
+        let action = document.activeElement.value;
+
+        if (action === 'tarik') {
+            this.action = "{{ route('buku-bank.tarik') }}";
+        } else {
+            this.action = "{{ route('buku-bank.setor') }}";
+        }
+
+        if (!hiddenInput.value || parseFloat(hiddenInput.value) <= 0) {
+            e.preventDefault();
+            alert('Nominal harus diisi dan lebih dari 0.');
             displayInput.focus();
         }
     });

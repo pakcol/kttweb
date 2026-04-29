@@ -34,6 +34,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('superuser')->group(function () {
         Route::get('/buku-bank', [BukuBankController::class, 'index'])->name('buku-bank.index');
         Route::post('/buku-bank/setor', [BukuBankController::class, 'setor'])->name('buku-bank.setor');
+        Route::post('/buku-bank/tarik', [BukuBankController::class, 'tarik'])->name('buku-bank.tarik');
 
     });
     // ======== TIKET CONTROLLER  ========

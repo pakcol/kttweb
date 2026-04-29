@@ -113,6 +113,7 @@ class TiketController extends Controller
             $request->validate([
                 'tanggal'        => 'required|date',
                 'topup'          => 'required|numeric|min:0.01',
+                'biaya_admin'    => 'nullable|numeric|min:0',
                 'jenis_tiket_id' => 'required|exists:jenis_tiket,id',
                 'jenis_bayar_id' => 'required|exists:jenis_bayar,id',
                 'bank_id'        => 'nullable|exists:bank,id',
@@ -147,8 +148,15 @@ class TiketController extends Controller
                     'tgl_realisasi' => $request->tanggal,
                 ]);
             } else {
+                $topup = $request->topup;
+                $admin = $request->biaya_admin ?? 0;
+                $topupBersih = $topup - $admin;
+
+                if ($topupBersih <= 0) {
+                    throw new \Exception('Top up setelah biaya admin harus lebih dari 0.');
+                }
                 $jenisTiket = JenisTiket::lockForUpdate()->findOrFail($request->jenis_tiket_id);
-                $jenisTiket->increment('saldo', $request->topup);
+                $jenisTiket->increment('saldo', $topupBersih);
 
                 $jenisBayar = JenisBayar::lockForUpdate()->findOrFail($request->jenis_bayar_id);
                 if ($jenisBayar->saldo < $request->topup) {
@@ -165,7 +173,7 @@ class TiketController extends Controller
                     $saldoSesudah = $bank->saldo - $request->topup;
                     MutasiBank::create([
                         'bank_id'    => $bank->id,
-                        'tanggal'    => now(),
+                        'tanggal'    => $request->tanggal,
                         'ref_type'   => 'TOPUP_JENIS_TIKET',
                         'ref_id'     => $request->jenis_tiket_id,
                         'debit'      => $request->topup,
@@ -178,7 +186,8 @@ class TiketController extends Controller
 
                 TopupHistory::create([
                     'tgl_issued'     => $request->tanggal,
-                    'transaksi'      => $request->topup,
+                    'transaksi'      => $topupBersih,
+                    'biaya_admin'    => $admin, 
                     'jenis_tiket_id' => $request->jenis_tiket_id,
                     'subagent_id'    => null,
                     'jenis_bayar_id' => $request->jenis_bayar_id,
