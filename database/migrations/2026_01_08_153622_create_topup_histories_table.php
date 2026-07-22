@@ -23,12 +23,6 @@ return new class extends Migration {
                 ->constrained('jenis_tiket')
                 ->nullOnDelete();
 
-            // target subagent (nullable)
-            $table->foreignId('subagent_id')
-                ->nullable()
-                ->constrained('subagents')
-                ->nullOnDelete();
-
             // ✅ FIX BUG 3: jenis_bayar_id dibuat nullable
             // (mode refund tiket tidak selalu memiliki jenis_bayar)
             $table->foreignId('jenis_bayar_id')
