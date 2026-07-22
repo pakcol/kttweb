@@ -48,16 +48,6 @@
                         </ul>
                     </li>
 
-                    <!-- Sub Agent Dropdown -->
-                    <li class="nav-item dropdown" id="subAgentDropdown">
-                        <a class="nav-link fw-medium {{ request()->is('sub-agent') ? 'text-primary fw-semibold' : 'text-dark' }}" 
-                           href="{{ url('/subagent') }}" 
-                           role="button"
-                           aria-expanded="false">
-                            Sub Agent
-                        </a>
-                    </li>
-
                     <!-- PLN Dropdown -->
                     <li class="nav-item dropdown" id="plnDropdown">
                         <a class="nav-link fw-medium dropdown-toggle {{ request()->is('pln') ? 'text-primary fw-semibold' : 'text-dark' }}" 
