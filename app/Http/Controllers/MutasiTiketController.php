@@ -11,7 +11,6 @@ use App\Models\JenisTiket;
 use App\Models\Bank;
 use App\Models\Biaya;
 use App\Models\PpobHistory;
-use App\Models\Subagent;
 use App\Services\MutasiTiketService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -127,17 +126,15 @@ class MutasiTiketController extends Controller
      * Simpan data mutasi tiket
      */
     public function store(Request $request, MutasiTiketService $service)
-{
-    $service->create($request->all());
+    {
+        $service->create($request->all());
 
-    return redirect()
-        ->route('mutasi-tiket.index', [
-            'jenis_tiket_id' => $request->jenis_tiket_id
-        ])
-        ->with('success', 'Mutasi berhasil disimpan');
-}
-
-
+        return redirect()
+            ->route('mutasi-tiket.index', [
+                'jenis_tiket_id' => $request->jenis_tiket_id
+            ])
+            ->with('success', 'Mutasi berhasil disimpan');
+    }
 
     /**
      * Form edit mutasi tiket
@@ -199,13 +196,13 @@ class MutasiTiketController extends Controller
                 'piutangs',
             ])
             ->whereNull('tgl_bayar')
-            ->where('jenis_bayar_id', 3) // ⬅️ INI PENTING
+            ->where('jenis_bayar_id', 3)
             ->orderBy('tgl_issued', 'asc')
             ->get();
 
         return view('piutang', [
             'piutang' => $piutang,
-            'jenisBayarNonPiutang' => JenisBayar::whereNotIn('id', [3, 4])->get(), // exclude PIUTANG & REFUND
+            'jenisBayarNonPiutang' => JenisBayar::whereNotIn('id', [3, 4])->get(),
             'bank' => Bank::orderBy('name')->get(),
         ]);
     }
@@ -238,8 +235,6 @@ class MutasiTiketController extends Controller
 
         return back()->with('success', 'Piutang tiket berhasil direalisasikan');
     }
-
-
 
     /**
      * Hapus mutasi tiket
@@ -381,65 +376,54 @@ class MutasiTiketController extends Controller
         $banks = Bank::all();
         $ppobs = JenisPpob::orderBy('jenis_ppob')->get();
         $jenisTiket = JenisTiket::orderBy('name_jenis')->get();
-        $subagents = Subagent::orderBy('nama')->get();
         $transfer = [];
 
         /* PENJUALAN (NON PIUTANG) */
-        // Total dari mutasi_tiket
         $penjualanMutasi = DB::table('mutasi_tiket')
             ->where('tgl_bayar', $tanggal)
             ->sum('harga_bayar');
 
-         // Total dari ppob_histories
         $penjualanPpob = DB::table('ppob_histories')
             ->where('tgl', $tanggal)
             ->sum('harga_jual');
 
-        // Total Penjualan
         $TTL_PENJUALAN = $penjualanMutasi + $penjualanPpob;
 
         /* PIUTANG */
-        // Piutang dari mutasi_tiket
         $piutangMutasi = DB::table('mutasi_tiket')
             ->join('jenis_bayar', 'jenis_bayar.id', '=', 'mutasi_tiket.jenis_bayar_id')
             ->whereNotNull('mutasi_tiket.piutang_id')
             ->where('mutasi_tiket.tgl_issued', $tanggal)
             ->sum('mutasi_tiket.harga_bayar');
 
-        // Piutang dari ppob_histories
         $piutangPpob = DB::table('ppob_histories')
             ->join('jenis_bayar', 'jenis_bayar.id', '=', 'ppob_histories.jenis_bayar_id')
             ->where('jenis_bayar.jenis', 'piutang')
             ->where('ppob_histories.tgl', $tanggal)
             ->sum('ppob_histories.harga_jual');
 
-        // Total Piutang
         $PIUTANG = $piutangMutasi + $piutangPpob;
 
-            /* JENIS BAYAR ID = 2 */
-        // Total dari mutasi_tiket dengan jenis_bayar_id = 2
+        /* JENIS BAYAR ID = 2 */
         $jenisBayarCashFlowMutasi = DB::table('mutasi_tiket')
             ->where('jenis_bayar_id', 2)
             ->where('tgl_bayar', $tanggal)
             ->sum('harga_bayar');
 
-        // Total dari ppob_histories dengan jenis_bayar_id = 2
         $jenisBayarCashFlowPpob = DB::table('ppob_histories')
             ->where('jenis_bayar_id', 2)
             ->where('tgl', $tanggal)
             ->sum('harga_jual');
 
-        // Total jenis_bayar_id = 2
         $CASH_FLOW = $jenisBayarCashFlowMutasi + $jenisBayarCashFlowPpob;
 
-        /* PENGELUARAN (HANYA KATEGORI 'lainnya') */
+        /* PENGELUARAN */
         $BIAYA = DB::table('biaya')
             ->whereDate('tgl', $tanggal)
             ->sum('biaya');
 
         /* ================= TRANSFER PER BANK ================= */
         foreach ($banks as $bank) {
-            // TOTAL MASUK DARI NOTA (TRANSFER)
             $tiketMasuk = MutasiTiket::where('tgl_bayar', $tanggal)
                 ->where('bank_id', $bank->id)
                 ->whereHas('jenisBayar', fn ($q) => $q->where('jenis', 'bank'))
@@ -466,10 +450,6 @@ class MutasiTiketController extends Controller
             ->orderBy('jenis_tiket.name_jenis')
             ->get();
 
-        $cashFlowSubagent = DB::table('subagent_histories')
-            ->whereDate('tgl_issued', $tanggal)
-            ->sum('transaksi');
-
         $SISA_SALDO_PPOB = PpobHistory::orderBy('id', 'desc')
             ->value('saldo');
 
@@ -487,8 +467,6 @@ class MutasiTiketController extends Controller
             'transfer',
             'jenisTiket',
             'topupJenisTiket',
-            'subagents',
-            'cashFlowSubagent',
             'ppobs',
             'SISA_SALDO_PPOB',
             'TOTAL_PENJUALAN_PPOB'
@@ -510,53 +488,36 @@ class MutasiTiketController extends Controller
                 ->leftJoin('jenis_bayar', 'jenis_bayar.id', '=', 'mutasi_tiket.jenis_bayar_id')
                 ->leftJoin('bank', 'bank.id', '=', 'mutasi_tiket.bank_id')
                 ->leftJoin('piutangs', 'piutangs.id', '=', 'mutasi_tiket.piutang_id')
-
-                // hanya transaksi yang SUDAH DIBAYAR
                 ->whereNotNull('mutasi_tiket.tgl_bayar')
                 ->whereBetween(
                     DB::raw('DATE(mutasi_tiket.tgl_bayar)'),
                     [$tanggalAwal, $tanggalAkhir]
                 )
-
                 ->orderBy('mutasi_tiket.tgl_bayar')
-
                 ->select([
-                    // ===== TANGGAL & JAM =====
                     DB::raw('DATE(mutasi_tiket.tgl_bayar) as tgl_issued'),
                     DB::raw('TIME(mutasi_tiket.tgl_bayar) as jam'),
-
-                    // ===== IDENTITAS =====
                     'tiket.kode_booking',
                     'jenis_tiket.name_jenis as airlines',
                     'tiket.name as nama',
-
-                    // ===== RUTE =====
                     'tiket.rute as rute1',
                     'tiket.tgl_flight as tgl_flight1',
                     'tiket.rute2',
                     'tiket.tgl_flight2',
-
-                    // ===== KEUANGAN =====
                     'mutasi_tiket.harga_bayar as harga',
                     'tiket.nta',
                     DB::raw('0 as diskon'),
                     DB::raw('(mutasi_tiket.harga_bayar - tiket.nta) as komisi'),
-
-                    // ===== PEMBAYARAN =====
                     'jenis_bayar.jenis as pembayaran',
                     'piutangs.nama as nama_piutang',
-
                     DB::raw('DATE(mutasi_tiket.tgl_bayar) as tgl_realisasi'),
                     DB::raw('TIME(mutasi_tiket.tgl_bayar) as jam_realisasi'),
-
-                    // ===== LAINNYA =====
                     'tiket.nilai_refund',
                     'mutasi_tiket.keterangan',
                     DB::raw("'-' as usr")
                 ])
                 ->get();
         }
-        
 
         /* ================= EXPORT CSV ================= */
         $response = new \Symfony\Component\HttpFoundation\StreamedResponse(function () use ($data) {
