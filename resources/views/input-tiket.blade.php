@@ -139,21 +139,6 @@
 
         <form action="{{ route('input-tiket.store') }}" id="inputDataForm" method="POST">
             @csrf
-            <div class="form-group">
-                <label for="statusCustomer">CUSTOMER TIKET</label>
-                <select id="statusCustomer" name="statusCustomer" required>
-                    <option value="customer">CUSTOMER</option>
-                    <option value="subagent">SUBAGENT</option>
-                </select>
-            </div>
-            <div class="form-group" id="subagentContainer" style="display:none;">
-                <label>SUBAGENT</label>
-                <select name="subagent_id" id="subagent_id">
-                    @foreach($subagents as $s)
-                        <option value="{{ $s->id }}">{{ $s->nama }}</option>
-                    @endforeach
-                </select>
-            </div>
 
             <div class="input-grid">
                 {{-- Kolom Kiri --}}
