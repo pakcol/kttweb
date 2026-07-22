@@ -38,16 +38,6 @@ return new class extends Migration
             $table->decimal('transaksi', 15, 2)->default(0)->change();
         });
 
-        // ===== SUBAGENTS =====
-        Schema::table('subagents', function (Blueprint $table) {
-            $table->decimal('saldo', 15, 2)->default(0)->change();
-        });
-
-        // ===== SUBAGENT HISTORIES =====
-        Schema::table('subagent_histories', function (Blueprint $table) {
-            $table->decimal('transaksi', 15, 2)->default(0)->change();
-        });
-
         // ===== BIAYA =====
         Schema::table('biaya', function (Blueprint $table) {
             $table->decimal('biaya', 15, 2)->default(0)->change();
@@ -83,16 +73,6 @@ return new class extends Migration
 
         // ===== TOPUP HISTORIES =====
         Schema::table('topup_histories', function (Blueprint $table) {
-            $table->integer('transaksi')->change();
-        });
-
-        // ===== SUBAGENTS =====
-        Schema::table('subagents', function (Blueprint $table) {
-            $table->integer('saldo')->change();
-        });
-
-        // ===== SUBAGENT HISTORIES =====
-        Schema::table('subagent_histories', function (Blueprint $table) {
             $table->integer('transaksi')->change();
         });
 
