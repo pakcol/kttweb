@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TiketController;
 use App\Http\Controllers\InvoiceController;
-use App\Http\Controllers\SubagentController;
 use App\Http\Controllers\BiayaController;
 use App\Http\Controllers\PpobController;
 use App\Http\Controllers\BukuBankController; 
@@ -67,17 +66,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{kode_booking}', [TiketController::class, 'getTiket'])->name('get');
         Route::put('/{kode_booking}', [TiketController::class, 'update'])->name('update');
         Route::delete('/{kode_booking}', [TiketController::class, 'destroy'])->name('destroy');
-    });
-
-    // ======== SUBAGENT CONTROLLER ======== 
-    Route::prefix('subagent')->name('subagent.')->group(function () {
-        Route::get('/', [SubagentController::class, 'index'])->name('index');
-        Route::post('/topup',[SubagentController::class, 'topup'])->name('topup');
-        Route::get('/search', [SubagentController::class, 'search'])->name('search');
-        Route::get('/{id}', [SubagentController::class, 'show'])->name('show');
-        Route::put('/{id}', [SubagentController::class, 'update'])->name('update');
-        Route::delete('/{id}', [SubagentController::class, 'destroy'])->name('destroy');
-        Route::get('/export', [SubagentController::class, 'exportExcel'])->name('export');
     });
 
     // ======== BIAYA CONTROLLER ======== 
