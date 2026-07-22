@@ -13,7 +13,6 @@ class TopupHistory extends Model
         'transaksi',
         'biaya_admin',
         'jenis_tiket_id',
-        'subagent_id',
         'jenis_bayar_id',
         'bank_id',
         'keterangan',
@@ -27,11 +26,6 @@ class TopupHistory extends Model
     public function jenisTiket()
     {
         return $this->belongsTo(JenisTiket::class, 'jenis_tiket_id');
-    }
-
-    public function subagent()
-    {
-        return $this->belongsTo(Subagent::class, 'subagent_id');
     }
 
     public function jenisBayar()
