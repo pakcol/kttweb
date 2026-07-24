@@ -89,13 +89,18 @@
     </tr>
     <tr>
         <td style="text-align: right; padding-right: 10px;">
-            <strong>Biaya Materai :</strong>
+            <strong>
+                <select id="feeLabelSelect" style="border:none; background:transparent; font-weight:bold; font-size:inherit; font-family:inherit; cursor:pointer;">
+                    <option value="Issued Fee">Issued Fee</option>
+                    <option value="Service Fee">Service Fee</option>
+                </select> :
+            </strong>
         </td>
         <td style="border: 1px solid #000; padding: 5px 10px; text-align: right;">
             <input 
                 type="text" 
-                id="materaiInput" 
-                value="{{ $materai }}" 
+                id="issuedFeeInput" 
+                value="{{ $issued_fee ?? 25000 }}" 
                 style="width: 100%; border: none; outline: none; text-align: right;"
                 inputmode="numeric"
                 pattern="[0-9]*"
@@ -104,13 +109,13 @@
     </tr>
     <tr>
         <td style="text-align: right; padding-right: 10px;">
-            <strong>Issued Fee :</strong>
+            <strong>Biaya Materai :</strong>
         </td>
         <td style="border: 1px solid #000; padding: 5px 10px; text-align: right;">
             <input 
                 type="text" 
-                id="issuedFeeInput" 
-                value="{{ $issued_fee ?? 25000 }}" 
+                id="materaiInput" 
+                value="{{ $materai }}" 
                 style="width: 100%; border: none; outline: none; text-align: right;"
                 inputmode="numeric"
                 pattern="[0-9]*"

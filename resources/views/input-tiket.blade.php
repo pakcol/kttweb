@@ -377,7 +377,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function closeInputModal() { $('modalInputTiket').style.display = 'none'; }
 
     /* ========= REFERENSI ELEMEN ========= */
-    const statusCustomer    = $('statusCustomer');
+    
     const form              = $('inputDataForm');
     const piutangIdInput    = $('piutang_id');          // hidden
     const namaPiutangInput  = $('nama_piutang_input');  // textbox
@@ -558,19 +558,10 @@ document.addEventListener('DOMContentLoaded', function () {
     $('jenis_bayar_id').addEventListener('change', toggleJenisPembayaran);
 
     /* ========= LOAD DETAIL TIKET (untuk edit) ========= */
-    function loadTiketDetail(kodeBooking) {
+      function loadTiketDetail(kodeBooking) {
         fetch(`tiket/by-tiket/${kodeBooking}`, { headers: { 'Accept': 'application/json' } })
         .then(r => r.ok ? r.json() : Promise.reject(r.status))
         .then(d => {
-            if (d.subagent_id) {
-                statusCustomer.value = 'subagent';
-                toggleCustomerType();
-                $('subagent_id').value = d.subagent_id;
-            } else {
-                statusCustomer.value = 'customer';
-                toggleCustomerType();
-            }
-
             $('jenis_bayar_id').value = d.jenis_bayar_id ?? '';
             $('bank_id').value        = d.bank_id ?? '';
 
@@ -593,35 +584,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     /* ========= TOGGLE CUSTOMER TYPE ========= */
-    function toggleCustomerType() {
-        const type           = statusCustomer.value;
-        const subagentSelect = $('subagent_id');
-        const jenisBayarSel  = $('jenis_bayar_id');
-        const bankSelect     = $('bank_id');
-
-        document.querySelectorAll('.subagent-hide').forEach(el =>
-            el.style.display = type === 'subagent' ? 'none' : 'block'
-        );
-        $('subagentContainer').style.display = type === 'subagent' ? 'block' : 'none';
-
-        if (type === 'subagent') {
-            subagentSelect.disabled = false;
-            subagentSelect.required = true;
-            jenisBayarSel.value     = '';
-            jenisBayarSel.disabled  = true;
-            bankSelect.value        = '';
-            bankSelect.disabled     = true;
-            $('bankContainer').style.display = 'none';
-        } else {
-            subagentSelect.disabled = true;
-            subagentSelect.required = false;
-            subagentSelect.value    = '';
-            jenisBayarSel.disabled  = false;
-        }
-        toggleJenisPembayaran();
-    }
-    statusCustomer.addEventListener('change', toggleCustomerType);
-    toggleCustomerType();
+    
 
     /* ========= FILL FORM FROM ROW (klik baris tabel) ========= */
     let formMode = 'create';
@@ -683,7 +646,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const checked = document.querySelectorAll('.check-row:checked');
         if (!checked.length) { alert('Pilih minimal satu tiket'); return; }
         const codes = Array.from(checked).map(cb => cb.value).join(',');
-        window.open(`/invoice-multi?codes=${codes}`, '_blank');
+        window.open(`/invoice-multi?codes=${encodeURIComponent(codes)}`, '_blank');
+
+        setTimeout(loadAllTickets, 1000);
     });
 
     /* ========= MODAL CARI ========= */

@@ -125,6 +125,10 @@ class InvoiceController extends Controller
 
     $invoice_number = 'INV-' . date('Ymd-His');
 
+    DB::table('tiket')
+        ->whereIn('kode_booking', $kodeBookingArray)
+        ->update(['keterangan' => $invoice_number]);
+
     return view('invoice', compact(
         'tikets',
         'subtotal',
@@ -155,8 +159,7 @@ class InvoiceController extends Controller
         $materai = $request->materai;
         $total = $subtotal + $issued_fee + $materai;
 
-        // Tidak perlu simpan ke DB kalau cuma tampil di halaman
-        // Tapi jika ingin disimpan, tambahkan kolom materai & total di tabel tikets
+        
 
         return back()->with([
             'materai' => $materai,
